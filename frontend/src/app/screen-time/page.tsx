@@ -112,13 +112,13 @@ export default function ScreenTimePage() {
         </div>
         <ol className="mt-6 space-y-2">
           {ranked.map((s, i) => (
-            <li key={s.id} className="flex items-center justify-between gap-3 text-lg">
-              <span className="flex items-center gap-3">
+            <li key={s.id} className="flex items-center justify-between gap-3 text-base sm:text-lg">
+              <span className="flex min-w-0 items-center gap-3">
                 <span className="w-5 text-right opacity-75">{i + 1}.</span>
                 <span className="h-3.5 w-3.5 shrink-0 rounded-[4px]" style={{ background: s.color }} aria-hidden="true" />
                 {s.label}
               </span>
-              <span className="tabular-nums">{formatMinutes(s.minutes)}</span>
+              <span className="whitespace-nowrap tabular-nums">{formatMinutes(s.minutes)}</span>
             </li>
           ))}
         </ol>
