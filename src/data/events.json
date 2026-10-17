@@ -1,0 +1,10 @@
+[
+  { "id": 1, "title": "Coding Night: Beginner Hack Jam", "category": "Coding", "day": "Tue", "slot": "evening", "date": "Tue, Oct 20", "location": "UTSC Science Wing, Room SW143", "tags": ["Coding", "Gaming"] },
+  { "id": 2, "title": "Board Game and Bubble Tea Social", "category": "Social", "day": "Wed", "slot": "afternoon", "date": "Wed, Oct 21", "location": "Student Centre Lounge", "tags": ["Gaming", "Cafes", "Anime"] },
+  { "id": 3, "title": "Campus Photo Walk", "category": "Arts", "day": "Thu", "slot": "afternoon", "date": "Thu, Oct 22", "location": "Meet at the Highland Creek Trail entrance", "tags": ["Photography", "Hiking", "Art"] },
+  { "id": 4, "title": "3-on-3 Basketball Pickup", "category": "Sports", "day": "Mon", "slot": "afternoon", "date": "Mon, Oct 19", "location": "Toronto Pan Am Sports Centre", "tags": ["Basketball", "Fitness"] },
+  { "id": 5, "title": "Chess Club Open Night", "category": "Games", "day": "Thu", "slot": "morning", "date": "Thu, Oct 22", "location": "Humanities Wing, Room HW216", "tags": ["Chess", "Reading"] },
+  { "id": 6, "title": "Yoga on the Quad", "category": "Wellness", "day": "Fri", "slot": "afternoon", "date": "Fri, Oct 23", "location": "Academic Resource Centre Lawn", "tags": ["Yoga", "Fitness"] },
+  { "id": 7, "title": "Open Mic and Music Jam", "category": "Music", "day": "Fri", "slot": "evening", "date": "Fri, Oct 23", "location": "The Meeting Place", "tags": ["Music"] },
+  { "id": 8, "title": "Study Skills Café: Midterm Prep", "category": "Study", "day": "Tue", "slot": "afternoon", "date": "Tue, Oct 20", "location": "Library Group Study Room 2", "tags": ["Cafes", "Reading", "Coding"] }
+]
