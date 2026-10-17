@@ -7,6 +7,7 @@
 | `frontend/` | **The website** (Next.js + TypeScript + Tailwind), built from the design PDF. See `frontend/README.md`. |
 | `backend/` | **The API** (Python + FastAPI): accounts, health check, AI insight. See `backend/README.md`. |
 | `deploy/` + `DEPLOY.md` | How to put it live on a Vultr server with your GoDaddy domain. |
+| `scripts/smoke_test.py` | Checks a running site end to end and prints PASS/FAIL: `python scripts/smoke_test.py` (your computer) or `python scripts/smoke_test.py https://your-domain.com`. |
 | `src/`, `index.html`, `package.json` (repo root) | The first prototype (React + Vite). The new `frontend/` replaces it. |
 
 ---
