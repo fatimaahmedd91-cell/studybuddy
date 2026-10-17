@@ -25,6 +25,8 @@ export default function config(phase: string): NextConfig {
     return {
       ...shared,
       devIndicators: { position: "bottom-right" },
+      // Codespaces opens the dev site on a *.app.github.dev address.
+      allowedDevOrigins: ["*.app.github.dev"],
       async rewrites() {
         return [{ source: "/api/:path*", destination: `${backend}/api/:path*` }];
       },
