@@ -1,0 +1,7 @@
+# Secrets. Never commit these.
+.env
+
+# Python virtual environment and caches
+.venv/
+__pycache__/
+.pytest_cache/

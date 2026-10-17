@@ -1,0 +1,8 @@
+# Install with:  pip install -r requirements.txt  (inside the activated .venv)
+fastapi==0.143.3
+uvicorn[standard]==0.54.0
+python-dotenv==1.2.4
+psycopg2-binary==2.9.13
+google-genai==2.31.0
+pytest==9.1.1
+httpx==0.28.1
