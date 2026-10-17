@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+/* FriendFinder colours, taken from the design PDF.
+   Each one becomes a Tailwind class, for example bg-bark, text-ember, border-ice. */
+@theme {
+  --color-bark: #401800;   /* dark brown: sidebar, dark panels, buttons, text */
+  --color-ember: #d64d00;  /* orange: card borders and highlight panels */
+  --color-paper: #fff6e2;  /* cream: top bar, avatar fill, chat bubbles */
+  --color-card: #ffedc5;   /* card cream: inside the orange cards */
+  --color-ice: #d0faff;    /* light blue: page background */
+
+  --font-sans: ui-rounded, "SF Pro Rounded", "Nunito", "Segoe UI", system-ui, sans-serif;
+}
+
+body {
+  background: var(--color-ice);
+  color: var(--color-bark);
+}
+
+/* Thin, on-brand scrollbars for the sideways post rows. */
+.scroll-row {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-ember) transparent;
+}
+
+/* Visible keyboard focus everywhere. */
+:focus-visible {
+  outline: 3px solid var(--color-ember);
+  outline-offset: 2px;
+}

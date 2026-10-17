@@ -1,4 +1,17 @@
-# FriendFinder (StudyBuddy) - Beginner Guide
+# FriendFinder (StudyBuddy)
+
+## What's where (start here)
+
+| Folder | What it is |
+|---|---|
+| `frontend/` | **The website** (Next.js + TypeScript + Tailwind), built from the design PDF. See `frontend/README.md`. |
+| `backend/` | **The API** (Python + FastAPI): accounts, health check, AI insight. See `backend/README.md`. |
+| `deploy/` + `DEPLOY.md` | How to put it live on a Vultr server with your GoDaddy domain. |
+| `src/`, `index.html`, `package.json` (repo root) | The first prototype (React + Vite). The new `frontend/` replaces it. |
+
+---
+
+## The first prototype: beginner guide
 
 Everything is already written. Your job is to run it, test it, and be able to explain it.
 

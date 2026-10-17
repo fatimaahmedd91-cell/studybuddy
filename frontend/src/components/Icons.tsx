@@ -1,0 +1,107 @@
+// Simple line icons that match the hand-drawn sidebar in the design.
+// They use the current text colour, so className="text-paper" makes them cream.
+type IconProps = { className?: string };
+
+function Svg({ className, children }: IconProps & { children: React.ReactNode }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className ?? "h-6 w-6"}
+      aria-hidden="true"
+    >
+      {children}
+    </svg>
+  );
+}
+
+export const FeedIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <rect x="4" y="4" width="16" height="16" rx="2" />
+    <path d="M10 8.5v7l5.5-3.5z" />
+  </Svg>
+);
+
+export const MessagesIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M21 3 3 10.5l7 2.5 2.5 7z" />
+    <path d="M21 3 10 13" />
+  </Svg>
+);
+
+export const GroupsIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <circle cx="12" cy="7" r="3" />
+    <circle cx="5" cy="10" r="2.2" />
+    <circle cx="19" cy="10" r="2.2" />
+    <path d="M7 20c0-3 2.2-5.5 5-5.5s5 2.5 5 5.5M1.5 19c.3-2.2 1.7-4 3.5-4M22.5 19c-.3-2.2-1.7-4-3.5-4" />
+  </Svg>
+);
+
+export const HourglassIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M6 3h12M6 21h12M7 3c0 5 10 5 10 9s-10 4-10 9M17 3c0 5-10 5-10 9s10 4 10 9" />
+  </Svg>
+);
+
+export const PartyIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M5 20 12 3l7 17z" />
+    <path d="M8.5 13.5h7M7 17.5h10" />
+    <circle cx="12" cy="3" r="1" />
+  </Svg>
+);
+
+export const FriendsIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="2.5" />
+    <circle cx="12" cy="5.5" r="3" />
+    <circle cx="12" cy="18.5" r="3" />
+    <circle cx="5.5" cy="12" r="3" />
+    <circle cx="18.5" cy="12" r="3" />
+  </Svg>
+);
+
+export const PlusCircleIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 8v8M8 12h8" />
+  </Svg>
+);
+
+export const BellIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M6 17V11a6 6 0 0 1 12 0v6l1.5 2h-15z" />
+    <path d="M10 21h4M12 3V2" />
+  </Svg>
+);
+
+export const MenuIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M4 6h16M4 12h16M4 18h16" />
+  </Svg>
+);
+
+export const SendIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M21 3 3 10.5l7 2.5 2.5 7z" />
+    <path d="M21 3 10 13" />
+  </Svg>
+);
+
+export const SearchIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <circle cx="11" cy="11" r="6" />
+    <path d="m20 20-4.5-4.5" />
+  </Svg>
+);
+
+export const CrownIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z" />
+  </Svg>
+);

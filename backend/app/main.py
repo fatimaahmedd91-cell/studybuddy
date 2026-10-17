@@ -16,6 +16,7 @@ from app import config
 from app.auth import router as auth_router
 from app.db import DatabaseNotConfigured, init_db
 from app.health import check_database, check_gemini
+from app.insight import router as insight_router
 from app.security import TokenSecretMissing
 
 log = logging.getLogger("friendfinder")
@@ -34,6 +35,7 @@ async def lifespan(app):
 
 app = FastAPI(title="FriendFinder API", lifespan=lifespan)
 app.include_router(auth_router)
+app.include_router(insight_router)
 
 
 # If the database is missing or down, answer 503 with a short message instead of crashing.

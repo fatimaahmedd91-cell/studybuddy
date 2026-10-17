@@ -79,6 +79,18 @@ Errors you might see:
 3. Click **Authorize** at the top of the page, paste the token, and click **Authorize**.
 4. Open `GET /api/me`, click **Try it out**, then **Execute**. You should see your account.
 
+### POST /api/insight
+
+Writes the "Why you might get along" note with Gemini. Send only what two people share:
+
+```json
+{"sharedInterests": ["Coding"], "sharedCourses": ["CSCA48"], "sharedSlots": [{"day": "Tue", "slot": "afternoon"}]}
+```
+
+- Any other field (like a name) is refused with 422, so personal details cannot be sent to the AI.
+- Each visitor can ask for 30 notes per 10 minutes (429 after that), so strangers cannot use up the key.
+- 503 if `GEMINI_API_KEY` is missing, 502 if Gemini fails. The website then shows the template note instead.
+
 ## Run the tests
 
 ```
