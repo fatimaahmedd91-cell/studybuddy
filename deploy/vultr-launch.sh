@@ -11,14 +11,24 @@
 #
 # If something goes wrong, http://YOUR_SERVER_IP shows the error instead of the site.
 # The full log is in /var/log/friendfinder-launch.log on the server.
+#
+# Already have a server? Log in to it as root (ssh root@YOUR_SERVER_IP) and run:
+#   curl -fsSL https://raw.githubusercontent.com/fatimaahmedd91-cell/studybuddy/main/deploy/vultr-launch.sh -o launch.sh
+#   GEMINI_API_KEY='your-key' bash launch.sh
+
+# Settings given on the command line, like GEMINI_API_KEY='...' bash launch.sh, are used if the lines below are empty.
+FROM_COMMAND_LINE_GEMINI_API_KEY="${GEMINI_API_KEY:-}"
+FROM_COMMAND_LINE_DOMAIN="${DOMAIN:-}"
 
 # ---------------- Fill these in before pasting (both optional) ----------------
 GEMINI_API_KEY=""   # your Gemini key, for real AI match notes. Empty = the labelled non-AI notes.
 DOMAIN=""           # your own domain, ONLY if its DNS already points at this server. Empty = free sslip.io address.
 # -------------------------------------------------------------------------------
 
+GEMINI_API_KEY="${GEMINI_API_KEY:-$FROM_COMMAND_LINE_GEMINI_API_KEY}"
+DOMAIN="${DOMAIN:-$FROM_COMMAND_LINE_DOMAIN}"
 REPO="https://github.com/fatimaahmedd91-cell/studybuddy.git"
-BRANCH="claude/friendfinder-mvp"
+BRANCH="main"
 APP_DIR=/opt/friendfinder
 LOG=/var/log/friendfinder-launch.log
 
@@ -48,6 +58,17 @@ show_failure() {
 trap show_failure ERR
 
 echo "==> FriendFinder launch started $(date -u)"
+if [ "$(id -u)" -ne 0 ]; then
+  echo "Please run this as root (log in with: ssh root@YOUR_SERVER_IP)."
+  false
+fi
+# The site needs Python 3.12, which comes with Ubuntu 24.04. Older Ubuntu versions are too old.
+. /etc/os-release
+if [ "${ID:-}" != "ubuntu" ] || [ "${VERSION_ID:-0}" \< "24" ]; then
+  echo "This server runs ${PRETTY_NAME:-an unknown system}, but FriendFinder needs Ubuntu 24.04."
+  echo "In Vultr: open the server -> Settings -> Change OS -> Ubuntu 24.04 LTS x64. Then run this again."
+  false
+fi
 echo 'DPkg::Lock::Timeout "900";' > /etc/apt/apt.conf.d/90friendfinder-wait-for-lock
 apt-get update
 apt-get install -y git curl
