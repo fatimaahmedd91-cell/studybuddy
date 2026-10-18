@@ -95,11 +95,72 @@ def refresh_demo_events(cur):
         )
 
 
+def add_commitments(cur, user_id, entries):
+    """Adds weekly private commitments (see DEMO_SCHEDULES), unless this person already has some."""
+    cur.execute("SELECT 1 FROM commitments WHERE user_id = %s LIMIT 1", (user_id,))
+    if cur.fetchone():
+        return
+    term_start = datetime.now(DEMO_TIME_ZONE).date() - timedelta(days=28)
+    for title, kind, weekday, starts, ends, place in entries:
+        cur.execute(
+            """
+            INSERT INTO commitments (user_id, title, kind, location, recurrence, weekday, start_date, start_time, end_time, timezone)
+            VALUES (%s, %s, %s, %s, 'weekly', %s, %s, %s, %s, %s)
+            """,
+            (user_id, title, kind, place, weekday, term_start, starts, ends, DEMO_TIME_ZONE.key),
+        )
+
+
+def add_demo_plans(cur, ids):
+    """Private schedules, planning permissions and meeting areas for the fictional people.
+
+    Only adds what's missing, so it also fills them in on databases seeded before they existed.
+    The demo people are made up, so their "consent" to location suggestions is made up too (marked "demo").
+    """
+    from app.planning import AREA_PRESETS  # imported here: planning imports a lot, and this file is imported early
+
+    for name, entries in data.DEMO_SCHEDULES.items():
+        if name in ids:
+            add_commitments(cur, ids[name], entries)
+    for name in data.DEMO_PLANNING_FRIENDS:
+        if name in ids:
+            cur.execute(
+                "INSERT INTO planning_consents (user_id, scope) SELECT %(id)s, 'friends' WHERE NOT EXISTS"
+                " (SELECT 1 FROM planning_consents WHERE user_id = %(id)s AND scope = 'friends')",
+                {"id": ids[name]},
+            )
+    for group_name, names in data.DEMO_PLANNING_GROUPS.items():
+        cur.execute("SELECT id FROM groups WHERE is_demo AND name = %s", (group_name,))
+        group = cur.fetchone()
+        for name in names if group else []:
+            if name in ids:
+                cur.execute(
+                    "INSERT INTO planning_consents (user_id, scope, group_id) SELECT %(id)s, 'group', %(group)s"
+                    " WHERE EXISTS (SELECT 1 FROM group_members WHERE group_id = %(group)s AND user_id = %(id)s)"
+                    " AND NOT EXISTS (SELECT 1 FROM planning_consents WHERE user_id = %(id)s AND scope = 'group'"
+                    " AND group_id = %(group)s)",
+                    {"id": ids[name], "group": group["id"]},
+                )
+    for name, preset in data.DEMO_MEETING_AREAS.items():
+        if name in ids:
+            label, lat, lng = AREA_PRESETS[preset]
+            cur.execute(
+                "UPDATE users SET consents = consents || %s WHERE id = %s AND NOT consents ? 'location_suggestions'",
+                (Json({"location_suggestions": {"granted": True, "at": "demo"}}), ids[name]),
+            )
+            cur.execute(
+                "INSERT INTO meeting_origins (user_id, label, lat, lng, source) VALUES (%s, %s, %s, %s, 'preset')"
+                " ON CONFLICT (user_id) DO NOTHING",
+                (ids[name], label, lat, lng),
+            )
+
+
 def seed(cur):
     """Adds the demo data if it isn't there yet. Returns a short summary."""
     ids = demo_people_ids(cur)
     if ids:
         refresh_demo_events(cur)
+        add_demo_plans(cur, ids)
         return {"created": False, "people": len(ids)}
 
     for person in data.DEMO_PEOPLE:
@@ -141,6 +202,7 @@ def seed(cur):
         for person in [spec["organiser"], *spec["going"]]:
             cur.execute("INSERT INTO event_rsvps (event_id, user_id) VALUES (%s, %s)", (event_id, ids[person]))
 
+    add_demo_plans(cur, ids)
     return {"created": True, "people": len(ids), "groups": len(group_ids), "events": len(data.DEMO_EVENTS)}
 
 

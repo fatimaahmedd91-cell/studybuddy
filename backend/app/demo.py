@@ -18,7 +18,7 @@ from app.db import get_connection
 from app.notifications import notify
 from app.ratelimit import RateLimiter, client_ip
 from app.security import create_token
-from app.seed import DEMO_DOMAIN, demo_people_ids, insert_demo_person, remove_old_explorers, seed
+from app.seed import DEMO_DOMAIN, add_commitments, demo_people_ids, insert_demo_person, remove_old_explorers, seed
 from app.users import load_user, own_profile
 
 router = APIRouter(prefix="/api")
@@ -37,6 +37,7 @@ def start_demo(request: Request):
         seed(cur)  # makes sure the fictional people exist (does nothing if they already do)
         people = demo_people_ids(cur)
         me = insert_demo_person(cur, data.DEMO_EXPLORER, f"explorer-{secrets.token_hex(6)}@{DEMO_DOMAIN}")
+        add_commitments(cur, me, data.DEMO_EXPLORER_SCHEDULE)
 
         for name in data.DEMO_INCOMING_REQUESTS:
             if name in people:

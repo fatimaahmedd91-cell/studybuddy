@@ -235,3 +235,27 @@ DEMO_FRIEND_MESSAGES = [
     "Hey! Saw you're into coding too 👋",
     "Want to grab a table at the library Tuesday afternoon?",
 ]
+
+# ---------- Private schedules, planning permissions and meeting areas (all made up) ----------
+# So a demo plan shows how private schedules work without anyone typing one in first.
+
+# Weekly commitments: (title, kind, weekday 0=Mon … 6=Sun, starts "HH:MM", ends "HH:MM", place).
+# An end time earlier than the start means it ends the next day (an overnight shift).
+DEMO_SCHEDULES = {
+    "Daniel Osei": [("MATA31 tutorial", "class", 1, "13:00", "14:00", "IC 130"),
+                    ("Bookstore shift", "work", 5, "15:00", "18:00", "")],
+    "Amira Khan": [("CSCA08 lecture", "class", 0, "11:00", "13:00", "SW 319"),
+                   ("Badminton practice", "other", 3, "18:00", "20:00", "")],
+    "Tariq Aziz": [("Cafe shift", "work", 2, "16:00", "21:00", ""),
+                   ("STAB22 lecture", "class", 3, "10:00", "12:00", "AA 112")],
+    "Lena Petrova": [("CSCA08 tutorial", "class", 1, "09:00", "10:00", "BV 260"),
+                     ("Overnight library shift", "work", 4, "22:00", "02:00", "")],
+}
+# These people let plans their friends make use their private schedule (only free times are ever shown).
+DEMO_PLANNING_FRIENDS = ["Daniel Osei", "Amira Khan", "Tariq Aziz"]
+# These people let plans for these groups use their private schedule.
+DEMO_PLANNING_GROUPS = {"CSCA08 Study Group": ["Lena Petrova", "Amira Khan", "Daniel Osei", "Tariq Aziz"]}
+# Approximate meeting areas (keys of AREA_PRESETS in app/planning.py), never a home address.
+DEMO_MEETING_AREAS = {"Daniel Osei": "utsc", "Amira Khan": "kennedy", "Tariq Aziz": "stc", "Lena Petrova": "uoft_st_george"}
+# Every "Try the demo" account starts with this one, so its private schedule isn't empty.
+DEMO_EXPLORER_SCHEDULE = [("Example: CSCA08 lab", "class", 1, "16:00", "17:00", "BV 473")]

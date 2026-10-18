@@ -229,3 +229,51 @@ def test_seed_reset_needs_confirmation_and_is_blocked_in_production(database, mo
     monkeypatch.setattr(config, "APP_ENV", "production")
     assert seed.main(["--reset", "--yes"]) == 1
     assert seed.main(["--reset", "--yes", "--allow-production"]) == 0
+
+
+def test_demo_plans_use_the_demo_friends_private_schedule(database, client):
+    import json
+    from datetime import date, timedelta
+    body = client.post("/api/auth/demo").json()
+    headers = {"Authorization": f"Bearer {body['access_token']}"}
+    accept_terms(client, headers)
+    daniel = client.get("/api/friends", headers=headers).json()["friends"][0]["person"]["id"]
+    # Every demo account starts with one sample commitment of its own.
+    mine = client.get("/api/commitments", headers=headers).json()["commitments"]
+    assert [c["title"] for c in mine] == ["Example: CSCA08 lab"]
+
+    today = date.today()
+    tuesday = today + timedelta(days=(1 - today.weekday()) % 7 or 7)
+    plan = client.post("/api/planning/slots", headers=headers, json={
+        "friend_ids": [daniel], "start_date": tuesday.isoformat(), "end_date": tuesday.isoformat(), "duration_minutes": 30}).json()
+    assert plan["participants"][0]["status"] == "included"
+    # Daniel's Tuesday 13:00–14:00 tutorial and the explorer's 16:00–17:00 lab (each with 15 min of buffer) are avoided,
+    # inside the Tuesday afternoon they're both free.
+    assert [(s["start"][11:16], s["end"][11:16]) for s in plan["slots"]] == [("12:00", "12:45"), ("14:15", "15:45")]
+    assert "MATA31" not in json.dumps(plan) and "IC 130" not in json.dumps(plan)
+
+
+def test_demo_plan_data_is_added_once_and_filled_in_on_older_databases(database, client):
+    from app import db
+    client.post("/api/auth/demo")
+    with db.get_connection() as conn, conn.cursor() as cur:
+        cur.execute("SELECT count(*) AS n FROM commitments c JOIN users u ON u.id = c.user_id"
+                    " WHERE u.is_demo AND u.email NOT LIKE 'explorer-%%'")
+        first = cur.fetchone()["n"]
+        cur.execute("SELECT count(*) AS n FROM meeting_origins")
+        areas = cur.fetchone()["n"]
+        # Like a database seeded before demo schedules existed:
+        cur.execute("DELETE FROM commitments")
+        cur.execute("DELETE FROM planning_consents")
+        cur.execute("DELETE FROM meeting_origins")
+    assert first == 8 and areas == 4
+    for _ in range(2):  # running it twice adds nothing extra
+        with db.get_connection() as conn, conn.cursor() as cur:
+            seed.seed(cur)
+    with db.get_connection() as conn, conn.cursor() as cur:
+        cur.execute("SELECT count(*) AS n FROM commitments")
+        assert cur.fetchone()["n"] == 8
+        cur.execute("SELECT scope, count(*) AS n FROM planning_consents GROUP BY scope ORDER BY scope")
+        assert [(r["scope"], r["n"]) for r in cur.fetchall()] == [("friends", 3), ("group", 4)]
+        cur.execute("SELECT count(*) AS n FROM meeting_origins")
+        assert cur.fetchone()["n"] == 4
