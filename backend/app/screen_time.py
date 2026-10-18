@@ -11,6 +11,8 @@ How time is counted:
 POST /api/screen-time/heartbeat    count 30 seconds (the website calls this; you don't need to)
 GET  /api/screen-time?tz=America/Toronto   today's total and the last 7 days, in your time zone
 Your daily goal is a profile setting: PATCH /api/me {"daily_goal_minutes": 30}
+
+Self-reported phone screen time and screen-time groups live in app/screen_time_groups.py.
 """
 
 from datetime import datetime, timedelta
@@ -20,6 +22,7 @@ from fastapi import APIRouter, HTTPException
 
 from app.auth import CurrentUser
 from app.db import get_connection, timescale_in_use
+from app.screen_time_groups import maybe_send_reminder
 
 router = APIRouter(prefix="/api")
 
@@ -41,6 +44,9 @@ def heartbeat(me: CurrentUser):
         if gap is not None and gap < MIN_GAP_SECONDS:
             return {"counted": False}
         cur.execute("INSERT INTO app_time (user_id, seconds) VALUES (%s, %s)", (me["id"], HEARTBEAT_SECONDS))
+        if gap is None:
+            # First heartbeat in an hour (a new visit): a good moment for the once-a-day reminder.
+            maybe_send_reminder(cur, me)
     return {"counted": True}
 
 

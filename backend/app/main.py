@@ -30,6 +30,7 @@ from app import (  # one feature per line, so adding a feature is a one-line cha
     profiles,
     safety,
     screen_time,
+    screen_time_groups,
     verification,
     website,
 )
@@ -73,6 +74,7 @@ for feature in (
     safety,
     moderation,
     memories,
+    screen_time_groups,
 ):
     app.include_router(feature.router)
 
