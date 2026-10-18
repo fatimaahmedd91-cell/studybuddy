@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import Avatar from "@/components/Avatar";
 import { SearchIcon, SendIcon } from "@/components/Icons";
+import { BlockButton, ReportDialog } from "@/components/SafetyActions";
 import { Empty, ErrorBox, Loading } from "@/components/States";
 import { DemoBadge } from "@/components/ui";
 import { api } from "@/lib/api";
@@ -18,6 +19,8 @@ function Chat({ friendId, onSent }: { friendId: number; onSent: () => void }) {
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
+  const [reporting, setReporting] = useState<number | null>(null);
+  const router = useRouter();
   const bottom = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -55,6 +58,9 @@ function Chat({ friendId, onSent }: { friendId: number; onSent: () => void }) {
           {data.friend.name}
         </Link>
         {data.friend.is_demo && <DemoBadge />}
+        <span className="ml-auto">
+          <BlockButton userId={data.friend.id} name={data.friend.name} onBlocked={() => router.push("/friends")} />
+        </span>
       </div>
       <div className="flex-1 space-y-3 overflow-y-auto py-4" aria-live="polite" aria-label={`Messages with ${data.friend.name}`}>
         {data.messages.length === 0 && <p className="text-center text-sm text-cream/80">No messages yet. Say hi!</p>}
@@ -63,13 +69,19 @@ function Chat({ friendId, onSent }: { friendId: number; onSent: () => void }) {
             {!m.from_me && <span className="h-5 w-5 shrink-0 rounded-full border-2 border-cream" aria-hidden="true" />}
             <div className={`max-w-[78%] rounded-2xl px-4 py-2 text-pine ${m.from_me ? "bg-sage" : "bg-cream"}`}>
               <p className="whitespace-pre-wrap break-words">{m.body}</p>
-              <p className="mt-0.5 text-right text-[11px] opacity-70">{m.from_me ? "You" : data.friend.name.split(" ")[0]} · {formatTime(m.created_at)}</p>
+              <p className="mt-0.5 text-right text-[11px] opacity-70">
+                {m.from_me ? "You" : data.friend.name.split(" ")[0]} · {formatTime(m.created_at)}
+                {!m.from_me && (
+                  <button type="button" onClick={() => setReporting(m.id)} className="ml-2 underline">Report</button>
+                )}
+              </p>
             </div>
           </div>
         ))}
         <div ref={bottom} />
       </div>
       {sendError && <p role="alert" className="mb-2 rounded-lg bg-cream px-3 py-2 text-sm font-medium text-danger">{sendError}</p>}
+      {reporting !== null && <ReportDialog targetType="message" targetId={reporting} onClose={() => setReporting(null)} />}
       <form onSubmit={send} className="flex gap-2">
         <label htmlFor="message" className="sr-only">Message {data.friend.name}</label>
         <input id="message" value={draft} maxLength={1000} onChange={(e) => setDraft(e.target.value)}

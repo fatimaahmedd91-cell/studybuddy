@@ -7,6 +7,7 @@ import { Suspense, useEffect, useState } from "react";
 import Avatar from "@/components/Avatar";
 import { EventForm, GroupForm } from "@/components/CreateForms";
 import Dialog from "@/components/Dialog";
+import { ReportButton, ReportDialog } from "@/components/SafetyActions";
 import { Empty, ErrorBox, Loading } from "@/components/States";
 import { Button, Chip, DemoBadge, FrameCard, PageHeading, inputClass } from "@/components/ui";
 import { api } from "@/lib/api";
@@ -116,6 +117,7 @@ function Discussion({ groupId }: { groupId: number }) {
   const [body, setBody] = useState("");
   const [busy, setBusy] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
+  const [reporting, setReporting] = useState<number | null>(null);
 
   async function post(e: React.FormEvent) {
     e.preventDefault();
@@ -144,7 +146,10 @@ function Discussion({ groupId }: { groupId: number }) {
           <li key={p.id} className="flex gap-3">
             <Avatar person={p.author} size="sm" />
             <div className="min-w-0 rounded-2xl bg-cream px-4 py-2 text-pine">
-              <p className="text-xs font-semibold">{p.mine ? "You" : p.author.name} · {timeAgo(p.created_at)}</p>
+              <p className="text-xs font-semibold">
+                {p.mine ? "You" : p.author.name} · {timeAgo(p.created_at)}
+                {!p.mine && <button type="button" onClick={() => setReporting(p.id)} className="ml-2 font-normal underline">Report</button>}
+              </p>
               <p className="whitespace-pre-wrap break-words">{p.body}</p>
             </div>
           </li>
@@ -157,6 +162,7 @@ function Discussion({ groupId }: { groupId: number }) {
         <Button type="submit" variant="light" disabled={busy || !body.trim()}>{busy ? "Posting…" : "Post"}</Button>
       </form>
       {sendError && <p role="alert" className="mt-2 rounded-lg bg-cream px-3 py-2 text-sm font-medium text-danger">{sendError}</p>}
+      {reporting !== null && <ReportDialog targetType="group_post" targetId={reporting} onClose={() => setReporting(null)} />}
     </section>
   );
 }
@@ -186,6 +192,7 @@ function GroupDetail({ id }: { id: number }) {
             <p className="mt-1 text-lg">{group.member_count} member{group.member_count === 1 ? "" : "s"}{group.is_owner && " · you created this group"}</p>
             <div className="mt-2 flex flex-wrap gap-1.5">{group.tags.map((t) => <Chip key={t}>{t}</Chip>)}</div>
             {group.description && <p className="mt-3 max-w-2xl whitespace-pre-line">{group.description}</p>}
+            {!group.is_owner && <ReportButton targetType="group" targetId={group.id} label="Report group" className="mt-3" />}
           </div>
           <JoinButton large group={group} onChange={(g) => setData(g)} />
         </div>

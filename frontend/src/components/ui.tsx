@@ -133,3 +133,48 @@ export function PageHeading({ title, children }: { title: string; children?: Rea
     </div>
   );
 }
+
+// An on/off switch with a label and an optional explanation. It's a real checkbox underneath,
+// so keyboards and screen readers understand it.
+export function Toggle({
+  label,
+  description,
+  checked,
+  onChange,
+  disabled = false,
+}: {
+  label: string;
+  description?: React.ReactNode;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <label className="flex min-h-11 cursor-pointer items-start justify-between gap-4 rounded-xl bg-cream px-3 py-2">
+      <span>
+        <span className="font-semibold">{label}</span>
+        {description && <span className="mt-0.5 block text-sm">{description}</span>}
+      </span>
+      <span className="relative mt-1 inline-flex shrink-0">
+        <input type="checkbox" role="switch" checked={checked} disabled={disabled}
+          onChange={(e) => onChange(e.target.checked)} className="peer sr-only" />
+        <span aria-hidden="true"
+          className="h-7 w-12 rounded-full bg-sage-strong transition peer-checked:bg-forest peer-focus-visible:outline peer-focus-visible:outline-3 peer-focus-visible:outline-forest peer-disabled:opacity-50" />
+        <span aria-hidden="true"
+          className="absolute left-1 top-1 h-5 w-5 rounded-full bg-cream shadow transition peer-checked:translate-x-5" />
+      </span>
+    </label>
+  );
+}
+
+// A titled settings block with an id, so the page can link to it (#privacy).
+export function SettingsSection({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
+  return (
+    <FrameCard>
+      <section id={id} aria-labelledby={`${id}-title`} className="scroll-mt-24 space-y-3 p-5 sm:p-6">
+        <h2 id={`${id}-title`} className="text-2xl font-bold">{title}</h2>
+        {children}
+      </section>
+    </FrameCard>
+  );
+}

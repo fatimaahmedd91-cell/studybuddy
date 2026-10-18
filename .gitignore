@@ -27,3 +27,6 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# Claude Code working copies (never commit)
+.claude/worktrees/

@@ -11,6 +11,7 @@ import Dialog from "@/components/Dialog";
 import { AvailabilityGrid } from "@/components/ProfileInputs";
 import { Empty, ErrorBox, Loading } from "@/components/States";
 import { Button, DarkPanel, DemoBadge, FrameCard, inputClass } from "@/components/ui";
+import { ReportButton } from "@/components/SafetyActions";
 import { api } from "@/lib/api";
 import { useMe } from "@/lib/auth";
 import { useOptions } from "@/lib/options";
@@ -250,6 +251,7 @@ function EventDetail({ id }: { id: number }) {
           )}
           {event.description && <p className="max-w-2xl whitespace-pre-line">{event.description}</p>}
           <RsvpButton event={event} onChange={setData} />
+          {!event.is_organiser && <ReportButton targetType="event" targetId={event.id} label="Report event" />}
         </div>
       </FrameCard>
       <section aria-labelledby="going-title" className="rounded-2xl bg-cream p-5">

@@ -20,14 +20,14 @@ const PRONOUNS = ["she/her", "he/him", "they/them", "she/they", "he/they"];
 type Form = Pick<
   OwnProfile,
   | "name" | "pronouns" | "university" | "hook" | "bio" | "interests" | "looking_for"
-  | "availability" | "avatar_emoji" | "avatar_color" | "stickers"
+  | "availability" | "availability_audience" | "avatar_emoji" | "avatar_color" | "stickers"
 > & { age: string };
 
 function fromProfile(p: OwnProfile): Form {
   return {
     name: p.name, pronouns: p.pronouns, age: p.age ? String(p.age) : "", university: p.university, hook: p.hook,
     bio: p.bio, interests: p.interests, looking_for: p.looking_for, availability: p.availability,
-    avatar_emoji: p.avatar_emoji, avatar_color: p.avatar_color, stickers: p.stickers,
+    availability_audience: p.availability_audience ?? "everyone", avatar_emoji: p.avatar_emoji, avatar_color: p.avatar_color, stickers: p.stickers,
   };
 }
 
@@ -212,10 +212,21 @@ export default function ProfileForm({
       </Field>
 
       <div>
-        <p className="text-sm font-semibold">When are you usually free? (optional)</p>
-        <p className="mb-2 text-xs opacity-75">Tap the times you're free. Others only see times you're BOTH free, never your whole week.</p>
+        <p className="text-sm font-semibold">When are you usually free to hang out? (optional)</p>
+        <p className="mb-2 text-xs opacity-75">
+          These are PUBLIC free times you choose to share. Others only ever see times you&apos;re BOTH free, never your
+          whole week. Classes and shifts go in your private schedule (Plan → My schedule) instead.
+        </p>
         <AvailabilityGrid days={options.days} slots={options.slots} value={form.availability}
           onChange={(v) => set("availability", v)} />
+        <label htmlFor="availability-audience" className="mt-3 block text-sm font-semibold">Who can use these times?</label>
+        <select id="availability-audience" value={form.availability_audience}
+          onChange={(e) => set("availability_audience", e.target.value as Form["availability_audience"])}
+          className={`${inputClass} mt-1`}>
+          <option value="everyone">Everyone on Meerkat (for matching and planning)</option>
+          <option value="friends">Friends only</option>
+          <option value="nobody">Nobody (only for my own planning)</option>
+        </select>
       </div>
 
       <PhotoField form={form} setForm={setForm} />

@@ -1,4 +1,9 @@
-// Placeholder: the draft legal text is added in this update.
-export default function Page() {
-  return <main className="p-8">Draft coming in this update.</main>;
+// Terms of Service (draft). The text is in src/content/legal.ts.
+import LegalPage from "@/components/LegalPage";
+import { TERMS } from "@/content/legal";
+
+export const metadata = { title: "Terms of Service · Meerkat" };
+
+export default function TermsPage() {
+  return <LegalPage doc={TERMS} />;
 }

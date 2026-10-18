@@ -10,6 +10,8 @@ import FriendButton from "@/components/FriendButton";
 import MatchInsight from "@/components/MatchInsight";
 import ProfileForm from "@/components/ProfileForm";
 import { AvailabilityGrid } from "@/components/ProfileInputs";
+import { BlockButton, ReportButton } from "@/components/SafetyActions";
+import VerificationBadges from "@/components/VerificationBadges";
 import { ProfileExpressive, ProfileInfo, ViewToggle } from "@/components/ProfileViews";
 import { ErrorBox, Loading, Notice } from "@/components/States";
 import { Button, FrameCard } from "@/components/ui";
@@ -94,6 +96,7 @@ function OwnProfile({ startEditing }: { startEditing: boolean }) {
 }
 
 function OtherProfile({ id }: { id: number }) {
+  const router = useRouter();
   const { options } = useOptions();
   const [view, setView] = useView();
   const [confirmRemove, setConfirmRemove] = useState(false);
@@ -143,6 +146,14 @@ function OtherProfile({ id }: { id: number }) {
       ) : (
         <ProfileExpressive person={person} actions={actions} />
       )}
+
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-cream px-4 py-3">
+        <VerificationBadges badges={person.badges} />
+        <div className="flex flex-wrap gap-2">
+          <ReportButton targetType="profile" targetId={person.id} label="Report profile" />
+          <BlockButton userId={person.id} name={person.name} onBlocked={() => router.push("/feed")} />
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         <section className="rounded-2xl bg-cream p-5" aria-labelledby="match-title">
