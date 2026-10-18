@@ -313,6 +313,35 @@ await check("Log out returns to the login page", async () => {
   await pa.waitForURL(`${BASE}/login`);
 });
 
+// ---------- Clean up: B deletes their account in Settings, A's is deleted through the API ----------
+await check("Delete account asks for DELETE, then logs out and the account is gone", async () => {
+  await pb.goto(`${BASE}/settings`);
+  await pb.getByRole("button", { name: "Delete my account" }).click();
+  const forever = pb.getByRole("button", { name: "Delete forever" });
+  expect(await forever.isDisabled(), "Delete forever works before typing DELETE");
+  await pb.getByLabel("Type DELETE to confirm").fill("DELETE");
+  await forever.click();
+  await pb.waitForURL((url) => !url.pathname.startsWith("/settings"));
+  const login = await fetch(`${BASE}/api/auth/login`, {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: B.email, password: B.password }),
+  });
+  expect(login.status === 401, `B can still log in (status ${login.status})`);
+});
+{
+  const login = await fetch(`${BASE}/api/auth/login`, {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: A.email, password: A.password }),
+  });
+  const token = login.ok ? (await login.json()).access_token : null;
+  if (token) {
+    await fetch(`${BASE}/api/me`, {
+      method: "DELETE", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ confirm: "DELETE" }),
+    });
+  }
+}
+
 await check("No JavaScript errors on any page", async () => expect(pageErrors.length === 0, pageErrors.slice(0, 3).join(" | ")));
 
 await browser.close();

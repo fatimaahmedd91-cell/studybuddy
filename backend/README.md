@@ -1,102 +1,119 @@
-# FriendFinder backend (Python + FastAPI)
+# FriendFinder API (Python + FastAPI)
 
-## First-time setup
-
-Run these from the `backend` folder.
-
-1. Make a virtual environment (a private folder of Python packages for this project):
-   ```
-   python -m venv .venv
-   ```
-2. Turn it on. You need to do this every time you open a new terminal:
-   - Windows: `.venv\Scripts\activate`
-   - Mac: `source .venv/bin/activate`
-
-   Your prompt now starts with `(.venv)`.
-3. Install the packages:
-   ```
-   pip install -r requirements.txt
-   ```
-4. Make your secrets file. Copy `.env.example` to a new file called `.env` in this same folder, then fill in:
-   - `GEMINI_API_KEY`: your own key from aistudio.google.com → Get API key.
-   - `DATABASE_URL`: the Tiger Data connection string. Leave it empty until you have one.
-   - `JWT_SECRET`: a long random string (at least 32 characters). Make one with
-     `python -c "import secrets; print(secrets.token_urlsafe(48))"` and paste the result.
-
-   `.env` is ignored by git. Run `git status` and make sure `.env` is **not** listed before you commit.
-
-## Run the API
+How to set it up and run it: see "Run it on your own computer" in the [main README](../README.md).
+In short, from this folder, with the virtual environment active:
 
 ```
-uvicorn app.main:app --reload
+pip install -r requirements.txt
+python -m app.seed               # tables + fictional demo data (safe to run again)
+uvicorn app.main:app --reload    # http://127.0.0.1:8000
+pytest                           # the tests
 ```
 
-`--reload` restarts the server every time you save a file. Press Ctrl+C to stop it.
+**Try every endpoint in the browser:** open http://127.0.0.1:8000/docs.
+Call `POST /api/auth/demo` (or sign up), copy the `access_token`, click **Authorize**, and paste it in.
+
+## Settings (`backend/.env`)
+
+| Setting | Needed? | What it does |
+|---|---|---|
+| `DATABASE_URL` | yes | PostgreSQL or TigerData connection string |
+| `JWT_SECRET` | yes | signs login tokens (32+ random characters) |
+| `APP_ENV` | no | `development` (default) or `production`, which protects demo data from an accidental reset |
+| `GEMINI_API_KEY` | no | turns on Gemini match notes. Without it, the labelled fallback is used. |
+| `GEMINI_MODEL` | no | default `gemini-flash-lite-latest` |
+| `GEMINI_TIMEOUT_SECONDS` | no | default 12 |
+| `DEMO_MODE_ENABLED` | no | default `true`, which shows the "Try the demo" button |
+| `TEST_DATABASE_URL` | no | a separate database for `pytest` (otherwise it uses `DATABASE_URL`, inside a temporary private schema) |
+
+Real environment variables win over `.env`, which is handy on a server.
 
 ## Endpoints
 
-### GET /api/health
+All start with `/api`. 🔒 means you must send `Authorization: Bearer <access_token>`.
+Errors always look like `{"detail": "A message you can show the user"}`.
 
-Open http://127.0.0.1:8000/api/health in your browser. You get something like:
+### Health and accounts
 
-```json
-{
-  "status": "ok",
-  "database": {"ok": true, "detail": "connected"},
-  "gemini": {"ok": true, "detail": "reachable (gemini-flash-lite-latest)"}
-}
-```
-
-- `status` is `"ok"` (HTTP 200) when both work, and `"degraded"` (HTTP 503) when something is missing.
-- `detail` says what is wrong, for example `DATABASE_URL is not set` or `Gemini refused the request (400 INVALID_ARGUMENT)` for a wrong key.
-- The Gemini check only asks for the model's details, so it uses no tokens.
-
-### Accounts
-
-The `users` table is created automatically when the server starts (if `DATABASE_URL` is set).
-
-| Endpoint | Send | You get back |
+| Endpoint | | What it does |
 |---|---|---|
-| `POST /api/auth/signup` | `{"email", "password", "name"}` | 201 with `access_token` and `user` |
-| `POST /api/auth/login` | `{"email", "password"}` | 200 with `access_token` and `user` |
-| `GET /api/me` | header `Authorization: Bearer <access_token>` | 200 with your `id`, `email`, `name`, `created_at` |
+| `GET /health` | | `{"status": "ok"}` (200) if the database works, `"degraded"` (503) if not. Also says whether Gemini and TimescaleDB are available. Uses no Gemini tokens. |
+| `POST /auth/signup` | | `{email, password, name, confirm_age: true}` → 201 `{access_token, user}`. 409 if the email is taken, 422 if `confirm_age` isn't true. |
+| `POST /auth/login` | | `{email, password}` → `{access_token, user}`. 401 if wrong. |
+| `POST /auth/demo` | | Makes a new, filled-in demo account → 201 `{access_token, user}`. 403 if demo mode is off. |
+| `GET /me` | 🔒 | Your full profile, including email and free times (only you see these) |
+| `PATCH /me` | 🔒 | Change any profile fields: `name, pronouns, age, university, hook, bio, interests, looking_for, availability, avatar_emoji, avatar_color, stickers, daily_goal_minutes` |
+| `DELETE /me` | 🔒 | `{confirm: "DELETE"}`. Deletes your account and everything that's yours. |
+| `PUT /me/photo` | 🔒 | `{image: "data:image/jpeg;base64,..."}`. JPEG up to 2 MB. Location and camera data are removed. |
+| `DELETE /me/photo` | 🔒 | Back to the emoji avatar |
+| `GET /photos/{id}` | | A profile photo |
+| `GET /options` | | Suggested interests and universities, friendship goals, days, time slots, minimum age |
 
-Rules:
-- Passwords must be 8 to 128 characters. Names must be 1 to 60 characters. Emails must be real-looking addresses.
-- Emails are saved in lowercase, so `Amira@Example.com` and `amira@example.com` are the same account.
-- Passwords are stored as Argon2 hashes, never as plain text, and no response ever includes a password or hash.
-- Tokens last 7 days.
+### People and friends
 
-Errors you might see:
-- `422`: something in the request is missing or invalid. The message says which field.
-- `409`: an account with this email already exists.
-- `401`: wrong email or password, or a missing, wrong, or expired token.
-- `503`: the database is not set up or not reachable, or `JWT_SECRET` is missing.
+| Endpoint | | What it does |
+|---|---|---|
+| `GET /people` | 🔒 | Discover: everyone with a finished profile, best match first. Filters: `?university= &interest= &goal= &free_together=true &q=name` |
+| `GET /people/{id}` | 🔒 | One profile, the match (score, reasons, shared free times) and your friendship status |
+| `GET /people/{id}/insight` | 🔒 | The match note: Gemini, or the labelled fallback. Includes `source`, `fallback_reason` and `facts_sent`. |
+| `GET /friends` | 🔒 | `{friends, incoming, outgoing}` |
+| `POST /friends/requests` | 🔒 | `{user_id}`. 400 for yourself, 409 if already friends or already asked. If they had already asked you, you become friends. |
+| `POST /friends/requests/{id}/accept` | 🔒 | Only the person who was asked (404 otherwise) |
+| `POST /friends/requests/{id}/decline` | 🔒 | Only the person who was asked |
+| `DELETE /friends/requests/{id}` | 🔒 | Cancel a request you sent |
+| `DELETE /friends/{user_id}` | 🔒 | Remove a friend |
 
-**Try it in the browser:** open http://127.0.0.1:8000/docs.
-1. Open `POST /api/auth/signup`, click **Try it out**, fill in the example, and click **Execute**.
-2. Copy the `access_token` from the response.
-3. Click **Authorize** at the top of the page, paste the token, and click **Authorize**.
-4. Open `GET /api/me`, click **Try it out**, then **Execute**. You should see your account.
+### Messages
 
-### POST /api/insight
+| Endpoint | | What it does |
+|---|---|---|
+| `GET /conversations` | 🔒 | Your friends, each with the last message and an unread count |
+| `GET /messages/{friend_id}` | 🔒 | The chat with one friend (marks it read). `?after_id=` returns only newer messages. |
+| `POST /messages/{friend_id}` | 🔒 | `{body}`, up to 1000 characters. Friends only (403 otherwise). |
 
-Writes the "Why you might get along" note with Gemini. Send only what two people share:
+### Groups and events
 
-```json
-{"sharedInterests": ["Coding"], "sharedCourses": ["CSCA48"], "sharedSlots": [{"day": "Tue", "slot": "afternoon"}]}
-```
+| Endpoint | | What it does |
+|---|---|---|
+| `GET /groups` | 🔒 | `?q= &tag= &mine=true` |
+| `POST /groups` | 🔒 | `{name, description, tags}`. You join it automatically. |
+| `GET /groups/{id}` | 🔒 | Details, members and upcoming events |
+| `POST /groups/{id}/join` | 🔒 | 409 if you're already in it |
+| `POST /groups/{id}/leave` | 🔒 | 404 if you're not in it |
+| `GET /groups/{id}/posts` | 🔒 | The discussion. Members only (403). |
+| `POST /groups/{id}/posts` | 🔒 | `{body}`. Members only. |
+| `GET /events` | 🔒 | `?when=upcoming` (default) or `past`, `&group_id=` |
+| `POST /events` | 🔒 | `{title, description, starts_at, ends_at, location, online_url, group_id}`. Times must include a time zone. The start must be in the future and within a year. An event lasts at most 24 hours and needs a location or an `http(s)` link. For a group event you must be a member. |
+| `GET /events/{id}` | 🔒 | Details and who's going |
+| `POST /events/{id}/rsvp` | 🔒 | "I'm going" (409 if you already are, 400 if it's over) |
+| `DELETE /events/{id}/rsvp` | 🔒 | Not going any more |
 
-- Any other field (like a name) is refused with 422, so personal details cannot be sent to the AI.
-- Each visitor can ask for 30 notes per 10 minutes (429 after that), so strangers cannot use up the key.
-- 503 if `GEMINI_API_KEY` is missing, 502 if Gemini fails. The website then shows the template note instead.
+### Notifications and screen time
 
-## Run the tests
+| Endpoint | | What it does |
+|---|---|---|
+| `GET /notifications` | 🔒 | `{items, unread_count}`, newest first |
+| `POST /notifications/{id}/read` | 🔒 | Mark one as read |
+| `POST /notifications/read-all` | 🔒 | Mark all as read |
+| `POST /screen-time/heartbeat` | 🔒 | The website sends this every 30 s while you're using it. Each one adds 30 s, but beats less than 25 s apart don't count. |
+| `GET /screen-time?tz=America/Toronto` | 🔒 | Today, the last 7 days, your goal, and `storage` (`timescaledb` or `postgresql`) |
 
-```
-pytest
-```
+### Common errors
 
-Every test should say `PASSED`.
-- The test that calls the real Gemini API is skipped if `GEMINI_API_KEY` is not set.
-- The account tests need a database. They use `TEST_DATABASE_URL`, or `DATABASE_URL` if that is empty. They work inside a temporary private schema that is deleted afterwards, so your real users are never touched. With no database set, those tests are skipped.
+| Code | Means |
+|---|---|
+| 401 | Not logged in, or the token expired. The website logs you out. |
+| 403 | Logged in, but not allowed (for example: not friends, not a member) |
+| 404 | Doesn't exist, or isn't yours to change |
+| 409 | Already done (already friends, already joined…) |
+| 422 | Something in the request is missing or wrong. The message says what. |
+| 429 | Too many requests. Wait and try again. |
+| 503 | The database isn't reachable, or `JWT_SECRET` is missing |
+
+## Tests
+
+`pytest` runs 117 tests. They cover every endpoint, the permission checks (the wrong person trying each action), input checks, demo mode, the seed command, and Gemini.
+
+- Most tests need a database. They work in a temporary private schema that's deleted afterwards, so your real data is never touched.
+  With no database set, those tests are skipped.
+- Gemini is replaced by a fake in most tests. One test calls the real Gemini API, and it's skipped if `GEMINI_API_KEY` isn't set.

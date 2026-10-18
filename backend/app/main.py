@@ -71,7 +71,7 @@ def health():
     body = {
         "status": "ok" if database["ok"] else "degraded",
         "database": database,
-        # Gemini is optional: without it, match notes use templates, so it doesn't make the app "degraded".
+        # Gemini is optional: without it, match notes use the labelled fallback, so it doesn't make the app "degraded".
         "gemini": gemini,
         "demo_mode": config.DEMO_MODE_ENABLED,
     }

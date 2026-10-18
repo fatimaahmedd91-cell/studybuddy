@@ -51,6 +51,9 @@ backend/.venv/bin/pip install --quiet -r backend/requirements.txt
 if [ ! -f "$ENV_FILE" ]; then
   cp backend/.env.example "$ENV_FILE"
 fi
+# This is the live server: protects demo data from an accidental reset.
+sed -i "s|^APP_ENV=.*|APP_ENV=production|" "$ENV_FILE"
+grep -q '^APP_ENV=' "$ENV_FILE" || echo "APP_ENV=production" >> "$ENV_FILE"
 # A fresh random JWT_SECRET, if there is none yet.
 if grep -q '^JWT_SECRET=$' "$ENV_FILE"; then
   sed -i "s|^JWT_SECRET=$|JWT_SECRET=$(python3 -c 'import secrets; print(secrets.token_urlsafe(48))')|" "$ENV_FILE"
@@ -73,6 +76,9 @@ fi
 # Only the app user can read the secrets file.
 chown friendfinder:friendfinder "$ENV_FILE"
 chmod 600 "$ENV_FILE"
+
+echo "    Creating the tables and adding the fictional demo people (only adds, never deletes)"
+(cd backend && sudo -u friendfinder .venv/bin/python -m app.seed)
 
 echo "==> 4/6 Building the website"
 (cd frontend && npm ci --no-audit --no-fund && npm run build)
@@ -98,5 +104,7 @@ echo "Done!"
 if grep -q '^GEMINI_API_KEY=$' "$ENV_FILE"; then
   echo "  * Add your Gemini key:  nano $ENV_FILE   then:  systemctl restart friendfinder-api"
 fi
+echo "  * Check the API on this server:  curl -s http://127.0.0.1:8000/api/health"
 echo "  * Once your GoDaddy DNS points here, open https://$DOMAIN"
 echo "  * Health check: https://$DOMAIN/api/health"
+echo "  * Test everything:  python3 scripts/smoke_test.py https://$DOMAIN"

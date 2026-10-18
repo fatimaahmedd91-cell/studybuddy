@@ -21,6 +21,8 @@ for _ in $(seq 1 30); do
 done
 
 cd backend
+# Tables, plus the fictional demo people, groups and events (only adds what's missing).
+.venv/bin/python -m app.seed || echo "Couldn't add demo data yet. The database may still be starting."
 setsid nohup .venv/bin/uvicorn app.main:app --port 8000 --reload --reload-dir app > "$LOGS/api.log" 2>&1 < /dev/null &
 cd ../frontend
 setsid nohup npm run dev -- --port 3000 > "$LOGS/web.log" 2>&1 < /dev/null &
