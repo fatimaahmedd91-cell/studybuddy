@@ -33,9 +33,13 @@ class RateLimiter:
 
 
 def client_ip(request: Request):
-    """The visitor's address. Behind Caddy it is the first entry of X-Forwarded-For."""
-    forwarded = request.headers.get("x-forwarded-for", "")
-    return forwarded.split(",")[0].strip() or (request.client.host if request.client else "unknown")
+    """The visitor's address.
+
+    Behind Caddy, uvicorn (run with --proxy-headers) has already swapped in the real address from
+    X-Forwarded-For, trusting only the proxy on 127.0.0.1. We don't read the header ourselves,
+    because a visitor could put any address in it.
+    """
+    return request.client.host if request.client else "unknown"
 
 
 def reset_all():

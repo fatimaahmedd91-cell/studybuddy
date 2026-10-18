@@ -122,6 +122,17 @@ def delete_me(body: DeleteAccount, me: CurrentUser):
     if body.confirm != "DELETE":
         raise HTTPException(status_code=422, detail='Type DELETE to confirm.')
     with get_connection() as conn, conn.cursor() as cur:
+        # Groups you made that nobody else joined, and events you organised that nobody else is going to.
+        cur.execute(
+            "DELETE FROM groups g WHERE created_by = %(me)s AND NOT EXISTS"
+            " (SELECT 1 FROM group_members m WHERE m.group_id = g.id AND m.user_id <> %(me)s)",
+            {"me": me["id"]},
+        )
+        cur.execute(
+            "DELETE FROM events e WHERE organiser_id = %(me)s AND NOT EXISTS"
+            " (SELECT 1 FROM event_rsvps r WHERE r.event_id = e.id AND r.user_id <> %(me)s)",
+            {"me": me["id"]},
+        )
         # Friendships, messages, memberships, RSVPs, photos and notifications go with it (ON DELETE CASCADE).
         cur.execute("DELETE FROM users WHERE id = %s", (me["id"],))
     return {"deleted": True}

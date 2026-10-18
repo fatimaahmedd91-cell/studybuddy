@@ -1,6 +1,7 @@
 """Your own profile: editing, validation, onboarding, photos, and account deletion."""
 
 import base64
+from datetime import datetime, timedelta, timezone
 
 import pytest
 
@@ -133,6 +134,23 @@ def test_deleting_an_account_needs_confirmation(database, client):
     assert client.request("DELETE", "/api/me", json={"confirm": "DELETE"}, headers=headers).status_code == 200
     with db.get_connection() as conn, conn.cursor() as cur:
         cur.execute("SELECT count(*) AS n FROM users")
+        assert cur.fetchone()["n"] == 0
+
+
+def test_deleting_an_account_removes_groups_and_events_only_you_were_in(database, client):
+    headers, _ = make_person(client)
+    other_headers, _ = make_person(client, "Daniel Osei")
+    lonely = client.post("/api/groups", json={"name": "Just me"}, headers=headers).json()
+    shared = client.post("/api/groups", json={"name": "Shared group"}, headers=headers).json()
+    client.post(f"/api/groups/{shared['id']}/join", headers=other_headers)
+    starts = (datetime.now(timezone.utc) + timedelta(days=2)).isoformat()
+    solo_event = client.post("/api/events", json={"title": "Solo walk", "starts_at": starts, "location": "Park"},
+                             headers=headers).json()
+    assert client.request("DELETE", "/api/me", json={"confirm": "DELETE"}, headers=headers).status_code == 200
+    with db.get_connection() as conn, conn.cursor() as cur:
+        cur.execute("SELECT id FROM groups")
+        assert [row["id"] for row in cur.fetchall()] == [shared["id"]]  # Daniel is still in this one
+        cur.execute("SELECT count(*) AS n FROM events WHERE id = %s", (solo_event["id"],))
         assert cur.fetchone()["n"] == 0
 
 
