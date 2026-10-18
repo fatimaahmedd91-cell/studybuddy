@@ -1,0 +1,29 @@
+{
+  // GitHub Codespaces setup: one click gives you the whole site running in the cloud.
+  // docker-compose.yml starts the code container and a PostgreSQL database.
+  // setup.sh runs once (installs everything), start.sh runs on every start (starts everything).
+  "name": "FriendFinder",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "22" }
+  },
+  "secrets": {
+    "GEMINI_API_KEY": {
+      "description": "Your Gemini API key from Google AI Studio. Leave it empty to use the labelled non-AI match notes instead.",
+      "documentationUrl": "https://aistudio.google.com/apikey"
+    }
+  },
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": { "label": "FriendFinder website", "onAutoForward": "openBrowser" },
+    "8000": { "label": "FriendFinder API", "onAutoForward": "silent" },
+    "5432": { "label": "Database", "onAutoForward": "ignore" }
+  },
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "postStartCommand": "bash .devcontainer/start.sh",
+  "customizations": {
+    "codespaces": { "openFiles": [".devcontainer/README.md"] }
+  }
+}

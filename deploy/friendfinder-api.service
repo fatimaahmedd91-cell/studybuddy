@@ -1,0 +1,23 @@
+# systemd service that keeps the FastAPI backend running (and restarts it after a crash or reboot).
+# setup.sh installs it to /etc/systemd/system/.
+[Unit]
+Description=FriendFinder API (FastAPI)
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+User=friendfinder
+Group=friendfinder
+WorkingDirectory=/opt/friendfinder/backend
+ExecStart=/opt/friendfinder/backend/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --proxy-headers --forwarded-allow-ips 127.0.0.1
+Restart=on-failure
+RestartSec=3
+
+# Safety: the API cannot change system files or see home folders.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

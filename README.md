@@ -1,67 +1,155 @@
-# FriendFinder (StudyBuddy) - Beginner Guide
+# FriendFinder
 
-Everything is already written. Your job is to run it, test it, and be able to explain it.
+A friendship app for students (not dating). Find people at your university who share your
+interests, goals and free time. Then add them as friends, message them, join groups and go to
+events together. Built for Hack the Valley.
 
-## Step 1: Run the app (everyone, 5 minutes)
+- **Website:** Next.js + TypeScript + Tailwind (`frontend/`)
+- **API:** Python + FastAPI (`backend/`)
+- **Database:** PostgreSQL, or TigerData (Timescale) in the cloud
+- **AI:** Google Gemini writes a short "why you might get along" note, with a clearly labelled non-AI fallback
 
-1. Install Node.js from https://nodejs.org (choose "LTS") if you do not have it. Restart your computer afterward.
-2. Open a terminal:
-   - Windows: press the Windows key, type `cmd`, press Enter.
-   - Mac: press Cmd+Space, type `Terminal`, press Enter.
-3. Go into the project folder (replace the path with where you saved it):
-   ```
-   cd path/to/studybuddy
-   ```
-4. Install (first time only):
-   ```
-   npm install
-   ```
-5. Start the app:
-   ```
-   npm run dev
-   ```
-6. Open the link it prints (usually http://localhost:5173) in your browser.
+What works today, and what doesn't yet: [docs/STATUS.md](docs/STATUS.md).
 
-**You should see:** a landing page. Click "Find my match" and you will see match cards.
+## Docs
 
-**If you see an error:**
-- `npm is not recognized` or `command not found`: Node is not installed or you need to restart the terminal.
-- `Cannot find module` or similar: run `npm install` again.
-- Page is blank: press Ctrl+C in the terminal, run `npm run dev` again, and refresh the browser.
-- Anything else: copy the full error and paste it to Claude.
+| File | Read it when you want to… |
+|---|---|
+| [docs/DEMO.md](docs/DEMO.md) | demo the app to judges (3 minutes) |
+| [docs/WHERE_TO_EDIT.md](docs/WHERE_TO_EDIT.md) | change a colour, a page, the matching, the AI prompt… |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | understand how the pieces fit together |
+| [docs/STATUS.md](docs/STATUS.md) | see what's done, what's missing, and the sponsor integrations |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | work on the code with the team (branches, pull requests, tests) |
+| [DEPLOY.md](DEPLOY.md) | put the site live on Vultr with a GoDaddy domain |
+| [backend/README.md](backend/README.md) | see every API endpoint |
+| [frontend/README.md](frontend/README.md) | see every page and component |
 
-## Who owns what
+---
 
-| Person | Role | Files |
-|---|---|---|
-| 1 | Front-end A (design) | `src/styles/theme.css`, `src/components/`, `src/pages/Landing.jsx` |
-| 2 | Front-end B (interactions) | `src/App.jsx`, `src/pages/` (Feed, Profile, Events, ScreenTime), `src/components/Timetable.jsx` |
-| 3 | Back-end A (data + testing) | `src/data/students.json`, `src/data/events.json` |
-| 4 | Back-end B (logic + testing) | `src/lib/matching.js`, `src/lib/insight.js` |
+## Start here: the easiest way (GitHub Codespaces, nothing to install)
 
-## Easy tasks for each person (ask Claude if you get stuck)
+1. On the repo page on GitHub, click **Code → Codespaces → Create codespace on** your branch.
+2. Wait about 3 minutes. The database, API and website all start by themselves, with demo data.
+3. When the pop-up says port 3000 is ready, click **Open in Browser**, then **Try the demo**.
 
-**Person 1:** Open `src/styles/theme.css`. Change `--accent` and `--brand2` at the top to new colors (for example `#e63946`). Save. The page updates by itself.
+Details: [.devcontainer/README.md](.devcontainer/README.md).
 
-**Person 2:** In the app, open Profile, edit the hook, press Save. Then switch "Demo as" at the top and confirm the feed changes. Report anything that looks broken.
+## Run it on your own computer
 
-**Person 3:** Open `src/data/students.json`. Copy one student block, paste it after the last one, give it a new `id` (13), a new name, and your own interests and courses. Save. Check the new student appears in the feed. Make sure every block ends with a comma except the last one.
+### You need
 
-**Person 4:** Open `src/lib/matching.js`. Find the lines starting `const interestScore`. These control how many points each shared interest is worth. Change the `10` to `15`, save, and watch the match percentages change. Write down what happened. This is the explanation you give the judges.
+- **Python 3.12 or newer**: https://www.python.org/downloads/ (on Windows, tick **"Add python.exe to PATH"** in the installer)
+- **Node.js 20.9 or newer** (pick "LTS"): https://nodejs.org
+- **A PostgreSQL database**. Pick one:
+  - **TigerData** (free cloud Postgres with Timescale, recommended): make a service at https://console.cloud.timescale.com and copy its connection string.
+  - **PostgreSQL on your computer**: https://www.postgresql.org/download/ . Then create a database called `friendfinder`.
 
-## How matching works (say this in the demo)
+Restart your terminal after installing, so it finds `python` and `npm`.
 
-Each pair of students gets a score out of 100: up to 40 points for shared interests, up to 35 for shared courses, up to 25 for overlapping free time. No AI is involved in ranking.
+### 1. Get the code
 
-## About the AI part (be honest with judges)
+```
+git clone https://github.com/sinsiahussain-lab/studybuddy.git
+cd studybuddy
+```
 
-The "Match Insight" box currently uses **templates**, and it is labeled "Template insight" on screen. It is not a live AI model. Say that clearly. A live AI call can be added later, sending only shared interests, courses, and free slots (never names).
+### 2. Set up the API (first time only)
 
-## Demo script (2 minutes)
+**Windows** (Command Prompt):
+```
+cd backend
+py -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+copy .env.example .env
+```
 
-1. Landing page, click "Find my match".
-2. Show the feed as Amira. Point out the top match and the percentage.
-3. Click Tariq: read the insight and show the green shared free time.
-4. Switch to "Study buddies" to show the filter.
-5. Open Events, press "Count me in".
-6. Open Screen Time, start and finish a short focus session.
+**Mac / Linux**:
+```
+cd backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+```
+
+(Using PowerShell on Windows? Activate with `.venv\Scripts\Activate.ps1`. If it says scripts are disabled, run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once.)
+
+Now open `backend/.env` in your editor and fill in:
+
+| Setting | What to put |
+|---|---|
+| `DATABASE_URL` | Your database's connection string, for example `postgresql://postgres:YOUR_PASSWORD@localhost:5432/friendfinder` |
+| `JWT_SECRET` | A long random string. Make one with `python -c "import secrets; print(secrets.token_urlsafe(48))"` |
+| `GEMINI_API_KEY` | Optional. Your key from https://aistudio.google.com/apikey . Without it, match notes use the labelled fallback. |
+
+`.env` is ignored by git, so your secrets stay on your computer. **Never** put a key in any other file, and never paste it into a chat or a commit.
+
+Add the demo data (fictional students, groups and events, all marked "Demo"):
+```
+python -m app.seed
+```
+
+### 3. Set up the website (first time only)
+
+Open a **second** terminal in the `studybuddy` folder:
+```
+cd frontend
+npm ci
+```
+
+### 4. Run it (every time)
+
+Terminal 1, the API (activate the virtual environment first, as in step 2):
+```
+cd backend
+uvicorn app.main:app --reload
+```
+
+Terminal 2, the website:
+```
+cd frontend
+npm run dev
+```
+
+Open **http://localhost:3000** and click **Try the demo**, or sign up.
+Check that everything is connected at http://localhost:3000/api/health (you want `"status":"ok"`).
+
+## Test it
+
+| What | Command (run from…) |
+|---|---|
+| API tests (117 tests, need a database; the 2 that call Gemini are skipped without a key) | `pytest` (from `backend`, with `.venv` active) |
+| Website type check | `npm run typecheck` (from `frontend`) |
+| Website production build | `npm run build` (from `frontend`) |
+| Whole journey against a running site, PASS/FAIL per step | `python scripts/smoke_test.py` (from the repo root; add `https://your-domain.com` for the live site) |
+| Browser test (optional, needs Playwright) | see the top of `scripts/e2e/journey.mjs` |
+
+## Demo data
+
+- `python -m app.seed` adds the fictional people, groups and events if they're missing. It never deletes anything. It also moves demo events that have ended into the coming week.
+- `python -m app.seed --reset --yes` deletes **all** demo data (including "Try the demo" accounts) and adds it back fresh. Real accounts are never touched.
+- On the live server (`APP_ENV=production`) the reset also needs `--allow-production`, so nobody resets it by accident.
+- Each **Try the demo** click makes a new demo account. These accounts are hidden from Discover and are deleted after 24 hours. Turn the button off with `DEMO_MODE_ENABLED=false`.
+
+## Folders
+
+| Folder | What it is |
+|---|---|
+| `frontend/` | The website |
+| `backend/` | The API, the database tables (`backend/app/migrations/`) and the tests (`backend/tests/`) |
+| `deploy/` | Server setup for Vultr: Caddy (HTTPS), systemd service, setup and update scripts |
+| `scripts/` | `smoke_test.py` (API journey) and `e2e/journey.mjs` (browser journey) |
+| `.devcontainer/` | GitHub Codespaces setup |
+| `docs/` | The guides listed above |
+| `src/`, `index.html`, `package.json`, `vite.config.js` (repo root) | The **first prototype** (React + Vite). `frontend/` replaces it. It's kept until the team agrees to delete it. |
+
+## Troubleshooting
+
+| You see | Try |
+|---|---|
+| `python` / `npm` is not recognized | Install it (see "You need"), then open a new terminal. On Windows try `py` instead of `python`. |
+| The website says the server isn't reachable | Is terminal 1 (the API) still running? Open http://127.0.0.1:8000/api/health |
+| `/api/health` says the database isn't available | Check `DATABASE_URL` in `backend/.env`, and that Postgres is running. TigerData URLs need `?sslmode=require` on the end. |
+| Match notes say "Suggested by FriendFinder (not AI)" | That's the fallback: Gemini isn't set up, or it failed. The note says why. Check `GEMINI_API_KEY`. |
+| `Too many sign-ups from this network` | The sign-up limit is 10 per hour per network. Restart the API to clear it locally. |
