@@ -12,8 +12,8 @@ What a block does (both directions, enforced here on the server):
 - Notifications caused by the other person are no longer shown or created.
 - Invitations (groups, events, screen-time groups, planning) between you are refused.
 What a block can't hide: if you are both in the same group or event, you can both still see that
-group's member and attendee lists. The blocked person's group posts are hidden from you, but your
-posts in that shared group are still visible to its members (including them).
+group's member and attendee lists. In a shared group's discussion, each person's posts are hidden
+from the other (everyone else still sees both).
 The blocked person is not told that you blocked them.
 
 Reports go to the moderators (app/moderation.py). Only moderators see who made a report.

@@ -130,7 +130,7 @@ export function BlockButton({ userId, name, onBlocked }: { userId: number; name:
             <li>You won&apos;t see each other in Discover, on profiles, or in Memories.</li>
             <li>Neither of you can send friend requests or messages. If you&apos;re friends, that ends.</li>
             <li>You won&apos;t get notifications from them. They aren&apos;t told that you blocked them.</li>
-            <li>In a group or event you&apos;re both in, you can still both see the member list. Their group posts are hidden from you.</li>
+            <li>In a group or event you&apos;re both in, you can still both see the member list. Your group posts are hidden from each other.</li>
           </ul>
           <p className="mt-2 text-sm">You can unblock them in Settings → Blocked people.</p>
           {error && <div className="mt-2"><Notice kind="error">{error}</Notice></div>}

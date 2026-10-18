@@ -244,3 +244,18 @@ def test_roles_command(database, capsys):
     assert roles.main(["set", "nobody@example.com", "moderator"]) == 1
     assert roles.main(["list"]) == 0
     assert "Nobody is a moderator" in capsys.readouterr().out
+
+
+def test_moderators_can_remove_a_reported_memory(database, client):
+    a = make_person(client, "Amira Khan")
+    b = make_person(client, "Tariq Aziz")
+    mod = make_person(client, "Mo Derator")
+    make_moderator(mod[1]["id"])
+    memory = client.post("/api/memories", json={"caption": "rude caption", "audience": "everyone"}, headers=b[0]).json()
+    client.post("/api/reports", json={"target_type": "memory", "target_id": memory["id"], "reason": "harassment"}, headers=a[0])
+    report = client.get("/api/moderation/reports", headers=mod[0]).json()[0]
+    assert report["current_content"] == "rude caption" and report["reported_person"]["id"] == b[1]["id"]
+    client.post(f"/api/moderation/reports/{report['id']}/remove-content", json={}, headers=mod[0])
+    # Removed for everyone, including its author.
+    assert client.get(f"/api/memories/{memory['id']}", headers=a[0]).status_code == 404
+    assert client.get(f"/api/memories/{memory['id']}", headers=b[0]).status_code == 404
