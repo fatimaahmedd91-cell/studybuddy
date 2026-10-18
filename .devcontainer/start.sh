@@ -25,7 +25,8 @@ cd backend
 .venv/bin/python -m app.seed || echo "Couldn't add demo data yet. The database may still be starting."
 setsid nohup .venv/bin/uvicorn app.main:app --port 8000 --reload --reload-dir app > "$LOGS/api.log" 2>&1 < /dev/null &
 cd ../frontend
-setsid nohup npm run dev -- --port 3000 > "$LOGS/web.log" 2>&1 < /dev/null &
+# --hostname 0.0.0.0: listen on every address, so Codespaces' port forwarding can reach it.
+setsid nohup npm run dev -- --port 3000 --hostname 0.0.0.0 > "$LOGS/web.log" 2>&1 < /dev/null &
 
 echo "FriendFinder is starting. The website opens on port 3000 in about 30 seconds."
 echo "Logs: $LOGS/api.log and $LOGS/web.log"

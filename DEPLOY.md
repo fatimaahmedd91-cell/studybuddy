@@ -25,6 +25,23 @@ In this guide, replace:
 
 Budget about 30 minutes. DNS changes can take a few minutes, and sometimes up to an hour, to work everywhere.
 
+## Fastest way: one paste, no domain needed yet
+
+This gets a working site on a Vultr server without typing anything on the server.
+
+1. In Vultr: **Deploy +** → **Deploy New Server** → **Cloud Compute (Shared CPU)**.
+   Pick a location near you, the image **Ubuntu 24.04 LTS x64**, and the cheapest plan with **at least 1 GB RAM**.
+2. Open [`deploy/vultr-launch.sh`](deploy/vultr-launch.sh) on GitHub and click the **copy** button (top right of the file).
+   Optional: paste it into Notepad first and put your Gemini key between the quotes on the `GEMINI_API_KEY=""` line.
+3. Back in Vultr, turn on **Cloud-Init User-Data** and paste the script into the box. Click **Deploy**.
+4. Wait about 15 minutes, then open `http://YOUR_VULTR_IP` (the IP is on the server's page in Vultr).
+   - The secure address is `https://YOUR-IP-WITH-DASHES.sslip.io`, for example `https://203-0-113-10.sslip.io`.
+     It uses a free shared address service, so its certificate is sometimes slow or unavailable. The `http://` address always works.
+   - If setup fails, `http://YOUR_VULTR_IP` shows the error instead of the site. Screenshot it.
+
+When you have a domain later, do steps 1 and 3 below, then on the server run
+`cd /opt/friendfinder && ALSO_SERVE="http://YOUR_VULTR_IP" bash deploy/setup.sh your-domain.com`.
+
 ## 1. Get the domain on GoDaddy
 
 1. Log in at godaddy.com, search for the domain you want, and add it to the cart.
@@ -62,7 +79,7 @@ ssh root@YOUR_VULTR_IP
 Then, on the server:
 
 ```
-git clone https://github.com/sinsiahussain-lab/studybuddy /opt/friendfinder
+git clone https://github.com/fatimaahmedd91-cell/studybuddy /opt/friendfinder
 cd /opt/friendfinder
 bash deploy/setup.sh your-domain.com
 ```

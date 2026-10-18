@@ -24,12 +24,14 @@ function CopyButton({ text }: { text: string }) {
     <Button
       variant="outline"
       className="min-h-9 px-3 text-sm"
-      onClick={() =>
+      onClick={() => {
+        // The clipboard only works on https:// addresses (and localhost).
+        if (!navigator.clipboard) return setState("failed");
         navigator.clipboard.writeText(text).then(
           () => setState("copied"),
           () => setState("failed"),
-        )
-      }
+        );
+      }}
     >
       {state === "copied" ? "Copied ✓" : state === "failed" ? "Copy failed: select the text" : "Copy"}
     </Button>

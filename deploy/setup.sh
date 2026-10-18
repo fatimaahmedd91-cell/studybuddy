@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 # First-time setup on a fresh Ubuntu 24.04 server (for example a Vultr instance).
 #
-#   git clone https://github.com/sinsiahussain-lab/studybuddy /opt/friendfinder
+#   git clone https://github.com/fatimaahmedd91-cell/studybuddy /opt/friendfinder
 #   cd /opt/friendfinder
 #   bash deploy/setup.sh yourdomain.com
 #
 # Run it as root. It is safe to run again: it skips anything already done.
+# (deploy/vultr-launch.sh runs this for you on a brand-new server.)
+#
+# Optional: ALSO_SERVE="http://203.0.113.10" also serves the site on that address (plain HTTP).
 set -euo pipefail
 
 DOMAIN="${1:?Usage: bash deploy/setup.sh yourdomain.com}"
@@ -21,6 +24,19 @@ if [ ! -f "$APP_DIR/deploy/setup.sh" ]; then
   exit 1
 fi
 cd "$APP_DIR"
+
+# Never stop to ask questions while installing (Ubuntu 24.04 otherwise asks which services to restart).
+export DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a
+# A brand-new server often installs updates by itself for its first few minutes. Wait for them
+# instead of failing with "Could not get lock".
+echo 'DPkg::Lock::Timeout "900";' > /etc/apt/apt.conf.d/90friendfinder-wait-for-lock
+
+# Building the website needs more memory than the smallest servers have, so add 2 GB of swap.
+if [ "$(awk '/MemTotal/ {print $2}' /proc/meminfo)" -lt 2000000 ] && [ "$(swapon --show | wc -l)" -eq 0 ]; then
+  echo "==> Adding 2 GB of swap (this server has less than 2 GB of memory)"
+  fallocate -l 2G /swapfile && chmod 600 /swapfile && mkswap /swapfile >/dev/null && swapon /swapfile
+  grep -q '^/swapfile ' /etc/fstab || echo '/swapfile none swap sw 0 0' >> /etc/fstab
+fi
 
 echo "==> 1/6 Installing system packages"
 apt-get update
@@ -88,7 +104,13 @@ cp deploy/friendfinder-api.service /etc/systemd/system/friendfinder-api.service
 systemctl daemon-reload
 systemctl enable friendfinder-api
 systemctl restart friendfinder-api
-sed "s/DOMAIN_NAME/$DOMAIN/g" deploy/Caddyfile > /etc/caddy/Caddyfile
+SITE_ADDRESSES="$DOMAIN${ALSO_SERVE:+, $ALSO_SERVE}"
+if [[ "$DOMAIN" == *.sslip.io ]]; then
+  # A free sslip.io test address has no "www." version, so leave that part out.
+  sed '/^www\.DOMAIN_NAME {/,/^}/d' deploy/Caddyfile
+else
+  cat deploy/Caddyfile
+fi | sed "s|^DOMAIN_NAME {|$SITE_ADDRESSES {|; s|DOMAIN_NAME|$DOMAIN|g" > /etc/caddy/Caddyfile
 caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
 systemctl enable caddy
 systemctl restart caddy
