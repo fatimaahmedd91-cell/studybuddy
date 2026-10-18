@@ -284,3 +284,14 @@ def test_commitments_are_in_the_data_export(database, client):
     client.post("/api/commitments", json=WEEKLY, headers=a[0])
     export = client.get("/api/me/export", headers=a[0]).json()
     assert export["commitments"][0]["title"] == "CSCA08 Lecture"
+
+
+def test_planning_permissions_and_meeting_area_are_in_the_data_export(database, client):
+    a = make_person(client)
+    client.put("/api/planning/consents", json={"scope": "friends"}, headers=a[0])
+    client.put("/api/me/consents/location_suggestions", json={"granted": True}, headers=a[0])
+    client.put("/api/me/meeting-origin", json={"preset": "union"}, headers=a[0])
+    export = client.get("/api/me/export", headers=a[0]).json()
+    assert export["planning_permissions"][0]["scope"] == "friends"
+    assert export["meeting_area"][0]["label"] == "Union Station"
+    assert export["buffer_minutes"] == [{"buffer_minutes": 15}]

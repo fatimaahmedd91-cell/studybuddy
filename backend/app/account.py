@@ -183,6 +183,11 @@ EXPORT_QUERIES = [
     ("memories", "memories", "SELECT id, caption, audience, created_at, updated_at FROM memories WHERE author_id = %(me)s"),
     ("commitments", "commitments", "SELECT * FROM commitments WHERE user_id = %(me)s"),
     ("screen_time_entries", "screen_time_entries", "SELECT * FROM screen_time_entries WHERE user_id = %(me)s"),
+    ("screen_time_groups", "st_members", "SELECT group_id, status, joined_at, left_at FROM st_members WHERE user_id = %(me)s"),
+    ("memory_comments", "memory_comments", "SELECT memory_id, body, created_at FROM memory_comments WHERE author_id = %(me)s"),
+    ("planning_permissions", "planning_consents", "SELECT scope, group_id, created_at FROM planning_consents WHERE user_id = %(me)s"),
+    ("meeting_area", "meeting_origins", "SELECT label, lat, lng, source, updated_at FROM meeting_origins WHERE user_id = %(me)s"),
+    ("buffer_minutes", "users", "SELECT buffer_minutes FROM users WHERE id = %(me)s"),
 ]
 
 

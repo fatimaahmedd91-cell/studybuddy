@@ -322,7 +322,7 @@ export const PRIVACY: LegalDoc = {
         ["Safety and technical records", "Reports, moderation decisions, security logs, device/browser information, and error records needed to protect and operate the service."],
       ] },
       "[REMOVE CATEGORIES NOT ACTUALLY COLLECTED. IDENTIFY ANY ANALYTICS, COOKIES, OR TRACKING TOOLS ACTUALLY USED.]",
-      { note: "What the code does today: no analytics, advertising or tracking tools, and no cookies. The browser's local storage keeps your login token and a few display choices. Locations are only an approximate meeting area you choose (rounded to about 1 km). No device-wide screen time is collected. Server logs (the web server and API) record IP addresses and requested addresses: confirm how long the host keeps them." },
+      { note: "What the code does today: no analytics, advertising or tracking tools, and no cookies. The browser's local storage keeps your login token and a few display choices. Locations are only an approximate meeting area you choose (rounded to about 1 km); others only see a halfway point, rounded more (about 5 km) when just two people plan. No device-wide screen time is collected. Server logs (the web server and API) record IP addresses and requested addresses: confirm how long the host keeps them." },
     ] },
     { heading: "3. Why we use information", blocks: [
       "We use personal information to:",
@@ -356,7 +356,7 @@ export const PRIVACY: LegalDoc = {
       "Before you use optional schedule-image extraction or other sensitive AI processing, we explain the information involved and provide the applicable choice.",
       "Provider retention, training use, processing locations, and account settings are described here: [INSERT VERIFIED DETAILS].",
       "Turning off optional AI features does not by itself delete information already processed. Contact us for available deletion options.",
-      { note: "What the code does today: AI is optional (Settings → Privacy) and uses Google Gemini through the Gemini API. Match notes send only shared interests, shared friendship goals, the university name if it's the same, and up to 6 shared free times, and only if both people turned AI on. Hangout suggestions send shared interests, the number of people and the proposed time slots. Timetable extraction sends the uploaded image or PDF, only after a separate choice each time. Names, emails, photos and messages are never sent." },
+      { note: "What the code does today: AI is optional (Settings → Privacy) and uses Google Gemini through the Gemini API. Match notes send only shared interests, shared friendship goals, the university name if it's the same, and up to 6 shared free times, and only if both people turned AI on. Hangout suggestions send shared interests, shared friendship goals, the number of people and the calculated free time slots, and only if everyone in the plan turned AI on. Timetable extraction sends the uploaded image or PDF, only after a separate choice each time. Names, emails, photos and messages are never sent." },
     ] },
     { heading: "6. Selfies and age assurance", blocks: [
       "If age assurance is enabled, the provider is [INSERT PROVIDER].",
