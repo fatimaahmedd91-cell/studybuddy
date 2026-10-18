@@ -87,7 +87,7 @@ print(f"Testing {BASE}\n")
 # ---------- The website and the server ----------
 
 status, body = request("GET", "/")
-if BASE.endswith(":8000"):
+if BASE.endswith(":8000") and status == 404:
     info("Website", "skipped, this address is just the backend")
 else:
     check("Website loads", status == 200 and "Meerkat" in str(body), f"status {status}")

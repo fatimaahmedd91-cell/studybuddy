@@ -35,8 +35,9 @@ Before real users: [docs/PRE_LAUNCH_CHECKLIST.md](docs/PRE_LAUNCH_CHECKLIST.md) 
 ## Start here: the easiest way (GitHub Codespaces, nothing to install)
 
 1. On the repo page on GitHub, click **Code → Codespaces → Create codespace on** your branch.
-2. Wait about 3 minutes. The database, API and website all start by themselves, with demo data.
-3. When the pop-up says port 3000 is ready, click **Open in Browser**, then **Try the demo**.
+2. Wait about 4 minutes. The database, API and website all start by themselves, with demo data.
+3. When the pop-up says port **8000** is ready, click **Open in Browser**, then **Try the demo**.
+   (Use 8000, not 3000: see the Codespaces details below.)
 
 Details: [.devcontainer/README.md](.devcontainer/README.md).
 

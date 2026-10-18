@@ -2,7 +2,7 @@
   // GitHub Codespaces setup: one click gives you the whole site running in the cloud.
   // docker-compose.yml starts the code container and a PostgreSQL database.
   // setup.sh runs once (installs everything), start.sh runs on every start (starts everything).
-  "name": "FriendFinder",
+  "name": "Meerkat",
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
@@ -15,10 +15,10 @@
       "documentationUrl": "https://aistudio.google.com/apikey"
     }
   },
-  "forwardPorts": [3000],
+  "forwardPorts": [8000, 3000],
   "portsAttributes": {
-    "3000": { "label": "FriendFinder website", "onAutoForward": "openBrowser" },
-    "8000": { "label": "FriendFinder API", "onAutoForward": "silent" },
+    "8000": { "label": "Meerkat (open this one)", "onAutoForward": "openBrowser" },
+    "3000": { "label": "Live-editing website (optional)", "onAutoForward": "silent" },
     "5432": { "label": "Database", "onAutoForward": "ignore" }
   },
   "postCreateCommand": "bash .devcontainer/setup.sh",
