@@ -18,6 +18,7 @@ from app import (  # one feature per line, so adding a feature is a one-line cha
     account,
     ai,
     auth,
+    commitments,
     demo,
     events,
     friends,
@@ -27,6 +28,7 @@ from app import (  # one feature per line, so adding a feature is a one-line cha
     moderation,
     notifications,
     people,
+    planning,
     profiles,
     safety,
     screen_time,
@@ -75,6 +77,8 @@ for feature in (
     moderation,
     memories,
     screen_time_groups,
+    commitments,
+    planning,
 ):
     app.include_router(feature.router)
 
