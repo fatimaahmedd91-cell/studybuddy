@@ -84,6 +84,7 @@ function OwnProfile({ startEditing }: { startEditing: boolean }) {
       </div>
       {saved && <Notice kind="success">Profile saved.</Notice>}
       {view === "info" ? <ProfileInfo person={me} actions={actions} /> : <ProfileExpressive person={me} actions={actions} />}
+      <Link href={`/memories?author_id=${me.id}`} className="inline-block font-semibold underline">📸 Your memories</Link>
       {options && (
         <section className="rounded-2xl bg-cream p-5" aria-labelledby="free-title">
           <h2 id="free-title" className="text-lg font-bold">When you&apos;re free</h2>
@@ -146,6 +147,9 @@ function OtherProfile({ id }: { id: number }) {
       ) : (
         <ProfileExpressive person={person} actions={actions} />
       )}
+      <Link href={`/memories?author_id=${person.id}`} className="inline-block font-semibold underline">
+        📸 Memories {person.name.split(" ")[0]} shared with you
+      </Link>
 
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-cream px-4 py-3">
         <VerificationBadges badges={person.badges} />

@@ -14,9 +14,24 @@ import psycopg2
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
-from app import (
-    account, ai, auth, demo, events, friends, groups, messages, moderation, notifications, people, profiles, safety,
-    screen_time, verification, website,
+from app import (  # one feature per line, so adding a feature is a one-line change
+    account,
+    ai,
+    auth,
+    demo,
+    events,
+    friends,
+    groups,
+    memories,
+    messages,
+    moderation,
+    notifications,
+    people,
+    profiles,
+    safety,
+    screen_time,
+    verification,
+    website,
 )
 from app import config
 from app.db import DatabaseNotConfigured, get_connection, run_migrations, timescale_in_use
@@ -42,8 +57,22 @@ async def lifespan(app):
 app = FastAPI(title="Meerkat API", lifespan=lifespan)
 
 for feature in (
-    auth, demo, profiles, account, verification, people, friends, messages, groups, events, notifications, screen_time,
-    ai, safety, moderation,
+    auth,
+    demo,
+    profiles,
+    account,
+    verification,
+    people,
+    friends,
+    messages,
+    groups,
+    events,
+    notifications,
+    screen_time,
+    ai,
+    safety,
+    moderation,
+    memories,
 ):
     app.include_router(feature.router)
 
