@@ -1,4 +1,4 @@
-# FriendFinder in Codespaces
+# Meerkat in Codespaces
 
 Everything starts by itself: the database, the API (with demo data), and the website.
 
@@ -12,7 +12,7 @@ Everything starts by itself: the database, the API (with demo data), and the web
    Every line should say PASS (lines starting with INFO are just information).
 
 **Gemini key:** add it as a Codespaces secret named `GEMINI_API_KEY` (GitHub → Settings → Codespaces → Secrets, and allow this repository), then restart the Codespace.
-Without it, match notes are labelled **"Suggested by FriendFinder (not AI)"**. With it, they say **"Written by Gemini"**.
+Without it, match notes are labelled **"Suggested by Meerkat (not AI)"**. With it, they say **"Written by Gemini"**.
 
 **Run the API tests:** `cd backend && .venv/bin/pytest`
 

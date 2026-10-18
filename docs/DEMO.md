@@ -1,29 +1,30 @@
-# Judge demo (about 3 minutes)
+# Judge demo (about 4 minutes)
 
 **Before judging:**
 
-- Open the site and `/api/health`. You want `"status":"ok"`, and `"gemini": {"ok": true}` if you want live AI notes.
+- Open the site and `/api/health`. You want `"status":"ok"`, and `"gemini": {"ok": true}` for live AI.
 - If it's been a few days, refresh the demo data from the `backend` folder: `python -m app.seed`. It moves demo events that have ended into the coming week, and never deletes anything.
-- Have a second browser (or a private window) ready, logged in as a real test account. That's for step 6.
+- Optional: a second browser (or private window) logged in as a real test account, for the messaging step.
 
 | # | Do | Say |
 |---|---|---|
-| 1 | Landing page → **Try the demo** | "FriendFinder helps students find *friends*, not dates, based on what they're into, what kind of friend they want, their campus, and when they're free. Judges can try it without signing up. Everything from the demo is marked *Demo*." |
-| 2 | **Feed** (Discover). Point at the top card's match % and the reasons. Use the **Interest** filter, then tick **Free when I'm free**. | "Matching is simple and explainable: points for shared interests, goals, university and free time. We show *why*, not just a number. No AI decides who you see." |
-| 3 | Click **View profile** on someone. Toggle **Info view / Expressive view**. Scroll to **Times you're both free** and the **match note**. Open **"What was sent to Gemini?"** | "Gemini writes the conversation starter. We only send what you two share: interests, goals, university, free times. Never names, photos or bios. If Gemini is down, we say so and show a non-AI suggestion, clearly labelled." |
-| 4 | Click the **bell** → open a friend request → **Accept**. | "Notifications are saved on the server, and requests can't be duplicated or sent to yourself. The server checks all of that, not just the page." |
-| 5 | **Friends** → **Message** Daniel → send a message. | "Messages are saved and only friends can message each other." |
-| 6 | (Optional, two browsers) From your second account, send the demo account a message, and it appears within a few seconds. | "We use simple polling instead of live sockets: reliable, and honest about the few-second delay." |
-| 7 | **Groups** → open a group → **JOIN!** → write a post. Then **Plan an event for this group**. | "Groups have members-only discussions. Events can belong to a group, and members get notified." |
-| 8 | **Events** → the calendar → open an event → **I'm going** (watch the count go up). | "Times are shown in your own time zone, and we name it, so nobody shows up an hour late." |
-| 9 | **Screen Time** → set a daily goal. | "This only counts time in FriendFinder, and says so. The idea is to get people off the app and into real hangouts." |
-| 10 | Make the browser phone-sized (or open it on a phone). | "Works on phones, with a bottom tab bar." |
+| 1 | Landing page → **Try the demo** → tick the box → **Accept and continue**. | "Meerkat: finding your mob shouldn't be up to chance. It's for adults looking for *friends*, not dates. Even the demo asks you to accept the Terms, and everything in the demo is fictional and marked *Demo*." |
+| 2 | **Discover**. Point at the match % and its reasons. Use the **Interest** filter. | "Matching is simple and explainable: shared interests, goals, campus and free time. No AI decides who you see." |
+| 3 | **View profile** on someone. Scroll to the **match note** → open **"What was sent to Gemini?"** | "Gemini writes the conversation starter, from only what you two share. Never names, photos or messages. AI is a choice each person makes in Settings, and both people have to say yes." |
+| 4 | **Plan** → tick Daniel → **Find times**. | "These free times are calculated exactly, not by AI. Your classes and shifts stay private: friends only ever see *when* you're both free, and only if you allowed it." |
+| 5 | Tick a couple of times → **Get suggestions**. Point at **Written by Gemini**, **Updated at …** and **Refresh**. | "Gemini ranks the times and suggests what to do, but it can only pick from the times we calculated. Suggestions are saved for an hour, so we don't call Gemini on every page view." |
+| 6 | **My schedule** tab → **Import a timetable image or PDF with Gemini** (show the consent text, don't need to upload). | "Gemini can read a timetable photo, but only after you choose to send it, and you review everything before it's saved. We never keep the file." |
+| 7 | Back to **Plan a hangout** → **Where to meet**. | "Meeting areas are opt-in and approximate: a campus or a rounded location. Nobody sees anyone else's, and the halfway point is labelled: it's a straight line, not travel time." |
+| 8 | **Memories** → post a caption (audience: **Friends**). | "Memories default to friends only. Photos lose their location data and are only served to people allowed to see them." |
+| 9 | **Screen Time** → **Groups** tab. | "Screen-time groups use numbers people type in themselves, labelled *self-reported*. A website can't read your phone's screen time, so we never pretend to. No entry is never shown as zero." |
+| 10 | Someone's profile → **Report profile** (show the reasons) → Cancel. Then **Settings** → **Privacy and availability** and **Verification**. | "Blocking and reporting are enforced on the server. Email and phone codes need a real provider, and when one isn't set up, the page says so instead of faking it. There's no selfie age check: no provider is connected, so no badge can appear." |
+| 11 | Footer → **Terms**. | "These are draft documents, clearly marked as drafts, with a pre-launch checklist for legal review." |
+| 12 | Make the browser phone-sized. | "Works on phones, with a bottom tab bar." |
 
-**Tech, if they ask:** Next.js + TypeScript + Tailwind website, FastAPI + PostgreSQL API, and Gemini structured output with caching and a fallback.
-On a TigerData database, screen time uses a TimescaleDB hypertable (on plain PostgreSQL it uses ordinary tables). 122 API tests plus an end-to-end browser test.
-Hosted on Render from one Docker image, with a GoDaddy domain (once set up). The Settings page shows which database is in use.
+**Tech, if they ask:** Next.js + TypeScript + Tailwind website, FastAPI + PostgreSQL API, Gemini structured output (JSON checked against a schema), with caching and labelled fallbacks.
+227 API tests, a 35-step browser test and a 56-check API journey. Moderators get a report queue with an action log.
 
-**Be honest about:** no block/report yet, no password reset, Solana not built (see `docs/STATUS.md`).
+**Be honest about:** the legal pages are drafts, email/phone codes need SMTP/Twilio, no age-check provider, no password reset, Solana not built (see `docs/STATUS.md`).
 
 **If something breaks during the demo:** say so, then go on to the next step. `/api/health` tells you what's down.
 If Gemini fails, the labelled fallback appears by itself.

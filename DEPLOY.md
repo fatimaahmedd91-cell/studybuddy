@@ -1,4 +1,6 @@
-# Putting FriendFinder live (GoDaddy domain + Vultr server)
+# Putting Meerkat live (GoDaddy domain + Vultr server)
+
+(The server folder, service and database are still called `friendfinder`, the project's first name. Keep them: renaming would break updates on servers that already run it.)
 
 How it fits together:
 
@@ -20,7 +22,7 @@ In this guide, replace:
 
 | Placeholder | With |
 |---|---|
-| `your-domain.com` | the domain you bought, for example `friendfinder.example` |
+| `your-domain.com` | the domain you bought, for example `meerkat.example` |
 | `YOUR_VULTR_IP` | the server's IP address from Vultr, for example `203.0.113.10` |
 
 Budget about 30 minutes. DNS changes can take a few minutes, and sometimes up to an hour, to work everywhere.
@@ -146,6 +148,9 @@ The same file has the other settings (see `backend/.env.example` for all of them
 | `DATABASE_URL` | you move to TigerData: paste its connection string |
 | `GEMINI_MODEL` | you want a different Gemini model |
 | `DEMO_MODE_ENABLED` | you want to hide "Try the demo" after judging: set it to `false` |
+| `GOOGLE_MAPS_API_KEY` | you want real places near the halfway point (Google Places API (New); costs money after the free allowance) |
+| `SMTP_…`, `TWILIO_…` | you set up email or phone codes (see `docs/PRE_LAUNCH_CHECKLIST.md`) |
+| `TERMS_VERSION` | the Terms changed: everyone is asked to accept again |
 
 Restart after every change: `systemctl restart friendfinder-api`.
 
@@ -168,6 +173,10 @@ cd /opt/friendfinder && bash deploy/update.sh
 
 It pulls the code, restarts the API (which adds any new database tables by itself), rebuilds the website, and checks `/api/health`.
 
+**The first update to Meerkat** (from the FriendFinder version) needs no extra steps: no new packages, and the new tables are added at start-up.
+Existing accounts keep their data, are asked to accept the Terms on their next visit, and have AI turned off until they choose it.
+This upgrade was tested on a copy of a database made by the old version.
+
 ## Everyday commands on the server
 
 | To… | Run |
@@ -188,7 +197,7 @@ It pulls the code, restarts the API (which adds any new database tables by itsel
 | Domain doesn't open | DNS may still be updating. Check that `ping your-domain.com` shows your Vultr IP. |
 | Browser warns about the certificate | Caddy gets the certificate once DNS points at the server. Wait a few minutes, then run `systemctl restart caddy`. |
 | Site loads but login says the database isn't available | Run `systemctl status friendfinder-api` and `journalctl -u friendfinder-api -n 50`. |
-| Match notes say "Suggested by FriendFinder (not AI)" | Gemini isn't working. The note says why. Check `GEMINI_API_KEY` in `backend/.env` and `/api/health`. |
+| Match notes say "Suggested by Meerkat (not AI)" | Gemini isn't working. The note says why. Check `GEMINI_API_KEY` in `backend/.env` and `/api/health`. |
 | `deploy/update.sh` says the API did not answer | Run `journalctl -u friendfinder-api -n 50`. It's usually a typo in `backend/.env`. |
 | The website build runs out of memory | Use a plan with at least 1 GB RAM, or add swap: `fallocate -l 1G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile` |
 | Caddy errors | Run `journalctl -u caddy -n 50`. |

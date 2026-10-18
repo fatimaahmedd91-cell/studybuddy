@@ -1,4 +1,4 @@
-# Working on FriendFinder together
+# Working on Meerkat together
 
 ## The golden rules
 
