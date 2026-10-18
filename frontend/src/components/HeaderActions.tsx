@@ -37,7 +37,7 @@ export function CreateMenu() {
   const [dialog, setDialog] = useState<"group" | "event" | null>(null);
   const ref = useDismiss(open, () => setOpen(false));
 
-  const item = "flex min-h-11 w-full items-center rounded-lg px-3 text-left font-medium hover:bg-card";
+  const item = "flex min-h-11 w-full items-center rounded-lg px-3 text-left font-medium hover:bg-sage";
   return (
     <div ref={ref} className="relative">
       <button
@@ -45,12 +45,12 @@ export function CreateMenu() {
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label="Create"
-        className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-card"
+        className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-sage"
       >
         <PlusCircleIcon className="h-7 w-7" />
       </button>
       {open && (
-        <div role="menu" className="absolute right-0 top-12 z-50 w-56 rounded-2xl border-2 border-bark bg-paper p-2 shadow-xl">
+        <div role="menu" className="absolute right-0 top-12 z-50 w-56 rounded-2xl border-2 border-pine bg-cream p-2 shadow-xl">
           <button role="menuitem" className={item} onClick={() => { setOpen(false); setDialog("group"); }}>
             👥 Create a group
           </button>
@@ -100,17 +100,17 @@ export function NotificationBell() {
         }}
         aria-expanded={open}
         aria-label={unread ? `Notifications, ${unread} unread` : "Notifications"}
-        className="relative flex h-11 w-11 items-center justify-center rounded-full hover:bg-card"
+        className="relative flex h-11 w-11 items-center justify-center rounded-full hover:bg-sage"
       >
         <BellIcon className="h-7 w-7" />
         {unread > 0 && (
-          <span className="absolute right-0.5 top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-ember px-1 text-[11px] font-bold text-paper">
+          <span className="absolute right-0.5 top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-forest px-1 text-[11px] font-bold text-cream">
             {unread > 9 ? "9+" : unread}
           </span>
         )}
       </button>
       {open && (
-        <div className="absolute right-0 top-12 z-50 w-[min(92vw,360px)] rounded-2xl border-2 border-bark bg-paper p-3 shadow-xl">
+        <div className="absolute right-0 top-12 z-50 w-[min(92vw,360px)] rounded-2xl border-2 border-pine bg-cream p-3 shadow-xl">
           <div className="mb-2 flex items-center justify-between gap-2">
             <p className="font-bold">Notifications</p>
             {unread > 0 && (
@@ -134,14 +134,14 @@ export function NotificationBell() {
               <li key={n.id}>
                 <button
                   onClick={() => openItem(n.id, n.link, n.read)}
-                  className={`flex w-full items-start gap-3 rounded-xl px-2 py-2 text-left hover:bg-card ${n.read ? "opacity-70" : "bg-card/60"}`}
+                  className={`flex w-full items-start gap-3 rounded-xl px-2 py-2 text-left hover:bg-sage ${n.read ? "opacity-70" : "bg-sage/60"}`}
                 >
                   {n.actor ? <Avatar person={n.actor} size="xs" /> : <span className="h-8 w-8" />}
                   <span className="flex-1 text-sm">
                     <span className={n.read ? "" : "font-semibold"}>{n.text}</span>
                     <span className="block text-xs opacity-70">{timeAgo(n.created_at)}</span>
                   </span>
-                  {!n.read && <span className="mt-1.5 h-2.5 w-2.5 rounded-full bg-ember" aria-label="unread" />}
+                  {!n.read && <span className="mt-1.5 h-2.5 w-2.5 rounded-full bg-forest" aria-label="unread" />}
                 </button>
               </li>
             ))}

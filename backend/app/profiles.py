@@ -13,12 +13,15 @@ import base64
 import binascii
 import uuid
 from typing import Annotated, Literal
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from fastapi import APIRouter, HTTPException, Response
 from psycopg2.extras import Json
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
+from app import config
 from app.auth import CurrentUser
+from app.notifications import CATEGORIES
 from app.db import get_connection
 from app.options import DAYS, FRIENDSHIP_GOALS, MIN_AGE, SLOTS, SUGGESTED_INTERESTS, SUGGESTED_UNIVERSITIES
 from app.users import USER_COLUMNS, is_complete, own_profile
@@ -54,6 +57,10 @@ class ProfileUpdate(BaseModel):
     avatar_color: Annotated[str, StringConstraints(pattern=r"^#[0-9a-fA-F]{6}$")] | None = None
     stickers: bool | None = None
     daily_goal_minutes: int | None = Field(default=None, ge=5, le=600)
+    # Privacy (Settings → Privacy and availability)
+    availability_audience: Literal["everyone", "friends", "nobody"] | None = None
+    discoverable: bool | None = None
+    timezone: text(64, 1) | None = None
 
 
 # These may be cleared by sending null. Everything else needs a value.
@@ -85,6 +92,11 @@ def update_me(body: ProfileUpdate, me: CurrentUser):
         changes["interests"] = _dedupe(changes["interests"])
     if "looking_for" in changes:
         changes["looking_for"] = _dedupe(changes["looking_for"])
+    if "timezone" in changes:
+        try:
+            ZoneInfo(changes["timezone"])
+        except (ZoneInfoNotFoundError, ValueError):
+            raise HTTPException(status_code=422, detail="That time zone isn't recognised. Pick one from the list.")
     if "availability" in changes:
         # Keep days and slots in a fixed order, without repeats or empty days.
         changes["availability"] = {
@@ -242,4 +254,6 @@ def options():
         "days": DAYS,
         "slots": SLOTS,
         "min_age": MIN_AGE,
+        "terms_version": config.TERMS_VERSION,
+        "notification_categories": {key: value["label"] for key, value in CATEGORIES.items()},
     }

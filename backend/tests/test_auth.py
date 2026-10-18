@@ -8,7 +8,7 @@ import pytest
 from app import config, db
 from tests.helpers import signup
 
-AMIRA = {"email": "Amira@Example.com", "password": "bubble-tea-42", "name": "  Amira Khan  ", "confirm_age": True}
+AMIRA = {"email": "Amira@Example.com", "password": "bubble-tea-42", "name": "  Amira Khan  ", "accept_terms": True}
 
 
 def test_signup_creates_an_account_and_returns_a_token(database, client):
@@ -31,10 +31,10 @@ def test_signup_stores_a_hash_not_the_password(database, client):
     assert stored != AMIRA["password"] and stored.startswith("$argon2")
 
 
-def test_signup_requires_the_age_confirmation(database, client):
-    response = client.post("/api/auth/signup", json={**AMIRA, "confirm_age": False})
+def test_signup_requires_the_age_and_terms_checkbox(database, client):
+    response = client.post("/api/auth/signup", json={**AMIRA, "accept_terms": False})
     assert response.status_code == 422
-    assert "16" in response.json()["detail"]
+    assert "18" in response.json()["detail"] and "Terms" in response.json()["detail"]
 
 
 def test_signup_rejects_an_email_that_is_already_used(database, client):

@@ -20,7 +20,7 @@ def signup(client, name="Amira Khan", email=None, password="bubble-tea-42"):
     """Creates an account and returns (auth headers, user)."""
     email = email or f"person{next(_counter)}@example.com"
     response = client.post(
-        "/api/auth/signup", json={"email": email, "password": password, "name": name, "confirm_age": True}
+        "/api/auth/signup", json={"email": email, "password": password, "name": name, "accept_terms": True}
     )
     assert response.status_code == 201, response.text
     body = response.json()

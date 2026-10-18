@@ -1,4 +1,4 @@
-"""Demo data for FriendFinder: fictional students, groups and events, all marked as demo (is_demo).
+"""Demo data for Meerkat: fictional students, groups and events, all marked as demo (is_demo).
 
     python -m app.seed                   add the demo data (skips what's already there)
     python -m app.seed --reset --yes     delete ALL demo data, then add it again
@@ -34,12 +34,16 @@ def demo_email(name):
 
 
 def insert_demo_person(cur, person, email):
-    """Adds one fictional person. Their password is random and never shown, so nobody can log in as them."""
+    """Adds one fictional person. Their password is random and never shown, so nobody can log in as them.
+
+    AI features are on for demo accounts, because everything about them is made up.
+    """
     cur.execute(
         """
         INSERT INTO users (email, password_hash, name, pronouns, age, university, hook, bio, interests,
-                           looking_for, availability, avatar_emoji, avatar_color, onboarded, is_demo)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, TRUE, TRUE)
+                           looking_for, availability, avatar_emoji, avatar_color, onboarded, is_demo, consents)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, TRUE, TRUE,
+                '{"ai_features": {"granted": true, "at": "demo"}}'::jsonb)
         RETURNING id
         """,
         (
@@ -148,7 +152,7 @@ def reset(cur):
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description="Add or reset FriendFinder demo data.")
+    parser = argparse.ArgumentParser(description="Add or reset Meerkat demo data.")
     parser.add_argument("--reset", action="store_true", help="delete all demo data first")
     parser.add_argument("--yes", action="store_true", help="confirm --reset")
     parser.add_argument("--allow-production", action="store_true", help="allow --reset when APP_ENV=production")

@@ -7,7 +7,7 @@ shared interests, shared friendship goals, the university (only if it's the same
 times both are free. Never names, emails, ages, bios, or photos.
 
 When Gemini isn't available (no key, timeout, quota used up, or an unusable answer), the app
-writes a note from fixed templates instead and labels it "Suggested by FriendFinder".
+writes a note from fixed templates instead and labels it "Suggested by Meerkat".
 """
 
 import hashlib
@@ -24,7 +24,9 @@ from app.auth import CurrentUser
 from app.db import get_connection
 from app.matching import compute_match
 from app.ratelimit import RateLimiter
-from app.users import load_user
+from app.friends import are_friends
+from app.safety import is_blocked
+from app.users import has_consent, load_user, visible_availability
 
 router = APIRouter(prefix="/api")
 log = logging.getLogger("friendfinder")
@@ -46,9 +48,15 @@ class InsightOut(BaseModel):
     activity: str = Field(min_length=5, max_length=250)
 
 
-def insight_facts(a, b):
-    """The shared facts for a pair. Always worked out from the lower id's side, so A->B and B->A match."""
+def insight_facts(a, b, friends=False):
+    """The shared facts for a pair. Always worked out from the lower id's side, so A->B and B->A match.
+
+    Shared free times are only included if BOTH people let the other one see their availability.
+    """
     low, high = (a, b) if a["id"] < b["id"] else (b, a)
+    both_visible = visible_availability(low, friends) and visible_availability(high, friends)
+    if not both_visible:
+        low, high = {**low, "availability": {}}, {**high, "availability": {}}
     match = compute_match(low, high)
     return {
         "shared_interests": match["shared_interests"],
@@ -169,8 +177,13 @@ def ask_gemini(facts):
     return result
 
 
-def make_insight(facts, user_id):
-    """Asks Gemini, or falls back to the template. Returns the note as a dict."""
+def make_insight(facts, user_id, ai_allowed=True):
+    """Asks Gemini, or falls back to the template. Returns the note as a dict.
+
+    ai_allowed is False unless BOTH people turned on AI features (Settings → Privacy).
+    """
+    if not ai_allowed:
+        return {**fallback_insight(facts), "source": "fallback", "model": None, "fallback_reason": "ai_off"}
     try:
         generate_limit.check(user_id)
         result = ask_gemini(facts)
@@ -188,9 +201,10 @@ def insight(person_id: int, me: CurrentUser):
         raise HTTPException(status_code=400, detail="Match notes are for other people.")
     with get_connection() as conn, conn.cursor() as cur:
         other = load_user(cur, person_id)
-        if not other or not other["onboarded"]:
+        if not other or not other["onboarded"] or is_blocked(cur, me["id"], person_id):
             raise HTTPException(status_code=404, detail="This person could not be found.")
-        facts = insight_facts(me, other)
+        facts = insight_facts(me, other, are_friends(cur, me["id"], person_id))
+        ai_allowed = has_consent(me, "ai_features") and has_consent(other, "ai_features")
         key = facts_hash(facts)
         low, high = sorted([me["id"], other["id"]])
         cur.execute(
@@ -200,14 +214,16 @@ def insight(person_id: int, me: CurrentUser):
         )
         saved = cur.fetchone()
 
-    usable = saved and saved["facts_hash"] == key and (
-        saved["payload"]["source"] == "gemini" or saved["age"] < FALLBACK_RETRY_SECONDS
+    # With AI off for this pair, the template note is made fresh (it's quick and sends nothing anywhere).
+    usable = ai_allowed and saved and saved["facts_hash"] == key and (
+        saved["payload"]["source"] == "gemini"
+        or (saved["payload"]["fallback_reason"] != "ai_off" and saved["age"] < FALLBACK_RETRY_SECONDS)
     )
     if usable:
         return {**saved["payload"], "facts_sent": facts, "cached": True, "generated_at": saved["created_at"]}
 
     # Ask outside the database transaction: the Gemini call can take a few seconds.
-    note = make_insight(facts, me["id"])
+    note = make_insight(facts, me["id"], ai_allowed)
     with get_connection() as conn, conn.cursor() as cur:
         cur.execute(
             """

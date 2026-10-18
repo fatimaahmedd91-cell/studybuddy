@@ -20,13 +20,29 @@ export type PublicProfile = MiniProfile & {
   interests: string[];
   looking_for: string[];
   stickers: boolean;
+  // Specific checks only, e.g. ["email_verified"]. There is no general "verified" badge.
+  badges: Badge[];
 };
+
+export type Badge = "email_verified" | "phone_verified" | "age_checked";
+export type Audience = "everyone" | "friends" | "nobody";
 
 export type OwnProfile = PublicProfile & {
   email: string;
+  email_verified: boolean;
+  phone: string | null;
+  phone_verified: boolean;
   availability: Availability;
+  availability_audience: Audience;
   daily_goal_minutes: number | null;
   onboarded: boolean;
+  timezone: string;
+  discoverable: boolean;
+  notification_prefs: Record<string, boolean>;
+  consents: Record<string, boolean>;
+  role: "member" | "moderator" | "admin";
+  age_check: { status: string | null; provider: string | null; at: string | null };
+  terms: { accepted_version: string | null; accepted_at: string | null; current_version: string; current: boolean };
 };
 
 export type Slot = { day: string; slot: string };
@@ -52,6 +68,8 @@ export type Options = {
   days: string[];
   slots: string[];
   min_age: number;
+  terms_version: string;
+  notification_categories: Record<string, string>;
 };
 
 export type FriendEntry = { request_id: number; person: PublicProfile; since?: string; sent_at?: string };
@@ -138,4 +156,15 @@ export type Health = {
   database: { ok: boolean; detail: string; timescaledb?: boolean };
   gemini: { ok: boolean; detail: string };
   demo_mode: boolean;
+};
+
+export type ReportTarget = "profile" | "message" | "memory" | "group" | "event" | "group_post";
+
+export type PrivacyRequest = {
+  id: number;
+  kind: "access" | "correction" | "deletion" | "withdraw_consent" | "other";
+  details: string;
+  status: "open" | "done";
+  created_at: string;
+  handled_at: string | null;
 };

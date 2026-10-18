@@ -4,14 +4,14 @@
 import { useState } from "react";
 import Dialog from "@/components/Dialog";
 import { ErrorBox, Loading } from "@/components/States";
-import { Button, DemoBadge, OrangeCard, PageHeading, inputClass } from "@/components/ui";
+import { Button, DemoBadge, FrameCard, PageHeading, inputClass } from "@/components/ui";
 import { api } from "@/lib/api";
 import { useAuth, useMe } from "@/lib/auth";
 import { useApi } from "@/lib/useApi";
 
 function StatusRow({ label, ok, detail }: { label: string; ok: boolean; detail: string }) {
   return (
-    <li className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-paper px-3 py-2">
+    <li className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-cream px-3 py-2">
       <span className="font-semibold">{label}</span>
       <span className="text-sm"><span aria-hidden="true">{ok ? "✅" : "⚠️"}</span> {ok ? "Working" : "Not working"}: {detail}</span>
     </li>
@@ -65,7 +65,7 @@ export default function SettingsPage() {
     <div>
       <PageHeading title="Settings" />
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-        <OrangeCard>
+        <FrameCard>
           <section className="space-y-3 p-6">
             <h2 className="text-2xl font-bold">Account</h2>
             <p className="flex flex-wrap items-center gap-2">Logged in as <b>{me.name}</b> {me.is_demo && <DemoBadge />}</p>
@@ -79,9 +79,9 @@ export default function SettingsPage() {
               <DeleteAccount />
             </div>
           </section>
-        </OrangeCard>
+        </FrameCard>
 
-        <OrangeCard>
+        <FrameCard>
           <section className="space-y-2 p-6 text-sm">
             <h2 className="text-2xl font-bold">Privacy &amp; AI</h2>
             <p><b>Match scores are plain math:</b> shared interests (up to 40 points), friendship goals (20), same university (15), and shared free time (25). No AI ranks people.</p>
@@ -90,9 +90,9 @@ export default function SettingsPage() {
             <p><b>Photos</b> are resized and stripped of location data before they&apos;re saved.</p>
             <p><b>Passwords</b> are stored as Argon2 hashes, never as plain text.</p>
           </section>
-        </OrangeCard>
+        </FrameCard>
 
-        <OrangeCard>
+        <FrameCard>
           <section className="space-y-3 p-6">
             <h2 className="text-2xl font-bold">System status</h2>
             {health.loading && <Loading />}
@@ -108,9 +108,9 @@ export default function SettingsPage() {
             )}
             <Button variant="outline" onClick={health.reload}>Check again</Button>
           </section>
-        </OrangeCard>
+        </FrameCard>
 
-        <OrangeCard>
+        <FrameCard>
           <section className="space-y-2 p-6 text-sm">
             <h2 className="text-2xl font-bold">Safety: what&apos;s not built yet</h2>
             <p>FriendFinder is a hackathon project. Before real launch it still needs:</p>
@@ -121,7 +121,7 @@ export default function SettingsPage() {
             </ul>
             <p>Until then: only accept requests from people you recognise, and meet new friends in public places.</p>
           </section>
-        </OrangeCard>
+        </FrameCard>
       </div>
     </div>
   );

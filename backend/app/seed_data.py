@@ -221,8 +221,8 @@ DEMO_EVENTS = [
 DEMO_EXPLORER = {
     "name": "Demo Explorer", "pronouns": "they/them", "age": None, "university": "UofT Scarborough",
     "avatar_emoji": "🧭", "avatar_color": "#1f9fc4",
-    "hook": "Just exploring FriendFinder!",
-    "bio": "This is a demo account for trying FriendFinder. Everything in it is made up.",
+    "hook": "Just exploring Meerkat!",
+    "bio": "This is a demo account for trying Meerkat. Everything in it is made up.",
     "interests": ["Coding", "Cafes", "Board games", "Hiking"],
     "looking_for": ["Study buddy", "Clubs and campus events"],
     "availability": {"Mon": [AFTERNOON], "Tue": [AFTERNOON, EVENING], "Thu": [AFTERNOON], "Sat": [AFTERNOON]},

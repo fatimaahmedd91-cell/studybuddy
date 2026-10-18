@@ -77,7 +77,15 @@ def send_request(body: FriendRequest, me: CurrentUser):
         raise HTTPException(status_code=400, detail="You can't send a friend request to yourself.")
     with get_connection() as conn, conn.cursor() as cur:
         other = load_user(cur, body.user_id)
-        if not other or not other["onboarded"]:
+        if not other or not other["onboarded"] or other["suspended_at"]:
+            raise HTTPException(status_code=404, detail="This person could not be found.")
+        cur.execute("SELECT blocker_id FROM blocks WHERE blocker_id IN (%s, %s) AND blocked_id IN (%s, %s)",
+                    (me["id"], other["id"], me["id"], other["id"]))
+        block = cur.fetchone()
+        if block and block["blocker_id"] == me["id"]:
+            raise HTTPException(status_code=409, detail="You blocked this person. Unblock them in Settings first.")
+        if block:
+            # They blocked you. Answer as if they don't exist, so the block isn't revealed.
             raise HTTPException(status_code=404, detail="This person could not be found.")
         cur.execute(
             "SELECT * FROM friendships WHERE LEAST(requester_id, addressee_id) = LEAST(%s, %s)"

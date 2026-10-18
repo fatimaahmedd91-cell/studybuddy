@@ -7,6 +7,13 @@ from tests.conftest import REAL_GEMINI_KEY
 from tests.helpers import make_person, signup
 
 
+def ai_person(client, name, **profile):
+    """A person with a finished profile who turned on AI features (Settings → Privacy)."""
+    headers, user = make_person(client, name, **profile)
+    assert client.put("/api/me/consents/ai_features", json={"granted": True}, headers=headers).status_code == 200
+    return headers, user
+
+
 def fake_gemini(calls, text="You both like coding."):
     def ask(facts):
         calls.append(facts)
@@ -16,8 +23,8 @@ def fake_gemini(calls, text="You both like coding."):
 
 
 def test_without_a_key_the_template_note_is_used(database, client):
-    a = make_person(client, "Amira Khan")
-    b = make_person(client, "Tariq Aziz")
+    a = ai_person(client, "Amira Khan")
+    b = ai_person(client, "Tariq Aziz")
     note = client.get(f"/api/people/{b[1]['id']}/insight", headers=a[0]).json()
     assert note["source"] == "fallback" and note["fallback_reason"] == "not_configured"
     assert "coding" in note["explanation"].lower()
@@ -25,11 +32,22 @@ def test_without_a_key_the_template_note_is_used(database, client):
     assert note["activity"].endswith("on Tue afternoon.")
 
 
+def test_gemini_is_not_used_unless_both_people_turned_ai_on(database, client, monkeypatch):
+    calls = []
+    monkeypatch.setattr(ai, "ask_gemini", fake_gemini(calls))
+    a = ai_person(client, "Amira Khan")
+    b = make_person(client, "Tariq Aziz")  # never turned AI features on
+    note = client.get(f"/api/people/{b[1]['id']}/insight", headers=a[0]).json()
+    assert note["source"] == "fallback" and note["fallback_reason"] == "ai_off" and calls == []
+    client.put("/api/me/consents/ai_features", json={"granted": True}, headers=b[0])
+    assert client.get(f"/api/people/{b[1]['id']}/insight", headers=a[0]).json()["source"] == "gemini"
+
+
 def test_gemini_note_is_used_and_saved(database, client, monkeypatch):
     calls = []
     monkeypatch.setattr(ai, "ask_gemini", fake_gemini(calls))
-    a = make_person(client, "Amira Khan")
-    b = make_person(client, "Tariq Aziz")
+    a = ai_person(client, "Amira Khan")
+    b = ai_person(client, "Tariq Aziz")
 
     first = client.get(f"/api/people/{b[1]['id']}/insight", headers=a[0]).json()
     assert first["source"] == "gemini" and first["cached"] is False
@@ -42,8 +60,8 @@ def test_gemini_note_is_used_and_saved(database, client, monkeypatch):
 def test_only_shared_facts_are_sent_to_gemini(database, client, monkeypatch):
     calls = []
     monkeypatch.setattr(ai, "ask_gemini", fake_gemini(calls))
-    a = make_person(client, "Amira Khan", bio="Secret bio", interests=["Coding", "Opera"])
-    b = make_person(client, "Tariq Aziz", interests=["coding", "Rugby"])
+    a = ai_person(client, "Amira Khan", bio="Secret bio", interests=["Coding", "Opera"])
+    b = ai_person(client, "Tariq Aziz", interests=["coding", "Rugby"])
     client.get(f"/api/people/{b[1]['id']}/insight", headers=a[0])
 
     sent = calls[0]
@@ -56,8 +74,8 @@ def test_only_shared_facts_are_sent_to_gemini(database, client, monkeypatch):
 def test_changing_what_you_share_makes_a_new_note(database, client, monkeypatch):
     calls = []
     monkeypatch.setattr(ai, "ask_gemini", fake_gemini(calls))
-    a = make_person(client, "Amira Khan")
-    b = make_person(client, "Tariq Aziz")
+    a = ai_person(client, "Amira Khan")
+    b = ai_person(client, "Tariq Aziz")
     client.get(f"/api/people/{b[1]['id']}/insight", headers=a[0])
     client.patch("/api/me", json={"interests": ["Chess"]}, headers=a[0])
     client.get(f"/api/people/{b[1]['id']}/insight", headers=a[0])
@@ -70,8 +88,8 @@ def test_gemini_problems_fall_back_to_the_template(database, client, monkeypatch
         raise ai.GeminiUnavailable(reason)
 
     monkeypatch.setattr(ai, "ask_gemini", broken)
-    a = make_person(client, "Amira Khan")
-    b = make_person(client, "Tariq Aziz")
+    a = ai_person(client, "Amira Khan")
+    b = ai_person(client, "Tariq Aziz")
     note = client.get(f"/api/people/{b[1]['id']}/insight", headers=a[0]).json()
     assert note["source"] == "fallback" and note["fallback_reason"] == reason
 
@@ -125,8 +143,8 @@ def test_insight_about_yourself_or_unknown_people(database, client):
 @pytest.mark.skipif(not REAL_GEMINI_KEY, reason="GEMINI_API_KEY is not set in backend/.env")
 def test_real_gemini_returns_a_structured_note(database, client, monkeypatch):
     monkeypatch.setattr(config, "GEMINI_API_KEY", REAL_GEMINI_KEY)
-    a = make_person(client, "Amira Khan")
-    b = make_person(client, "Tariq Aziz")
+    a = ai_person(client, "Amira Khan")
+    b = ai_person(client, "Tariq Aziz")
     note = client.get(f"/api/people/{b[1]['id']}/insight", headers=a[0]).json()
     assert note["source"] == "gemini", note
     assert note["explanation"] and note["conversation_starter"] and note["activity"]
@@ -135,12 +153,22 @@ def test_real_gemini_returns_a_structured_note(database, client, monkeypatch):
 # ---------- Demo mode and seed data ----------
 
 
+def accept_terms(client, headers):
+    version = client.get("/api/options").json()["terms_version"]
+    response = client.post("/api/me/accept-terms", json={"accept": True, "version": version}, headers=headers)
+    assert response.status_code == 200, response.text
+
+
 def test_try_the_demo_creates_a_ready_account(database, client):
     response = client.post("/api/auth/demo")
     assert response.status_code == 201
     body = response.json()
     assert body["user"]["is_demo"] and body["user"]["onboarded"]
     headers = {"Authorization": f"Bearer {body['access_token']}"}
+    # A demo visitor hasn't accepted the Terms yet, so they're asked to before anything else.
+    assert body["user"]["terms"]["current"] is False
+    assert client.get("/api/friends", headers=headers).status_code == 403
+    accept_terms(client, headers)
 
     friends = client.get("/api/friends", headers=headers).json()
     assert len(friends["incoming"]) == 2 and len(friends["friends"]) == 1
@@ -160,6 +188,7 @@ def test_demo_groups_and_events_are_marked_demo_and_old_demo_accounts_expire(dat
     from app import db
     body = client.post("/api/auth/demo").json()
     headers = {"Authorization": f"Bearer {body['access_token']}"}
+    accept_terms(client, headers)
     group = client.post("/api/groups", json={"name": "Explorer club", "tags": []}, headers=headers).json()
     assert group["is_demo"]
 

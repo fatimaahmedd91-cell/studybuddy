@@ -4,6 +4,10 @@ GET /api/people        everyone else with a finished profile, best match first (
                        visitor accounts are left out).
                        Optional filters: ?university=  ?interest=  ?goal=  ?free_together=true  ?q=name
 GET /api/people/{id}   one person's profile, why you match, and your friendship status
+
+People who turned off "Show me in Discover" aren't listed, and blocked people (either direction)
+are hidden everywhere. Someone's free times only count towards a match if their availability
+audience allows you to see it (everyone, or friends only).
 """
 
 from fastapi import APIRouter, HTTPException
@@ -12,7 +16,8 @@ from app.auth import CurrentUser
 from app.db import get_connection
 from app.matching import compute_match
 from app.seed import EXPLORER_EMAILS
-from app.users import USER_COLUMNS, load_user, public_profile
+from app.safety import blocked_ids, is_blocked
+from app.users import USER_COLUMNS, load_user, public_profile, visible_availability
 
 router = APIRouter(prefix="/api")
 
@@ -41,7 +46,8 @@ NO_RELATIONSHIP = {"status": "none", "request_id": None}
 
 
 def person_card(me, other, relation):
-    match = compute_match(me, other)
+    is_friend = bool(relation and relation["status"] == "friends")
+    match = compute_match(me, {**other, "availability": visible_availability(other, is_friend)})
     return {
         **public_profile(other),
         "match": match,
@@ -58,7 +64,7 @@ def discover(
     free_together: bool = False,
     q: str = "",
 ):
-    conditions = ["onboarded = TRUE", "id <> %s", "email NOT LIKE %s"]
+    conditions = ["onboarded = TRUE", "discoverable = TRUE", "suspended_at IS NULL", "id <> %s", "email NOT LIKE %s"]
     params = [me["id"], EXPLORER_EMAILS]
     if university.strip():
         conditions.append("lower(trim(university)) = lower(trim(%s))")
@@ -76,6 +82,8 @@ def discover(
     with get_connection() as conn, conn.cursor() as cur:
         cur.execute(f"SELECT {USER_COLUMNS} FROM users WHERE {' AND '.join(conditions)} LIMIT 300", params)
         others = cur.fetchall()
+        hidden = blocked_ids(cur, me["id"])
+        others = [row for row in others if row["id"] not in hidden]
         relations = relationships(cur, me["id"])
         cur.execute(
             "SELECT DISTINCT trim(university) AS u FROM users WHERE onboarded = TRUE AND trim(university) <> '' ORDER BY 1"
@@ -93,7 +101,10 @@ def discover(
 def person(person_id: int, me: CurrentUser):
     with get_connection() as conn, conn.cursor() as cur:
         other = load_user(cur, person_id)
-        if not other or (not other["onboarded"] and other["id"] != me["id"]):
+        hidden = other and other["id"] != me["id"] and (
+            not other["onboarded"] or other["suspended_at"] or is_blocked(cur, me["id"], person_id)
+        )
+        if not other or hidden:
             raise HTTPException(status_code=404, detail="This person could not be found.")
         relation = relationships(cur, me["id"]).get(person_id)
     card = person_card(me, other, relation)

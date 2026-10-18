@@ -12,7 +12,7 @@ import ProfileForm from "@/components/ProfileForm";
 import { AvailabilityGrid } from "@/components/ProfileInputs";
 import { ProfileExpressive, ProfileInfo, ViewToggle } from "@/components/ProfileViews";
 import { ErrorBox, Loading, Notice } from "@/components/States";
-import { Button, OrangeCard } from "@/components/ui";
+import { Button, FrameCard } from "@/components/ui";
 import { api } from "@/lib/api";
 import { useMe } from "@/lib/auth";
 import { useOptions } from "@/lib/options";
@@ -63,12 +63,12 @@ function OwnProfile({ startEditing }: { startEditing: boolean }) {
     return (
       <div>
         <h1 className="mb-4 text-3xl font-bold">Edit your profile</h1>
-        <OrangeCard>
+        <FrameCard>
           <div className="p-5 sm:p-7">
             <ProfileForm profile={me} mode="edit" onCancel={stopEditing}
               onSaved={() => { stopEditing(); setSaved(true); }} />
           </div>
-        </OrangeCard>
+        </FrameCard>
       </div>
     );
   }
@@ -83,7 +83,7 @@ function OwnProfile({ startEditing }: { startEditing: boolean }) {
       {saved && <Notice kind="success">Profile saved.</Notice>}
       {view === "info" ? <ProfileInfo person={me} actions={actions} /> : <ProfileExpressive person={me} actions={actions} />}
       {options && (
-        <section className="rounded-2xl bg-paper p-5" aria-labelledby="free-title">
+        <section className="rounded-2xl bg-cream p-5" aria-labelledby="free-title">
           <h2 id="free-title" className="text-lg font-bold">When you&apos;re free</h2>
           <p className="mb-2 text-sm">Only you see this whole grid. Others only see the times you&apos;re both free.</p>
           <AvailabilityGrid days={options.days} slots={options.slots} value={me.availability} />
@@ -145,7 +145,7 @@ function OtherProfile({ id }: { id: number }) {
       )}
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-        <section className="rounded-2xl bg-paper p-5" aria-labelledby="match-title">
+        <section className="rounded-2xl bg-cream p-5" aria-labelledby="match-title">
           <h2 id="match-title" className="text-xl font-bold">{person.match.score}% match</h2>
           <ul className="mt-2 list-disc space-y-1 pl-5">
             {person.match.reasons.length ? person.match.reasons.map((r) => <li key={r}>{r}</li>) : <li>Nothing in common on paper yet.</li>}

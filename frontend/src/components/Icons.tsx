@@ -1,5 +1,5 @@
 // Simple line icons that match the hand-drawn sidebar in the design.
-// They use the current text colour, so className="text-paper" makes them cream.
+// They use the current text colour, so className="text-cream" makes them cream.
 type IconProps = { className?: string };
 
 function Svg({ className, children }: IconProps & { children: React.ReactNode }) {
@@ -123,5 +123,42 @@ export const SettingsIcon = (p: IconProps) => (
 export const ChatIcon = (p: IconProps) => (
   <Svg {...p}>
     <path d="M4 5h16v11H9l-5 4z" />
+  </Svg>
+);
+
+export const MemoriesIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <rect x="3.5" y="5" width="17" height="14" rx="2" />
+    <circle cx="9" cy="10" r="1.6" />
+    <path d="M4 17l5-4.5 3.5 3 3-2.5 4.5 4" />
+  </Svg>
+);
+
+export const PlanIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <rect x="4" y="5" width="16" height="15" rx="2" />
+    <path d="M8 3v4M16 3v4M4 10h16" />
+    <path d="M9 15l2 2 4-4" />
+  </Svg>
+);
+
+export const MoreIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <circle cx="6" cy="12" r="1.3" />
+    <circle cx="12" cy="12" r="1.3" />
+    <circle cx="18" cy="12" r="1.3" />
+  </Svg>
+);
+
+export const ShieldIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z" />
+    <path d="M9 12l2 2 4-4" />
+  </Svg>
+);
+
+export const FlagIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M5 21V4M5 4h11l-2 4 2 4H5" />
   </Svg>
 );

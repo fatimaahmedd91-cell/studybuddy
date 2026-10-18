@@ -18,6 +18,7 @@ from app.auth import CurrentUser
 from app.db import get_connection
 from app.notifications import notify
 from app.ratelimit import RateLimiter
+from app.safety import blocked_ids
 from app.users import mini_profile
 
 router = APIRouter(prefix="/api")
@@ -170,7 +171,10 @@ def list_posts(group_id: int, me: CurrentUser):
             """,
             (group_id,),
         )
+        # Posts by someone you blocked (or who blocked you) are hidden from you. See app/safety.py.
         rows = cur.fetchall()
+        hidden = blocked_ids(cur, me["id"])
+        rows = [row for row in rows if row["author_id"] not in hidden]
     return [
         {
             "id": r["id"],

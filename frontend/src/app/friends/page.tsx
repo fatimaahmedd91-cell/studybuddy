@@ -6,7 +6,7 @@ import Avatar from "@/components/Avatar";
 import FriendButton from "@/components/FriendButton";
 import { ChatIcon } from "@/components/Icons";
 import { Empty, ErrorBox, Loading } from "@/components/States";
-import { ButtonLink, DemoBadge, OrangeCard, PageHeading } from "@/components/ui";
+import { ButtonLink, DemoBadge, FrameCard, PageHeading } from "@/components/ui";
 import { api } from "@/lib/api";
 import { timeAgo } from "@/lib/time";
 import type { FriendEntry } from "@/lib/types";
@@ -15,7 +15,7 @@ import { useApi } from "@/lib/useApi";
 function RequestRow({ entry, kind, onDone }: { entry: FriendEntry; kind: "incoming" | "outgoing"; onDone: () => void }) {
   const p = entry.person;
   return (
-    <li className="flex flex-col gap-3 rounded-2xl bg-card p-3 sm:flex-row sm:items-center">
+    <li className="flex flex-col gap-3 rounded-2xl bg-sage p-3 sm:flex-row sm:items-center">
       <Link href={`/profile?id=${p.id}`} className="flex min-w-0 flex-1 items-center gap-3">
         <Avatar person={p} size="sm" />
         <span className="min-w-0">
@@ -77,7 +77,7 @@ export default function FriendsPage() {
               <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {data.friends.map(({ person: p }) => (
                   <li key={p.id}>
-                    <OrangeCard className="h-full">
+                    <FrameCard className="h-full">
                       <div className="flex h-full flex-col items-center gap-2 p-5 text-center">
                         <Avatar person={p} size="md" />
                         <p className="flex items-center gap-2 text-lg font-bold">{p.name} {p.is_demo && <DemoBadge />}</p>
@@ -88,7 +88,7 @@ export default function FriendsPage() {
                           <ButtonLink href={`/profile?id=${p.id}`} variant="outline">Profile</ButtonLink>
                         </div>
                       </div>
-                    </OrangeCard>
+                    </FrameCard>
                   </li>
                 ))}
               </ul>

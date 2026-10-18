@@ -1,30 +1,48 @@
 @import "tailwindcss";
 
-/* FriendFinder colours, taken from the design PDF.
-   Each one becomes a Tailwind class, for example bg-bark, text-ember, border-ice. */
+/* ============================================================================
+   Meerkat design tokens: change the look of the whole site here.
+   Each colour becomes Tailwind classes, for example bg-forest, text-pine, border-sage-strong.
+   Keep text on forest green or pine at a normal size or larger; both have strong contrast with cream.
+   ========================================================================== */
 @theme {
-  --color-bark: #401800;   /* dark brown: sidebar, dark panels, buttons, text */
-  --color-ember: #d64d00;  /* orange: card borders and highlight panels */
-  --color-paper: #fff6e2;  /* cream: top bar, avatar fill, chat bubbles */
-  --color-card: #ffedc5;   /* card cream: inside the orange cards */
-  --color-ice: #d0faff;    /* light blue: page background */
+  /* Brand: a calm, nature-inspired palette */
+  --color-pine: #1f3a2b;          /* deepest green: sidebar, dark panels, main text */
+  --color-forest: #2e6b46;        /* forest green: primary buttons, card frames, strong accents */
+  --color-sage-strong: #c5d9b8;   /* sage: selected items, bars on dark panels */
+  --color-sage: #e3ecdb;          /* soft sage: inside framed cards, gentle highlights */
+  --color-cream: #fbf8f1;         /* warm off-white: header, inputs, chat bubbles */
+  --color-sand: #f1ede2;          /* warm neutral: page background */
 
+  /* Meaning colours: use these for messages, never the brand colours */
+  --color-danger: #b42318;        /* errors, destructive buttons */
+  --color-danger-soft: #fde8e6;
+  --color-warning: #8a4b0b;       /* "check this" notes, e.g. uncertain imported times */
+  --color-warning-soft: #fdf0d5;
+  --color-success: #1f7a3a;       /* success messages, "both free" times */
+  --color-success-soft: #e2f3e6;
+
+  /* Shapes */
+  --radius-frame: 22px;           /* outer frame of cards and panels */
+  --radius-inner: 16px;           /* the card inside a frame */
+
+  /* Type */
   --font-sans: ui-rounded, "SF Pro Rounded", "Nunito", "Segoe UI", system-ui, sans-serif;
 }
 
 body {
-  background: var(--color-ice);
-  color: var(--color-bark);
+  background: var(--color-sand);
+  color: var(--color-pine);
 }
 
-/* Thin, on-brand scrollbars for the sideways post rows. */
+/* Thin, on-brand scrollbars for sideways rows. */
 .scroll-row {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-ember) transparent;
+  scrollbar-color: var(--color-forest) transparent;
 }
 
 /* Visible keyboard focus everywhere. */
 :focus-visible {
-  outline: 3px solid var(--color-ember);
+  outline: 3px solid var(--color-forest);
   outline-offset: 2px;
 }

@@ -10,7 +10,7 @@ import { EventForm } from "@/components/CreateForms";
 import Dialog from "@/components/Dialog";
 import { AvailabilityGrid } from "@/components/ProfileInputs";
 import { Empty, ErrorBox, Loading } from "@/components/States";
-import { Button, DarkPanel, DemoBadge, OrangeCard, inputClass } from "@/components/ui";
+import { Button, DarkPanel, DemoBadge, FrameCard, inputClass } from "@/components/ui";
 import { api } from "@/lib/api";
 import { useMe } from "@/lib/auth";
 import { useOptions } from "@/lib/options";
@@ -38,7 +38,7 @@ function RsvpButton({ event, onChange }: { event: FriendEvent; onChange: (e: Fri
       <Button onClick={toggle} disabled={busy} variant={event.is_going ? "light" : "dark"} aria-pressed={event.is_going}>
         {busy ? "…" : event.is_going ? "Going ✓ · Cancel RSVP" : "I'm going"}
       </Button>
-      {error && <p role="alert" className="text-sm font-medium text-[#a32a00]">{error}</p>}
+      {error && <p role="alert" className="text-sm font-medium text-danger">{error}</p>}
     </div>
   );
 }
@@ -66,23 +66,23 @@ function Calendar({ events }: { events: FriendEvent[] }) {
   const onDay = (d: Date) => events.filter((e) => new Date(e.starts_at).toDateString() === d.toDateString());
 
   return (
-    <section aria-labelledby="calendar-title" className="rounded-[22px] bg-paper p-4 sm:p-6">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-bark pb-3">
+    <section aria-labelledby="calendar-title" className="rounded-frame bg-cream p-4 sm:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-pine pb-3">
         <h2 id="calendar-title" className="text-3xl tracking-[0.2em]">CALENDAR</h2>
         <div className="flex items-center gap-1">
-          <button aria-label="Previous month" onClick={() => setShown(new Date(year, month - 1, 1))} className="h-11 w-11 rounded-full text-2xl hover:bg-card">‹</button>
+          <button aria-label="Previous month" onClick={() => setShown(new Date(year, month - 1, 1))} className="h-11 w-11 rounded-full text-2xl hover:bg-sage">‹</button>
           <span className="w-36 text-center font-semibold">{shown.toLocaleDateString(undefined, { month: "long", year: "numeric" })}</span>
-          <button aria-label="Next month" onClick={() => setShown(new Date(year, month + 1, 1))} className="h-11 w-11 rounded-full text-2xl hover:bg-card">›</button>
+          <button aria-label="Next month" onClick={() => setShown(new Date(year, month + 1, 1))} className="h-11 w-11 rounded-full text-2xl hover:bg-sage">›</button>
         </div>
       </div>
       <div className="mt-2 grid grid-cols-7 text-center text-xs font-semibold" aria-hidden="true">
         {WEEKDAYS.map((d) => <div key={d} className="py-1">{d}</div>)}
       </div>
-      <div className="grid grid-cols-7 border-l-2 border-t-2 border-bark">
+      <div className="grid grid-cols-7 border-l-2 border-t-2 border-pine">
         {cells.map((date, i) => {
           const list = date ? onDay(date) : [];
           return (
-            <div key={i} className={`min-h-[64px] border-b-2 border-r-2 border-bark p-1 sm:min-h-[80px] ${date?.toDateString() === today ? "bg-card" : ""}`}>
+            <div key={i} className={`min-h-[64px] border-b-2 border-r-2 border-pine p-1 sm:min-h-[80px] ${date?.toDateString() === today ? "bg-sage" : ""}`}>
               {date && (
                 <>
                   <p className="text-xs font-semibold">{date.getDate()}</p>
@@ -90,7 +90,7 @@ function Calendar({ events }: { events: FriendEvent[] }) {
                     {list.slice(0, 2).map((e) => (
                       <li key={e.id}>
                         <Link href={`/events?id=${e.id}`} title={`${e.title}, ${formatTime(e.starts_at)}`}
-                          className="block truncate rounded bg-bark px-1 text-[10px] leading-4 text-paper">
+                          className="block truncate rounded bg-pine px-1 text-[10px] leading-4 text-cream">
                           {e.title}
                         </Link>
                       </li>
@@ -114,7 +114,7 @@ function FriendTime() {
   const person = useApi(() => (friendId ? api.person(friendId) : Promise.resolve(null)), [friendId]);
 
   return (
-    <section aria-labelledby="friend-time-title" className="rounded-[22px] bg-ember p-5 text-paper">
+    <section aria-labelledby="friend-time-title" className="rounded-frame bg-forest p-5 text-cream">
       <h2 id="friend-time-title" className="text-2xl font-bold">View a friend&apos;s free time</h2>
       {friends.data && friends.data.friends.length === 0 ? (
         <p className="mt-2 text-xl font-bold">Add friends to compare when you&apos;re both free.</p>
@@ -129,7 +129,7 @@ function FriendTime() {
             </select>
           </label>
           {person.data && options && (
-            <div className="mt-3 rounded-xl bg-paper p-2 text-bark">
+            <div className="mt-3 rounded-xl bg-cream p-2 text-pine">
               {person.data.match.overlap.length ? (
                 <AvailabilityGrid days={options.days} slots={options.slots} value={{}} highlight={person.data.match.overlap} />
               ) : (
@@ -157,10 +157,10 @@ function EventList() {
     <div>
       <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
         <h1 className="text-3xl font-bold sm:text-4xl">Events</h1>
-        <div role="group" aria-label="Which events" className="inline-flex rounded-xl border-2 border-bark p-1">
+        <div role="group" aria-label="Which events" className="inline-flex rounded-xl border-2 border-pine p-1">
           {(["upcoming", "past"] as const).map((w) => (
             <button key={w} aria-pressed={when === w} onClick={() => setWhen(w)}
-              className={`min-h-10 rounded-lg px-4 text-sm font-semibold capitalize ${when === w ? "bg-bark text-paper" : "hover:bg-paper"}`}>
+              className={`min-h-10 rounded-lg px-4 text-sm font-semibold capitalize ${when === w ? "bg-pine text-cream" : "hover:bg-cream"}`}>
               {w}
             </button>
           ))}
@@ -178,7 +178,7 @@ function EventList() {
             {data && events.length === 0 && <p className="mt-3">No {when} events. Plan one!</p>}
             <ul className="mt-3 space-y-3">
               {events.map((e) => (
-                <li key={e.id} className="rounded-2xl bg-paper p-4 text-bark">
+                <li key={e.id} className="rounded-2xl bg-cream p-4 text-pine">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0">
                       <Link href={`/events?id=${e.id}`} className="text-lg font-bold underline-offset-4 hover:underline">{e.title}</Link>
@@ -196,10 +196,10 @@ function EventList() {
         </div>
 
         <div className="space-y-5">
-          <section aria-labelledby="timetable-title" className="rounded-[22px] bg-ember p-5 text-paper">
-            <h2 id="timetable-title" className="border-b border-paper/70 pb-2 text-3xl">Your timetable</h2>
+          <section aria-labelledby="timetable-title" className="rounded-frame bg-forest p-5 text-cream">
+            <h2 id="timetable-title" className="border-b border-cream/70 pb-2 text-3xl">Your timetable</h2>
             {options && (
-              <div className="mt-3 rounded-xl bg-paper p-2 text-bark">
+              <div className="mt-3 rounded-xl bg-cream p-2 text-pine">
                 <AvailabilityGrid days={options.days} slots={options.slots} value={me.availability} />
               </div>
             )}
@@ -207,7 +207,7 @@ function EventList() {
           </section>
           <FriendTime />
           <button onClick={() => setPlanning(true)}
-            className="w-full rounded-[18px] bg-ember px-6 py-4 text-left text-2xl font-bold tracking-wider text-paper hover:brightness-110">
+            className="w-full rounded-[18px] bg-forest px-6 py-4 text-left text-2xl font-bold tracking-wider text-cream hover:brightness-110">
             PLAN AN EVENT!
           </button>
         </div>
@@ -236,7 +236,7 @@ function EventDetail({ id }: { id: number }) {
   return (
     <div className="space-y-5">
       <Link href="/events" className="font-semibold underline">← All events</Link>
-      <OrangeCard>
+      <FrameCard>
         <div className="space-y-3 p-5 sm:p-7">
           <h1 className="text-3xl font-bold sm:text-4xl">{event.title} {event.is_demo && <DemoBadge />}</h1>
           <p className="text-lg font-semibold">
@@ -251,8 +251,8 @@ function EventDetail({ id }: { id: number }) {
           {event.description && <p className="max-w-2xl whitespace-pre-line">{event.description}</p>}
           <RsvpButton event={event} onChange={setData} />
         </div>
-      </OrangeCard>
-      <section aria-labelledby="going-title" className="rounded-2xl bg-paper p-5">
+      </FrameCard>
+      <section aria-labelledby="going-title" className="rounded-2xl bg-cream p-5">
         <h2 id="going-title" className="text-xl font-bold">{event.going_count} going</h2>
         {event.attendees?.length ? (
           <ul className="mt-3 flex flex-wrap gap-3">

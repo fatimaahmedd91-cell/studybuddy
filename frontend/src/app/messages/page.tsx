@@ -43,25 +43,25 @@ function Chat({ friendId, onSent }: { friendId: number; onSent: () => void }) {
     }
   }
 
-  if (loading) return <div className="p-6 text-paper"><Loading label="Loading messages…" /></div>;
+  if (loading) return <div className="p-6 text-cream"><Loading label="Loading messages…" /></div>;
   if (error || !data) return <div className="p-4"><ErrorBox message={error ?? "Couldn't load this chat."} onRetry={reload} /></div>;
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-3 border-b border-paper/25 pb-3">
-        <Link href="/messages" className="rounded-lg px-2 py-1 text-paper underline lg:hidden">← Back</Link>
+      <div className="flex items-center gap-3 border-b border-cream/25 pb-3">
+        <Link href="/messages" className="rounded-lg px-2 py-1 text-cream underline lg:hidden">← Back</Link>
         <Avatar person={data.friend} size="sm" />
-        <Link href={`/profile?id=${data.friend.id}`} className="font-semibold text-paper underline-offset-4 hover:underline">
+        <Link href={`/profile?id=${data.friend.id}`} className="font-semibold text-cream underline-offset-4 hover:underline">
           {data.friend.name}
         </Link>
         {data.friend.is_demo && <DemoBadge />}
       </div>
       <div className="flex-1 space-y-3 overflow-y-auto py-4" aria-live="polite" aria-label={`Messages with ${data.friend.name}`}>
-        {data.messages.length === 0 && <p className="text-center text-sm text-paper/80">No messages yet. Say hi!</p>}
+        {data.messages.length === 0 && <p className="text-center text-sm text-cream/80">No messages yet. Say hi!</p>}
         {data.messages.map((m) => (
           <div key={m.id} className={`flex ${m.from_me ? "justify-end" : "items-end gap-2"}`}>
-            {!m.from_me && <span className="h-5 w-5 shrink-0 rounded-full border-2 border-paper" aria-hidden="true" />}
-            <div className={`max-w-[78%] rounded-2xl px-4 py-2 text-bark ${m.from_me ? "bg-card" : "bg-paper"}`}>
+            {!m.from_me && <span className="h-5 w-5 shrink-0 rounded-full border-2 border-cream" aria-hidden="true" />}
+            <div className={`max-w-[78%] rounded-2xl px-4 py-2 text-pine ${m.from_me ? "bg-sage" : "bg-cream"}`}>
               <p className="whitespace-pre-wrap break-words">{m.body}</p>
               <p className="mt-0.5 text-right text-[11px] opacity-70">{m.from_me ? "You" : data.friend.name.split(" ")[0]} · {formatTime(m.created_at)}</p>
             </div>
@@ -69,13 +69,13 @@ function Chat({ friendId, onSent }: { friendId: number; onSent: () => void }) {
         ))}
         <div ref={bottom} />
       </div>
-      {sendError && <p role="alert" className="mb-2 rounded-lg bg-paper px-3 py-2 text-sm font-medium text-[#a32a00]">{sendError}</p>}
+      {sendError && <p role="alert" className="mb-2 rounded-lg bg-cream px-3 py-2 text-sm font-medium text-danger">{sendError}</p>}
       <form onSubmit={send} className="flex gap-2">
         <label htmlFor="message" className="sr-only">Message {data.friend.name}</label>
         <input id="message" value={draft} maxLength={1000} onChange={(e) => setDraft(e.target.value)}
-          placeholder={`Message ${data.friend.name.split(" ")[0]}…`} className="min-h-11 flex-1 rounded-full bg-paper px-4 text-bark" />
+          placeholder={`Message ${data.friend.name.split(" ")[0]}…`} className="min-h-11 flex-1 rounded-full bg-cream px-4 text-pine" />
         <button type="submit" aria-label="Send" disabled={sending || !draft.trim()}
-          className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-paper text-paper hover:bg-paper hover:text-bark disabled:opacity-50">
+          className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-cream text-cream hover:bg-cream hover:text-pine disabled:opacity-50">
           <SendIcon className="h-5 w-5" />
         </button>
       </form>
@@ -96,13 +96,13 @@ function MessagesContent() {
     <div>
       <h1 className="mb-4 text-3xl font-bold">Messages</h1>
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1fr_340px]">
-        <div className={`rounded-[22px] bg-ember p-2.5 sm:p-3.5 ${friendId ? "" : "hidden lg:block"}`}>
-          <div className="flex h-[min(70vh,640px)] flex-col rounded-[16px] bg-bark p-4 sm:p-6">
+        <div className={`rounded-frame bg-forest p-2.5 sm:p-3.5 ${friendId ? "" : "hidden lg:block"}`}>
+          <div className="flex h-[min(70vh,640px)] flex-col rounded-inner bg-pine p-4 sm:p-6">
             {friendId ? (
               <Chat key={friendId} friendId={friendId} onSent={conversations.reload} />
             ) : (
-              <div className="flex flex-1 flex-col items-center justify-center text-center text-paper">
-                <div className="flex h-32 w-32 items-center justify-center rounded-full border-2 border-paper">
+              <div className="flex flex-1 flex-col items-center justify-center text-center text-cream">
+                <div className="flex h-32 w-32 items-center justify-center rounded-full border-2 border-cream">
                   <SendIcon className="h-14 w-14" />
                 </div>
                 <p className="mt-5 text-3xl tracking-wide">Current Chat</p>
@@ -112,9 +112,9 @@ function MessagesContent() {
           </div>
         </div>
 
-        <div className={`rounded-[22px] bg-ember p-2.5 sm:p-3.5 ${friendId ? "hidden lg:block" : ""}`}>
-          <div className="flex h-full max-h-[min(70vh,640px)] flex-col rounded-[16px] bg-card p-4">
-            <label className="flex items-center gap-2 rounded-full border-2 border-bark px-4">
+        <div className={`rounded-frame bg-forest p-2.5 sm:p-3.5 ${friendId ? "hidden lg:block" : ""}`}>
+          <div className="flex h-full max-h-[min(70vh,640px)] flex-col rounded-inner bg-sage p-4">
+            <label className="flex items-center gap-2 rounded-full border-2 border-pine px-4">
               <SearchIcon className="h-4 w-4" />
               <span className="sr-only">Search friends</span>
               <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search"
@@ -134,7 +134,7 @@ function MessagesContent() {
                 <li key={c.friend.id}>
                   <button onClick={() => router.push(`/messages?with=${c.friend.id}`)}
                     aria-current={friendId === c.friend.id ? "true" : undefined}
-                    className={`flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left ${friendId === c.friend.id ? "bg-paper" : "hover:bg-paper/60"}`}>
+                    className={`flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left ${friendId === c.friend.id ? "bg-cream" : "hover:bg-cream/60"}`}>
                     <Avatar person={c.friend} size="sm" />
                     <span className="min-w-0 flex-1">
                       <span className="block font-semibold">{c.friend.name}</span>
@@ -143,7 +143,7 @@ function MessagesContent() {
                       </span>
                     </span>
                     {c.unread > 0 && (
-                      <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-ember px-1.5 text-xs font-bold text-paper"
+                      <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-forest px-1.5 text-xs font-bold text-cream"
                         aria-label={`${c.unread} unread`}>
                         {c.unread}
                       </span>

@@ -1,4 +1,5 @@
-// Every call to the Python backend goes through this file. All addresses start with /api/.
+// Every call to the Python backend goes through this file (or a feature file next to it, like
+// lib/memories.ts, that uses the get/send helpers exported below). All addresses start with /api/.
 import type {
   Conversation,
   FriendEvent,
@@ -8,10 +9,13 @@ import type {
   Health,
   Insight,
   Message,
+  MiniProfile,
   Notification,
   Options,
   OwnProfile,
   Person,
+  PrivacyRequest,
+  ReportTarget,
   ScreenTime,
 } from "./types";
 
@@ -59,7 +63,7 @@ export function setUnauthorizedHandler(handler: (() => void) | null) {
   onUnauthorized = handler;
 }
 
-async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+export async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = getToken();
   let res: Response;
   try {
@@ -82,11 +86,11 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   return body as T;
 }
 
-const get = <T>(path: string) => request<T>(path);
-const send = <T>(method: string, path: string, body?: unknown) =>
+export const get = <T>(path: string) => request<T>(path);
+export const send = <T>(method: string, path: string, body?: unknown) =>
   request<T>(path, { method, body: body === undefined ? undefined : JSON.stringify(body) });
 
-function query(params: Record<string, string | number | boolean | undefined | null>) {
+export function query(params: Record<string, string | number | boolean | undefined | null>) {
   const search = new URLSearchParams();
   for (const [key, value] of Object.entries(params)) {
     if (value !== undefined && value !== null && value !== "" && value !== false) search.set(key, String(value));
@@ -99,8 +103,9 @@ type Session = { access_token: string; user: OwnProfile };
 
 export const api = {
   // Accounts
-  signup: (email: string, password: string, name: string, confirm_age: boolean) =>
-    send<Session>("POST", "/api/auth/signup", { email, password, name, confirm_age }),
+  // accept_terms is the unticked "I am at least 18 … I agree to the Terms" checkbox.
+  signup: (email: string, password: string, name: string, accept_terms: boolean, terms_version?: string) =>
+    send<Session>("POST", "/api/auth/signup", { email, password, name, accept_terms, terms_version }),
   login: (email: string, password: string) => send<Session>("POST", "/api/auth/login", { email, password }),
   startDemo: () => send<Session>("POST", "/api/auth/demo"),
   me: () => get<OwnProfile>("/api/me"),
@@ -109,6 +114,27 @@ export const api = {
   deletePhoto: () => send<OwnProfile>("DELETE", "/api/me/photo"),
   deleteAccount: () => send<{ deleted: boolean }>("DELETE", "/api/me", { confirm: "DELETE" }),
   options: () => get<Options>("/api/options"),
+  acceptTerms: (version: string) => send<OwnProfile>("POST", "/api/me/accept-terms", { accept: true, version }),
+
+  // Settings (see backend/app/account.py)
+  changeEmail: (new_email: string, current_password: string) =>
+    send<OwnProfile>("PATCH", "/api/me/email", { new_email, current_password }),
+  changePhone: (phone: string | null) => send<OwnProfile>("PATCH", "/api/me/phone", { phone }),
+  setNotificationPrefs: (prefs: Record<string, boolean>) => send<OwnProfile>("PATCH", "/api/me/notification-prefs", prefs),
+  setConsent: (key: string, granted: boolean) => send<OwnProfile>("PUT", `/api/me/consents/${key}`, { granted }),
+  consents: () => get<{ key: string; description: string; granted: boolean }[]>("/api/me/consents"),
+  exportData: () => get<Record<string, unknown>>("/api/me/export"),
+  privacyRequests: () => get<PrivacyRequest[]>("/api/privacy-requests"),
+  createPrivacyRequest: (kind: PrivacyRequest["kind"], details: string) =>
+    send<PrivacyRequest>("POST", "/api/privacy-requests", { kind, details }),
+
+  // Safety (see backend/app/safety.py)
+  blocks: () => get<{ person: MiniProfile; blocked_at: string }[]>("/api/blocks"),
+  block: (userId: number) => send("POST", "/api/blocks", { user_id: userId }),
+  unblock: (userId: number) => send("DELETE", `/api/blocks/${userId}`),
+  reportReasons: () => get<{ value: string; label: string }[]>("/api/reports/reasons"),
+  report: (report: { target_type: ReportTarget; target_id: number; reason: string; details: string }) =>
+    send<{ id: number; status: string }>("POST", "/api/reports", report),
 
   // People and friends
   people: (filters: { university?: string; interest?: string; goal?: string; free_together?: boolean; q?: string }) =>

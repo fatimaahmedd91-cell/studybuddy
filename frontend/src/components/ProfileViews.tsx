@@ -4,7 +4,7 @@
 // Both read the same profile data, so editing your profile changes both.
 import type { PublicProfile } from "@/lib/types";
 import Avatar from "./Avatar";
-import { Chip, DemoBadge, OrangeCard } from "./ui";
+import { Chip, DemoBadge, FrameCard } from "./ui";
 
 // Stickers are picked from the person's interests. Edit this list to add more.
 const STICKERS: Record<string, string> = {
@@ -38,7 +38,7 @@ export function ProfileInfo({
 }) {
   const shared = new Set(sharedInterests.map((i) => i.toLowerCase()));
   return (
-    <OrangeCard>
+    <FrameCard>
       <div className="space-y-6 p-5 sm:p-8">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:gap-10">
           <Avatar person={person} size="xl" />
@@ -84,14 +84,14 @@ export function ProfileInfo({
           {sharedInterests.length > 0 && <p className="mt-2 text-xs opacity-75">✓ = an interest you share</p>}
         </section>
       </div>
-    </OrangeCard>
+    </FrameCard>
   );
 }
 
 export function ProfileExpressive({ person, actions }: { person: PublicProfile; actions?: React.ReactNode }) {
   const stickers = person.stickers ? stickersFor(person) : [];
   return (
-    <OrangeCard inner="bg-paper">
+    <FrameCard inner="bg-cream">
       <div className="flex flex-col items-center px-5 pb-8 pt-10 text-center sm:px-10">
         {/* Photo with stickers on a ring around it. The stickers are decoration only. */}
         <div className="relative p-8 sm:p-12">
@@ -102,7 +102,7 @@ export function ProfileExpressive({ person, actions }: { person: PublicProfile; 
               <span
                 key={sticker}
                 aria-hidden="true"
-                className="pointer-events-none absolute flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-bark bg-card text-2xl shadow-md sm:h-14 sm:w-14 sm:text-3xl"
+                className="pointer-events-none absolute flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-pine bg-sage text-2xl shadow-md sm:h-14 sm:w-14 sm:text-3xl"
                 style={{ left: `${50 + 47 * Math.cos(angle)}%`, top: `${50 + 47 * Math.sin(angle)}%`, rotate: `${(i % 2 ? 1 : -1) * 10}deg` }}
               >
                 {sticker}
@@ -116,7 +116,7 @@ export function ProfileExpressive({ person, actions }: { person: PublicProfile; 
         </div>
         {subtitle(person) && <p className="mt-2 text-xl">{subtitle(person)}</p>}
         {person.hook && (
-          <p className="mt-5 max-w-xl rounded-2xl bg-ember px-6 py-4 text-2xl font-bold text-paper sm:text-3xl">
+          <p className="mt-5 max-w-xl rounded-2xl bg-forest px-6 py-4 text-2xl font-bold text-cream sm:text-3xl">
             &ldquo;{person.hook}&rdquo;
           </p>
         )}
@@ -126,19 +126,19 @@ export function ProfileExpressive({ person, actions }: { person: PublicProfile; 
         </div>
         {actions && <div className="mt-6 flex flex-wrap justify-center gap-2">{actions}</div>}
       </div>
-    </OrangeCard>
+    </FrameCard>
   );
 }
 
 export function ViewToggle({ view, onChange }: { view: "info" | "expressive"; onChange: (v: "info" | "expressive") => void }) {
   return (
-    <div role="group" aria-label="Profile view" className="inline-flex rounded-xl border-2 border-bark p-1">
+    <div role="group" aria-label="Profile view" className="inline-flex rounded-xl border-2 border-pine p-1">
       {(["info", "expressive"] as const).map((v) => (
         <button
           key={v}
           aria-pressed={view === v}
           onClick={() => onChange(v)}
-          className={`min-h-10 rounded-lg px-4 text-sm font-semibold ${view === v ? "bg-bark text-paper" : "hover:bg-paper"}`}
+          className={`min-h-10 rounded-lg px-4 text-sm font-semibold ${view === v ? "bg-pine text-cream" : "hover:bg-cream"}`}
         >
           {v === "info" ? "Info view" : "Expressive view"}
         </button>

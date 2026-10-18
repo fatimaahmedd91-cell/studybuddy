@@ -4,12 +4,12 @@ import { AuthProvider } from "@/lib/auth";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "FriendFinder",
-  description: "Find platonic friends, study buddies, groups and events on campus who share your interests and free time.",
+  title: "Meerkat",
+  description: "Finding your mob shouldn't be up to chance. Meerkat helps adults find platonic friends, groups and events through shared interests and free time.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#401800",
+  themeColor: "#1f3a2b",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

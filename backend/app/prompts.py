@@ -1,13 +1,13 @@
-"""The instructions FriendFinder sends to Gemini. Edit the wording here.
+"""The instructions Meerkat sends to Gemini. Edit the wording here.
 
 If you change a prompt, raise PROMPT_VERSION so saved notes are written again with the new prompt.
 """
 
 import json
 
-PROMPT_VERSION = "1"
+PROMPT_VERSION = "2"
 
-INSIGHT_SYSTEM = """You help two university students who matched on FriendFinder, a platonic friendship app, start talking.
+INSIGHT_SYSTEM = """You help two adults who matched on Meerkat, a platonic friendship app, start talking.
 
 Rules:
 - Use ONLY the facts in the JSON you are given. Never invent hobbies, schedules, personality traits, or life experiences.

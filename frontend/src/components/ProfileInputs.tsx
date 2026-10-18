@@ -39,7 +39,7 @@ export function ChipPicker({
             <button
               type="button"
               onClick={() => onChange(values.filter((v) => v !== value))}
-              className="inline-flex min-h-9 items-center gap-1 rounded-full bg-bark px-3 text-sm font-semibold text-paper"
+              className="inline-flex min-h-9 items-center gap-1 rounded-full bg-pine px-3 text-sm font-semibold text-cream"
               aria-label={`Remove ${value}`}
             >
               {value} <span aria-hidden="true">×</span>
@@ -67,7 +67,7 @@ export function ChipPicker({
         <button
           type="button"
           onClick={() => add(draft)}
-          className="min-h-11 rounded-xl border-2 border-bark px-4 font-semibold hover:bg-paper"
+          className="min-h-11 rounded-xl border-2 border-pine px-4 font-semibold hover:bg-cream"
         >
           Add
         </button>
@@ -86,7 +86,7 @@ export function ChipPicker({
               key={s}
               type="button"
               onClick={() => add(s)}
-              className="min-h-8 rounded-full border border-bark/40 px-2.5 text-xs hover:bg-paper"
+              className="min-h-8 rounded-full border border-pine/40 px-2.5 text-xs hover:bg-cream"
             >
               + {s}
             </button>
@@ -120,7 +120,7 @@ export function ToggleChips({
             aria-pressed={on}
             onClick={() => onChange(on ? values.filter((v) => v !== option) : [...values, option])}
             className={`min-h-11 rounded-full border-2 px-4 text-sm font-semibold ${
-              on ? "border-bark bg-bark text-paper" : "border-bark/40 bg-paper hover:border-bark"
+              on ? "border-pine bg-pine text-cream" : "border-pine/40 bg-cream hover:border-pine"
             }`}
           >
             {on ? "✓ " : ""}
@@ -181,10 +181,10 @@ export function AvailabilityGrid({
                 const free = (value[day] ?? []).includes(slot);
                 const both = isHighlighted(day, slot);
                 const style = both
-                  ? "bg-[#1c7c3a] text-white"
+                  ? "bg-success text-white"
                   : free
-                    ? "bg-bark text-paper"
-                    : "bg-paper/70 text-bark/40";
+                    ? "bg-pine text-cream"
+                    : "bg-cream/70 text-pine/40";
                 const label = both ? "Both" : free ? "Free" : "–";
                 return (
                   <td key={day} className="p-0">

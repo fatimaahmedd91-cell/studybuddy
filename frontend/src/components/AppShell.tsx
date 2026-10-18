@@ -1,30 +1,53 @@
 "use client";
 
 // The frame around every page.
+//   Legal pages (/terms, /privacy, /guidelines): open to everyone, no menus.
 //   Public pages (/, /login, /signup): no menus.
+//   Logged in but the Terms changed (or were never accepted): the TermsGate screen first.
 //   Onboarding: header only.
 //   Everything else: header (logo, +, bell), the sidebar on wide screens, a tab bar on phones.
 // It also sends logged-out visitors to /login and unfinished profiles to /onboarding.
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+import { BRAND } from "@/lib/brand";
+import { MeerkatMark } from "./Brand";
 import { CreateMenu, NotificationBell } from "./HeaderActions";
-import { FeedIcon, FriendsIcon, GroupsIcon, HourglassIcon, MenuIcon, PartyIcon, ProfileIcon, SettingsIcon } from "./Icons";
+import {
+  FeedIcon,
+  FriendsIcon,
+  GroupsIcon,
+  HourglassIcon,
+  MemoriesIcon,
+  MenuIcon,
+  MoreIcon,
+  PartyIcon,
+  PlanIcon,
+  ProfileIcon,
+  SettingsIcon,
+  ShieldIcon,
+} from "./Icons";
 import { Loading } from "./States";
+import TermsGate from "./TermsGate";
 
-// The sidebar. Change the order or labels here.
+// The navigation. Change the order or labels here.
+// "phone: true" items are in the phone tab bar; the rest are under "More" on phones.
 const NAV = [
-  { href: "/feed", label: "Feed", Icon: FeedIcon },
-  { href: "/profile", label: "Profile", Icon: ProfileIcon },
-  { href: "/groups", label: "Groups", Icon: GroupsIcon },
-  { href: "/screen-time", label: "Screen Time", Icon: HourglassIcon },
-  { href: "/events", label: "Events", Icon: PartyIcon },
-  { href: "/friends", label: "Friends", Icon: FriendsIcon },
+  { href: "/feed", label: "Discover", Icon: FeedIcon, phone: true },
+  { href: "/memories", label: "Memories", Icon: MemoriesIcon, phone: true },
+  { href: "/plan", label: "Plan", Icon: PlanIcon, phone: true },
+  { href: "/friends", label: "Friends", Icon: FriendsIcon, phone: true },
+  { href: "/profile", label: "Profile", Icon: ProfileIcon, phone: false },
+  { href: "/groups", label: "Groups", Icon: GroupsIcon, phone: false },
+  { href: "/events", label: "Events", Icon: PartyIcon, phone: false },
+  { href: "/screen-time", label: "Screen Time", Icon: HourglassIcon, phone: false },
 ];
 
 const PUBLIC_PAGES = ["/", "/login", "/signup"];
+// Readable by anyone, logged in or not.
+export const OPEN_PAGES = ["/terms", "/privacy", "/guidelines"];
 
 function isActive(pathname: string, href: string) {
   if (href === "/friends") return pathname === "/friends" || pathname === "/messages";
@@ -51,13 +74,11 @@ function useHeartbeat() {
   }, []);
 }
 
-function Logo() {
+export function Logo({ href = "/feed" }: { href?: string }) {
   return (
-    <Link href="/feed" className="flex min-h-11 items-center gap-2 text-xl font-extrabold tracking-wide sm:text-2xl">
-      <span aria-hidden="true" className="flex h-9 w-9 items-center justify-center rounded-full bg-bark text-lg text-paper">
-        ff
-      </span>
-      FriendFinder
+    <Link href={href} className="flex min-h-11 items-center gap-2 text-xl font-extrabold tracking-wide sm:text-2xl">
+      <MeerkatMark className="h-9 w-9" />
+      {BRAND.name}
     </Link>
   );
 }
@@ -65,11 +86,11 @@ function Logo() {
 function Header({ withActions }: { withActions: boolean }) {
   const { me } = useAuth();
   return (
-    <header className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between gap-2 bg-paper px-3 shadow-sm sm:px-5">
+    <header className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between gap-2 bg-cream px-3 shadow-sm sm:px-5">
       <div className="flex min-w-0 items-center gap-2">
         <Logo />
         {me?.is_demo && (
-          <span className="hidden rounded-full border-2 border-bark bg-ice px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider sm:inline"
+          <span className="hidden rounded-full border-2 border-pine bg-sage px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider sm:inline"
             title="This is a demo account with fictional data">
             Demo account
           </span>
@@ -79,7 +100,7 @@ function Header({ withActions }: { withActions: boolean }) {
         <div className="flex items-center gap-1">
           <CreateMenu />
           <NotificationBell />
-          <Link href="/settings" aria-label="Settings" className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-card md:hidden">
+          <Link href="/settings" aria-label="Settings" className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-sage md:hidden">
             <SettingsIcon className="h-6 w-6" />
           </Link>
         </div>
@@ -90,13 +111,14 @@ function Header({ withActions }: { withActions: boolean }) {
 
 function Sidebar() {
   const pathname = usePathname();
+  const { me } = useAuth();
   const item = (active: boolean) =>
-    `flex h-[70px] w-[70px] flex-col items-center justify-center gap-1 rounded-full border-2 text-paper transition ${
-      active ? "border-ember bg-paper/10" : "border-transparent hover:border-ember/60"
+    `flex h-[66px] w-[70px] flex-col items-center justify-center gap-1 rounded-full border-2 text-cream transition ${
+      active ? "border-sage-strong bg-cream/10" : "border-transparent hover:border-sage-strong/60"
     }`;
   return (
-    <nav aria-label="Main" className="fixed bottom-0 left-0 top-16 z-30 hidden w-[92px] flex-col items-center bg-bark py-4 md:flex">
-      <ul className="flex flex-1 flex-col items-center gap-2 overflow-y-auto">
+    <nav aria-label="Main" className="fixed bottom-0 left-0 top-16 z-30 hidden w-[92px] flex-col items-center bg-pine py-3 md:flex">
+      <ul className="flex flex-1 flex-col items-center gap-1 overflow-y-auto">
         {NAV.map(({ href, label, Icon }) => (
           <li key={href}>
             <Link href={href} aria-current={isActive(pathname, href) ? "page" : undefined} className={item(isActive(pathname, href))}>
@@ -105,6 +127,14 @@ function Sidebar() {
             </Link>
           </li>
         ))}
+        {me && me.role !== "member" && (
+          <li>
+            <Link href="/moderation" aria-current={pathname === "/moderation" ? "page" : undefined} className={item(pathname === "/moderation")}>
+              <ShieldIcon className="h-6 w-6" />
+              <span className="text-center text-[11px] leading-tight">Moderation</span>
+            </Link>
+          </li>
+        )}
       </ul>
       <Link href="/settings" aria-label="Settings" aria-current={pathname === "/settings" ? "page" : undefined}
         className={item(pathname === "/settings")}>
@@ -116,21 +146,67 @@ function Sidebar() {
 
 function MobileNav() {
   const pathname = usePathname();
+  const { me } = useAuth();
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreRef = useRef<HTMLDivElement>(null);
+  const extra = NAV.filter((n) => !n.phone);
+  const moreActive = extra.some((n) => isActive(pathname, n.href)) || pathname === "/moderation";
+
+  // Close the "More" menu when the page changes or when tapping outside it.
+  useEffect(() => setMoreOpen(false), [pathname]);
+  useEffect(() => {
+    if (!moreOpen) return;
+    const close = (e: PointerEvent) => {
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) setMoreOpen(false);
+    };
+    window.addEventListener("pointerdown", close);
+    return () => window.removeEventListener("pointerdown", close);
+  }, [moreOpen]);
+
+  const tab = (active: boolean) =>
+    `flex min-h-14 w-full flex-col items-center justify-center gap-0.5 text-cream ${active ? "bg-forest" : ""}`;
   return (
-    <nav aria-label="Main" className="fixed inset-x-0 bottom-0 z-30 border-t-2 border-ember bg-bark md:hidden">
-      <ul className="grid grid-cols-6">
-        {NAV.map(({ href, label, Icon }) => {
+    <nav aria-label="Main" className="fixed inset-x-0 bottom-0 z-30 border-t-2 border-forest bg-pine md:hidden">
+      <ul className="grid grid-cols-5">
+        {NAV.filter((n) => n.phone).map(({ href, label, Icon }) => {
           const active = isActive(pathname, href);
           return (
             <li key={href}>
-              <Link href={href} aria-current={active ? "page" : undefined}
-                className={`flex min-h-14 flex-col items-center justify-center gap-0.5 text-paper ${active ? "bg-ember/30" : ""}`}>
+              <Link href={href} aria-current={active ? "page" : undefined} className={tab(active)}>
                 <Icon className="h-5 w-5" />
                 <span className="text-[10px] leading-tight">{label}</span>
               </Link>
             </li>
           );
         })}
+        <li>
+          <div ref={moreRef} className="relative">
+            <button type="button" aria-expanded={moreOpen} aria-haspopup="menu" onClick={() => setMoreOpen(!moreOpen)}
+              className={tab(moreActive)}>
+              <MoreIcon className="h-5 w-5" />
+              <span className="text-[10px] leading-tight">More</span>
+            </button>
+            {moreOpen && (
+              <ul role="menu" className="absolute bottom-full right-1 mb-2 w-52 overflow-hidden rounded-2xl border-2 border-forest bg-cream text-pine shadow-lg">
+                {extra.map(({ href, label, Icon }) => (
+                  <li key={href} role="none">
+                    <Link role="menuitem" href={href} aria-current={isActive(pathname, href) ? "page" : undefined}
+                      className="flex min-h-12 items-center gap-3 px-4 hover:bg-sage">
+                      <Icon className="h-5 w-5" /> {label}
+                    </Link>
+                  </li>
+                ))}
+                {me && me.role !== "member" && (
+                  <li role="none">
+                    <Link role="menuitem" href="/moderation" className="flex min-h-12 items-center gap-3 px-4 hover:bg-sage">
+                      <ShieldIcon className="h-5 w-5" /> Moderation
+                    </Link>
+                  </li>
+                )}
+              </ul>
+            )}
+          </div>
+        </li>
       </ul>
     </nav>
   );
@@ -148,18 +224,23 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const { status, me } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
+  const isOpen = OPEN_PAGES.includes(pathname);
   const isPublic = PUBLIC_PAGES.includes(pathname);
+  const termsOk = !me || me.terms.current;
 
   // Send people to the right place for their login state.
   useEffect(() => {
+    if (isOpen) return;
     if (status === "anonymous" && !isPublic) router.replace("/login");
-    if (status === "ready" && me) {
+    if (status === "ready" && me && termsOk) {
       if (!me.onboarded && pathname !== "/onboarding") router.replace("/onboarding");
       else if (me.onboarded && (isPublic || pathname === "/onboarding")) router.replace("/feed");
     }
-  }, [status, me, pathname, isPublic, router]);
+  }, [status, me, termsOk, pathname, isOpen, isPublic, router]);
 
+  if (isOpen) return <>{children}</>;
   if (status === "loading") return <FullPageLoading />;
+  if (status === "ready" && me && !termsOk) return <TermsGate />;
   if (isPublic) return status === "anonymous" ? <>{children}</> : <FullPageLoading />;
   if (status !== "ready" || !me) return <FullPageLoading />;
   if (!me.onboarded && pathname !== "/onboarding") return <FullPageLoading />;
@@ -170,7 +251,7 @@ function LoggedIn({ onboarding, children }: { onboarding: boolean; children: Rea
   useHeartbeat();
   return (
     <>
-      <a href="#main" className="sr-only z-50 rounded bg-bark px-4 py-2 text-paper focus:not-sr-only focus:fixed focus:left-2 focus:top-2">
+      <a href="#main" className="sr-only z-50 rounded bg-pine px-4 py-2 text-cream focus:not-sr-only focus:fixed focus:left-2 focus:top-2">
         Skip to content
       </a>
       <Header withActions={!onboarding} />

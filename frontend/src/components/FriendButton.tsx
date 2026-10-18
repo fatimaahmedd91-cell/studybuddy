@@ -79,7 +79,7 @@ export default function FriendButton({
     case "friends":
       buttons = (
         <>
-          <span className="inline-flex min-h-11 items-center rounded-xl bg-[#1c7c3a] px-4 font-semibold text-white">Friends ✓</span>
+          <span className="inline-flex min-h-11 items-center rounded-xl bg-success px-4 font-semibold text-white">Friends ✓</span>
           <ButtonLink href={`/messages?with=${personId}`} variant="outline">Message</ButtonLink>
         </>
       );
@@ -89,7 +89,7 @@ export default function FriendButton({
   return (
     <div className="flex flex-col gap-1">
       <div className="flex flex-wrap gap-2">{buttons}</div>
-      {error && <p className="text-sm font-medium text-[#a32a00]" role="alert">{error}</p>}
+      {error && <p className="text-sm font-medium text-danger" role="alert">{error}</p>}
     </div>
   );
 }

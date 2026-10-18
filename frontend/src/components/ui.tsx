@@ -1,39 +1,43 @@
 // Small building blocks used on every page, so the whole site matches the design.
-// Colours come from the tokens in src/app/globals.css (bark, ember, paper, card, ice).
+// Colours come from the tokens in src/app/globals.css (pine, forest, sage, cream, sand, danger...).
 import Link from "next/link";
 
-// The thick orange frame with a cream inside, used for most cards.
-export function OrangeCard({
+// The thick forest-green frame with a soft sage inside, used for most cards.
+export function FrameCard({
   children,
   className = "",
-  inner = "bg-card",
+  inner = "bg-sage",
 }: {
   children: React.ReactNode;
   className?: string;
   inner?: string;
 }) {
   return (
-    <div className={`rounded-[22px] bg-ember p-2.5 sm:p-3.5 ${className}`}>
-      <div className={`h-full rounded-[16px] ${inner}`}>{children}</div>
+    <div className={`rounded-frame bg-forest p-2.5 sm:p-3.5 ${className}`}>
+      <div className={`h-full rounded-inner ${inner}`}>{children}</div>
     </div>
   );
 }
 
-// A dark brown panel with cream text, like "Upcoming Events!" in the design.
+// A dark pine-green panel with cream text, like "Upcoming Events!" in the design.
 export function DarkPanel({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <section className={`rounded-[22px] bg-bark p-5 text-paper sm:p-6 ${className}`}>{children}</section>;
+  return <section className={`rounded-frame bg-pine p-5 text-cream sm:p-6 ${className}`}>{children}</section>;
 }
 
-type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "dark" | "outline" | "light" | "danger" };
-
-const VARIANTS = {
-  dark: "bg-bark text-paper hover:brightness-125",
-  outline: "border-2 border-bark text-bark hover:bg-paper",
-  light: "bg-paper text-bark hover:bg-card",
-  danger: "border-2 border-[#a32a00] text-[#a32a00] hover:bg-paper",
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: "primary" | "dark" | "outline" | "light" | "danger";
 };
 
-export function Button({ variant = "dark", className = "", children, ...props }: ButtonProps) {
+// primary: forest green, for the main action on a screen. dark: pine, for actions on light cards.
+const VARIANTS = {
+  primary: "bg-forest text-cream hover:bg-pine",
+  dark: "bg-pine text-cream hover:brightness-125",
+  outline: "border-2 border-pine text-pine hover:bg-cream",
+  light: "bg-cream text-pine hover:bg-sage",
+  danger: "border-2 border-danger text-danger hover:bg-cream",
+};
+
+export function Button({ variant = "primary", className = "", children, ...props }: ButtonProps) {
   return (
     <button
       className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2 font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${VARIANTS[variant]} ${className}`}
@@ -46,7 +50,7 @@ export function Button({ variant = "dark", className = "", children, ...props }:
 
 export function ButtonLink({
   href,
-  variant = "dark",
+  variant = "primary",
   className = "",
   children,
 }: {
@@ -89,7 +93,7 @@ export function Field({
       <div className="mt-1">{children}</div>
       {hint && !error && <p className="mt-1 text-xs opacity-75">{hint}</p>}
       {error && (
-        <p className="mt-1 text-sm font-medium text-[#a32a00]" role="alert">
+        <p className="mt-1 text-sm font-medium text-danger" role="alert">
           {error}
         </p>
       )}
@@ -98,12 +102,12 @@ export function Field({
 }
 
 export const inputClass =
-  "w-full min-h-11 rounded-xl border-2 border-bark/30 bg-paper px-3 py-2 text-bark placeholder:text-bark/50 focus:border-bark";
+  "w-full min-h-11 rounded-xl border-2 border-pine/30 bg-cream px-3 py-2 text-pine placeholder:text-pine/50 focus:border-pine";
 
 export function Chip({ children, strong = false }: { children: React.ReactNode; strong?: boolean }) {
   return (
     <span
-      className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${strong ? "bg-bark text-paper" : "bg-paper text-bark"}`}
+      className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${strong ? "bg-pine text-cream" : "bg-cream text-pine"}`}
     >
       {children}
     </span>
@@ -113,7 +117,7 @@ export function Chip({ children, strong = false }: { children: React.ReactNode; 
 export function DemoBadge() {
   return (
     <span
-      className="rounded-full border border-bark/40 bg-ice px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-bark"
+      className="rounded-full border border-pine/40 bg-sand px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-pine"
       title="Fictional demo data"
     >
       Demo

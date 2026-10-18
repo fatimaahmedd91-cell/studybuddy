@@ -8,7 +8,7 @@ import Avatar from "@/components/Avatar";
 import { EventForm, GroupForm } from "@/components/CreateForms";
 import Dialog from "@/components/Dialog";
 import { Empty, ErrorBox, Loading } from "@/components/States";
-import { Button, Chip, DemoBadge, OrangeCard, PageHeading, inputClass } from "@/components/ui";
+import { Button, Chip, DemoBadge, FrameCard, PageHeading, inputClass } from "@/components/ui";
 import { api } from "@/lib/api";
 import { formatDateTime, timeAgo } from "@/lib/time";
 import type { Group } from "@/lib/types";
@@ -37,7 +37,7 @@ function JoinButton({ group, onChange, large = false }: { group: Group; onChange
         className={large ? "min-w-40 py-3 text-2xl tracking-wider" : ""}>
         {busy ? "…" : group.is_member ? "JOINED ✓ · Leave" : "JOIN!"}
       </Button>
-      {error && <p role="alert" className="text-sm font-medium text-[#a32a00]">{error}</p>}
+      {error && <p role="alert" className="text-sm font-medium text-danger">{error}</p>}
     </div>
   );
 }
@@ -59,13 +59,13 @@ function GroupList() {
       <PageHeading title="Groups">
         <Button onClick={() => setCreating(true)}>+ Create group</Button>
       </PageHeading>
-      <div className="mb-5 flex flex-wrap items-end gap-3 rounded-2xl bg-paper p-4">
+      <div className="mb-5 flex flex-wrap items-end gap-3 rounded-2xl bg-cream p-4">
         <label className="min-w-56 flex-1 text-sm font-semibold">
           Search groups
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Name or description" className={`${inputClass} mt-1 font-normal`} />
         </label>
         <label className="flex min-h-11 items-center gap-2 text-sm font-semibold">
-          <input type="checkbox" checked={mine} onChange={(e) => setMine(e.target.checked)} className="h-5 w-5 accent-[#401800]" />
+          <input type="checkbox" checked={mine} onChange={(e) => setMine(e.target.checked)} className="h-5 w-5 accent-pine" />
           Only my groups
         </label>
       </div>
@@ -80,7 +80,7 @@ function GroupList() {
       <ul className="space-y-5">
         {data?.map((group) => (
           <li key={group.id}>
-            <OrangeCard>
+            <FrameCard>
               <div className="flex flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7">
                 <div className="min-w-0">
                   <Link href={`/groups?id=${group.id}`} className="text-2xl font-semibold tracking-wide underline-offset-4 hover:underline sm:text-3xl">
@@ -97,7 +97,7 @@ function GroupList() {
                 <JoinButton large group={group}
                   onChange={(g) => setData(data.map((x) => (x.id === g.id ? { ...x, ...g } : x)))} />
               </div>
-            </OrangeCard>
+            </FrameCard>
           </li>
         ))}
       </ul>
@@ -134,7 +134,7 @@ function Discussion({ groupId }: { groupId: number }) {
   }
 
   return (
-    <section aria-labelledby="discussion-title" className="rounded-[22px] bg-bark p-5 text-paper sm:p-6">
+    <section aria-labelledby="discussion-title" className="rounded-frame bg-pine p-5 text-cream sm:p-6">
       <h2 id="discussion-title" className="text-2xl font-bold">Discussion</h2>
       {loading && <Loading />}
       {error && <ErrorBox message={error} onRetry={reload} />}
@@ -143,7 +143,7 @@ function Discussion({ groupId }: { groupId: number }) {
         {data?.map((p) => (
           <li key={p.id} className="flex gap-3">
             <Avatar person={p.author} size="sm" />
-            <div className="min-w-0 rounded-2xl bg-paper px-4 py-2 text-bark">
+            <div className="min-w-0 rounded-2xl bg-cream px-4 py-2 text-pine">
               <p className="text-xs font-semibold">{p.mine ? "You" : p.author.name} · {timeAgo(p.created_at)}</p>
               <p className="whitespace-pre-wrap break-words">{p.body}</p>
             </div>
@@ -153,10 +153,10 @@ function Discussion({ groupId }: { groupId: number }) {
       <form onSubmit={post} className="mt-4 flex gap-2">
         <label htmlFor="post" className="sr-only">Write a post</label>
         <input id="post" value={body} maxLength={1000} onChange={(e) => setBody(e.target.value)}
-          placeholder="Write something to the group…" className="min-h-11 flex-1 rounded-full bg-paper px-4 text-bark" />
+          placeholder="Write something to the group…" className="min-h-11 flex-1 rounded-full bg-cream px-4 text-pine" />
         <Button type="submit" variant="light" disabled={busy || !body.trim()}>{busy ? "Posting…" : "Post"}</Button>
       </form>
-      {sendError && <p role="alert" className="mt-2 rounded-lg bg-paper px-3 py-2 text-sm font-medium text-[#a32a00]">{sendError}</p>}
+      {sendError && <p role="alert" className="mt-2 rounded-lg bg-cream px-3 py-2 text-sm font-medium text-danger">{sendError}</p>}
     </section>
   );
 }
@@ -179,7 +179,7 @@ function GroupDetail({ id }: { id: number }) {
   return (
     <div className="space-y-5">
       <Link href="/groups" className="font-semibold underline">← All groups</Link>
-      <OrangeCard>
+      <FrameCard>
         <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-start sm:justify-between sm:p-7">
           <div className="min-w-0">
             <h1 className="text-3xl font-bold sm:text-4xl">{group.name} {group.is_demo && <DemoBadge />}</h1>
@@ -189,11 +189,11 @@ function GroupDetail({ id }: { id: number }) {
           </div>
           <JoinButton large group={group} onChange={(g) => setData(g)} />
         </div>
-      </OrangeCard>
+      </FrameCard>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1fr_1.4fr]">
         <div className="space-y-5">
-          <section aria-labelledby="members-title" className="rounded-2xl bg-paper p-5">
+          <section aria-labelledby="members-title" className="rounded-2xl bg-cream p-5">
             <h2 id="members-title" className="text-xl font-bold">Members</h2>
             <ul className="mt-3 flex flex-wrap gap-3">
               {group.members?.map((m) => (
@@ -206,13 +206,13 @@ function GroupDetail({ id }: { id: number }) {
               ))}
             </ul>
           </section>
-          <section aria-labelledby="events-title" className="rounded-2xl bg-paper p-5">
+          <section aria-labelledby="events-title" className="rounded-2xl bg-cream p-5">
             <h2 id="events-title" className="text-xl font-bold">Upcoming events</h2>
             {group.events?.length ? (
               <ul className="mt-2 space-y-2">
                 {group.events.map((e) => (
                   <li key={e.id}>
-                    <Link href={`/events?id=${e.id}`} className="block rounded-xl bg-card px-3 py-2 hover:brightness-95">
+                    <Link href={`/events?id=${e.id}`} className="block rounded-xl bg-sage px-3 py-2 hover:brightness-95">
                       <span className="font-semibold">{e.title}</span>
                       <span className="block text-sm">{formatDateTime(e.starts_at)} · {e.going_count} going</span>
                     </Link>

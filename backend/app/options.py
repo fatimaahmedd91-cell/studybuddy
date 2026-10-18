@@ -3,6 +3,8 @@
 The website reads these from GET /api/options, so changing a list here changes the sign-up form too.
 """
 
+from app.config import MIN_AGE  # noqa: F401  (the minimum age is set in config.py, default 18)
+
 # What someone is looking for in a friend. People pick from this list, so matching can compare them.
 FRIENDSHIP_GOALS = [
     "Study buddy",
@@ -31,4 +33,3 @@ SUGGESTED_UNIVERSITIES = [
 DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 SLOTS = ["morning", "afternoon", "evening"]
 
-MIN_AGE = 16

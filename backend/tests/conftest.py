@@ -18,10 +18,6 @@ from app import config, db, main, ratelimit
 TEST_DB_URL = os.getenv("TEST_DATABASE_URL") or config.DATABASE_URL
 REAL_GEMINI_KEY = config.GEMINI_API_KEY  # kept for the one test that calls the real Gemini
 
-ALL_TABLES = (
-    "users, photos, friendships, messages, groups, group_members, group_posts, events, event_rsvps, "
-    "notifications, app_time, match_insights"
-)
 
 
 @pytest.fixture(autouse=True)
@@ -64,7 +60,12 @@ def database(test_database_url, monkeypatch):
     monkeypatch.setattr(config, "DATABASE_URL", test_database_url)
     db.run_migrations()
     with db.get_connection() as conn, conn.cursor() as cur:
-        cur.execute(f"TRUNCATE {ALL_TABLES} RESTART IDENTITY CASCADE")
+        # Empty every table in the private schema (except the record of which migrations ran).
+        cur.execute(
+            "SELECT tablename FROM pg_tables WHERE schemaname = current_schema() AND tablename <> 'schema_migrations'"
+        )
+        tables = ", ".join(f'"{row["tablename"]}"' for row in cur.fetchall())
+        cur.execute(f"TRUNCATE {tables} RESTART IDENTITY CASCADE")
 
 
 @pytest.fixture

@@ -1,4 +1,4 @@
-"""FriendFinder backend.
+"""Meerkat backend (the code still calls itself "friendfinder" in a few internal names).
 
 Start it from the backend folder with:
     uvicorn app.main:app --reload
@@ -14,7 +14,10 @@ import psycopg2
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
-from app import ai, auth, demo, events, friends, groups, messages, notifications, people, profiles, screen_time, website
+from app import (
+    account, ai, auth, demo, events, friends, groups, messages, notifications, people, profiles, safety, screen_time,
+    website,
+)
 from app import config
 from app.db import DatabaseNotConfigured, get_connection, run_migrations, timescale_in_use
 from app.health import check_database, check_gemini
@@ -36,9 +39,11 @@ async def lifespan(app):
     yield
 
 
-app = FastAPI(title="FriendFinder API", lifespan=lifespan)
+app = FastAPI(title="Meerkat API", lifespan=lifespan)
 
-for feature in (auth, demo, profiles, people, friends, messages, groups, events, notifications, screen_time, ai):
+for feature in (
+    auth, demo, profiles, account, people, friends, messages, groups, events, notifications, screen_time, ai, safety,
+):
     app.include_router(feature.router)
 
 

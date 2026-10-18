@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import Avatar from "@/components/Avatar";
 import FriendButton from "@/components/FriendButton";
 import { Empty, ErrorBox, Loading } from "@/components/States";
-import { Button, Chip, DemoBadge, OrangeCard, PageHeading, inputClass } from "@/components/ui";
+import { Button, Chip, DemoBadge, FrameCard, PageHeading, inputClass } from "@/components/ui";
 import { api } from "@/lib/api";
 import { useMe } from "@/lib/auth";
 import { useOptions } from "@/lib/options";
@@ -19,7 +19,7 @@ const NO_FILTERS: Filters = { q: "", university: "", interest: "", goal: "", fre
 function PersonCard({ person, onRelationship }: { person: Person; onRelationship: (p: Person) => void }) {
   const shared = new Set(person.match.shared_interests.map((i) => i.toLowerCase()));
   return (
-    <OrangeCard>
+    <FrameCard>
       <article className="flex flex-col gap-5 p-4 sm:p-5 md:flex-row md:items-start">
         <Link href={`/profile?id=${person.id}`} className="flex shrink-0 flex-col items-center gap-2 text-center md:w-52">
           <Avatar person={person} size="lg" />
@@ -31,7 +31,7 @@ function PersonCard({ person, onRelationship }: { person: Person; onRelationship
         </Link>
         <div className="min-w-0 flex-1 space-y-3">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="rounded-full bg-bark px-3 py-1 text-lg font-bold text-paper">{person.match.score}% match</span>
+            <span className="rounded-full bg-pine px-3 py-1 text-lg font-bold text-cream">{person.match.score}% match</span>
             {person.hook && <span className="italic">&ldquo;{person.hook}&rdquo;</span>}
           </div>
           {person.match.reasons.length > 0 ? (
@@ -47,13 +47,13 @@ function PersonCard({ person, onRelationship }: { person: Person; onRelationship
           <div className="flex flex-wrap items-start gap-2 pt-1">
             <FriendButton compact personId={person.id} personName={person.name} relationship={person.relationship}
               onChange={(relationship) => onRelationship({ ...person, relationship })} />
-            <Link href={`/profile?id=${person.id}`} className="inline-flex min-h-11 items-center rounded-xl border-2 border-bark px-4 font-semibold hover:bg-paper">
+            <Link href={`/profile?id=${person.id}`} className="inline-flex min-h-11 items-center rounded-xl border-2 border-pine px-4 font-semibold hover:bg-cream">
               View profile
             </Link>
           </div>
         </div>
       </article>
-    </OrangeCard>
+    </FrameCard>
   );
 }
 
@@ -80,7 +80,7 @@ export default function FeedPage() {
   return (
     <div>
       <PageHeading title="Discover" />
-      <form className="mb-6 grid gap-3 rounded-2xl bg-paper p-4 sm:grid-cols-2 lg:grid-cols-5" onSubmit={(e) => e.preventDefault()}
+      <form className="mb-6 grid gap-3 rounded-2xl bg-cream p-4 sm:grid-cols-2 lg:grid-cols-5" onSubmit={(e) => e.preventDefault()}
         aria-label="Filter people">
         <label className="text-sm font-semibold lg:col-span-1">
           Name
@@ -111,7 +111,7 @@ export default function FeedPage() {
         <div className="flex flex-col justify-end gap-2">
           <label className="flex min-h-11 items-center gap-2 text-sm font-semibold">
             <input type="checkbox" checked={filters.free_together}
-              onChange={(e) => setFilters({ ...filters, free_together: e.target.checked })} className="h-5 w-5 accent-[#401800]" />
+              onChange={(e) => setFilters({ ...filters, free_together: e.target.checked })} className="h-5 w-5 accent-pine" />
             Free when I&apos;m free
           </label>
           {active && (
