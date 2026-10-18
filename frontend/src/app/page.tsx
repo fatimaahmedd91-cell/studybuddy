@@ -11,9 +11,9 @@ import { useAuth } from "@/lib/auth";
 import { BRAND } from "@/lib/brand";
 
 const FEATURES = [
-  ["Friends, not dates", "Match on shared interests, friendship goals, your campus, and when you're both free."],
-  ["Plans that fit", "Find times that really work for everyone, without anyone sharing their private schedule."],
-  ["Memories together", "Share moments with your mob, with you in control of who sees them."],
+  ["Friends, not dates", "Match on what you're into, what kind of friend you want, and when you're actually free."],
+  ["Plans that fit", "Find a time that works for everyone. Your classes and shifts stay private."],
+  ["Memories together", "Post the moments with your mob. You choose who sees them."],
 ];
 
 export default function Landing() {
@@ -55,15 +55,13 @@ export default function Landing() {
           <div className="space-y-3 p-6">
             <h2 className="text-2xl font-bold">Just looking?</h2>
             <p>
-              Try {BRAND.name} with a <b>demo account</b>: a ready-made profile, fictional people, groups and events.
-              No email or personal details needed.
+              Poke around a <b>demo account</b> with made-up people, groups and events. No sign-up needed.
             </p>
             <Button onClick={tryDemo} disabled={busy} className="w-full text-lg">
               {busy ? "Setting up your demo…" : "Try the demo"}
             </Button>
             <p className="text-xs opacity-75">
-              Demo accounts are temporary and clearly marked. Everyone in the demo is made up. You&apos;ll be asked to
-              accept the Terms first.
+              Demo accounts are temporary, and everyone in them is fictional. You&apos;ll accept the Terms first.
             </p>
             {error && <ErrorBox message={error} />}
           </div>
