@@ -24,6 +24,7 @@ import hmac
 import logging
 import secrets
 import smtplib
+import ssl
 from datetime import datetime, timezone
 from email.message import EmailMessage
 
@@ -77,6 +78,12 @@ class SendFailed(Exception):
     pass
 
 
+def tls_context():
+    """Encryption settings for the SMTP connection: checks the server's certificate and name.
+    (smtplib's own default doesn't check them, which would let someone in between read the codes.)"""
+    return ssl.create_default_context()
+
+
 def send_email(to, subject, body):
     """Sends a plain-text email through the configured SMTP account."""
     message = EmailMessage()
@@ -86,10 +93,10 @@ def send_email(to, subject, body):
     message.set_content(body)
     try:
         if config.SMTP_PORT == 465:
-            server = smtplib.SMTP_SSL(config.SMTP_HOST, config.SMTP_PORT, timeout=15)
+            server = smtplib.SMTP_SSL(config.SMTP_HOST, config.SMTP_PORT, timeout=15, context=tls_context())
         else:
             server = smtplib.SMTP(config.SMTP_HOST, config.SMTP_PORT, timeout=15)
-            server.starttls()
+            server.starttls(context=tls_context())
         with server:
             if config.SMTP_USER:
                 server.login(config.SMTP_USER, config.SMTP_PASSWORD)
