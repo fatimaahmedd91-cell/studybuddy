@@ -225,6 +225,7 @@ await check(`9. Match note appears${EXPECT_GEMINI ? " and is written by Gemini" 
 
 // ---------- 6. Groups ----------
 const groupName = `Chess Club ${run}`;
+let groupUrl = "";
 await check("6. A creates a group from the + menu", async () => {
   await pa.getByRole("button", { name: "Create", exact: true }).click();
   await pa.getByRole("menuitem", { name: /Create a group/ }).click();
@@ -232,6 +233,7 @@ await check("6. A creates a group from the + menu", async () => {
   await pa.getByRole("button", { name: "Create group" }).click();
   await pa.getByRole("heading", { name: groupName }).waitFor();
   await pa.getByText("1 member").first().waitFor();
+  groupUrl = pa.url();
 });
 await check("6b. B joins the group and posts in the discussion", async () => {
   await pb.goto(`${BASE}/groups`);
@@ -252,6 +254,7 @@ await check("6c. B leaves the group", async () => {
 
 // ---------- 7. Events ----------
 const eventTitle = `Chess night ${run}`;
+let eventUrl = "";
 await check("11b. Event form refuses a start time in the past", async () => {
   await pa.goto(`${BASE}/events`);
   await pa.getByRole("button", { name: "PLAN AN EVENT!" }).click();
@@ -269,6 +272,7 @@ await check("7. A creates an event (in Toronto time)", async () => {
   await pa.getByRole("heading", { name: eventTitle }).waitFor();
   await pa.getByText("1 going").waitFor();
   await pa.getByText(/6:30\s?p\.?m\.?.*E[DS]T/i).first().waitFor();
+  eventUrl = pa.url();
 });
 await check("7b. B RSVPs and cancels, counts stay right", async () => {
   await pb.goto(pa.url());
@@ -288,6 +292,37 @@ await check("8. A's bell shows acceptance, group join and RSVP; mark all read", 
   await pa.getByText(`${B.name} is going to ${eventTitle}`).waitFor();
   await pa.getByRole("button", { name: "Mark all as read" }).click();
   await pa.getByRole("button", { name: "Notifications", exact: true }).waitFor();
+});
+
+// ---------- Editing and deleting ----------
+await check("7c. The organiser edits the event, then cancels it", async () => {
+  await pa.keyboard.press("Escape");
+  await pa.goto(eventUrl);
+  await pa.getByRole("button", { name: "Edit event" }).click();
+  const dialog = pa.getByRole("dialog");
+  await dialog.getByLabel("Title").fill(`${eventTitle} (moved)`);
+  await dialog.getByRole("button", { name: "Save changes" }).click();
+  await pa.getByRole("heading", { name: `${eventTitle} (moved)` }).waitFor();
+  await pa.getByRole("button", { name: "Cancel event" }).click();
+  await pa.getByRole("dialog").getByRole("button", { name: "Cancel event" }).click();
+  await pa.getByText("Event cancelled.").waitFor();
+});
+await check("6d. The owner edits the group, then deletes it only after typing its name", async () => {
+  await pa.goto(groupUrl);
+  await pa.getByRole("button", { name: "Edit group" }).click();
+  await pa.getByRole("dialog").getByLabel("Group name").fill(`${groupName} II`);
+  await pa.getByRole("dialog").getByRole("button", { name: "Save changes" }).click();
+  await pa.getByRole("heading", { name: `${groupName} II` }).waitFor();
+  await pa.getByRole("button", { name: "Delete group" }).click();
+  const confirm = pa.getByRole("dialog");
+  const forever = confirm.getByRole("button", { name: "Delete forever" });
+  expect(await forever.isDisabled(), "Delete forever works before typing the name");
+  await confirm.getByLabel("Type the group's name to confirm").fill(`${groupName} II`);
+  await forever.click();
+  await pa.waitForURL((url) => url.pathname === "/groups" && !url.searchParams.get("id"));
+  const status = await pa.evaluate(async (url) => (await fetch(`/api/groups/${new URL(url).searchParams.get("id")}`,
+    { headers: { Authorization: `Bearer ${localStorage.getItem("ff_token")}` } })).status, groupUrl);
+  expect(status === 404, `the group still exists (status ${status})`);
 });
 
 // ---------- Screen time ----------
@@ -327,6 +362,34 @@ await check("Settings: a notification switch and who sees your free times stay c
   await pa.getByRole("heading", { name: "Notifications" }).waitFor();
   expect(!(await pa.getByRole("switch", { name: /Hangout plans/ }).isChecked()), "the switch went back on");
   expect(await pa.getByRole("radio", { name: /Friends only/ }).isChecked(), "the free-times choice wasn't saved");
+});
+
+await check("Change password in Settings: this browser stays logged in, the old password stops working", async () => {
+  await pa.goto(`${BASE}/settings`);
+  await pa.getByRole("button", { name: "Change password" }).click();
+  await pa.locator("#pw-current").fill(A.password);
+  await pa.locator("#pw-new").fill("avery-password-2");
+  await pa.locator("#pw-again").fill("avery-password-2");
+  await pa.getByRole("button", { name: "Save new password" }).click();
+  await pa.getByText(/Password changed/).waitFor();
+  const old = await fetch(`${BASE}/api/auth/login`, {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: A.email, password: A.password }),
+  });
+  expect(old.status === 401, `the old password still works (status ${old.status})`);
+  A.password = "avery-password-2";
+  await pa.reload();
+  await pa.getByRole("heading", { name: "Notifications" }).waitFor();
+});
+await check("Forgot password: the page says honestly whether email reset is set up", async () => {
+  const visitor = await newPage();
+  await visitor.goto(`${BASE}/login`);
+  await visitor.getByRole("link", { name: "Forgot password?" }).click();
+  await visitor.getByRole("heading", { name: "Forgot your password?" }).waitFor();
+  await visitor.getByLabel("Email").fill(A.email);
+  await visitor.getByRole("button", { name: "Get a reset code" }).click();
+  await visitor.getByText(/isn't set up on this server|we'll send a reset code there/).waitFor();
+  await visitor.context().close();
 });
 
 // ---------- Remove friend ----------
