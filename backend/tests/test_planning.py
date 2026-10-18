@@ -227,6 +227,18 @@ def test_gemini_cant_invent_slots(database, client, monkeypatch):
     assert result["source"] == "fallback" and result["fallback_reason"] == "invalid_response"
 
 
+def test_slot_ids_in_gemini_text_become_real_times():
+    facts = {"slots": [{"id": "S1", "when": "Tue, Oct 20, 12:00 PM – 5:00 PM", "minutes": 300},
+                       {"id": "S2", "when": "Sat, Oct 24, 12:00 PM – 5:00 PM", "minutes": 300}]}
+    out = planning.PlanOut(summary="S2 is the longest window, and S1 works too.", ranked_slot_ids=["S2", "S1"],
+                           activities=[planning.PlanActivity(title="Code at a cafe", reason="You both like coding.")],
+                           plan_slot_id="S2", plan="Meet during slot S2 for coding.")
+    checked = planning.check_plan(out, facts)
+    assert checked.plan == "Meet during Sat, Oct 24, 12:00 PM – 5:00 PM for coding."
+    assert "S1" not in checked.summary and "S2" not in checked.summary
+    assert checked.ranked_slot_ids == ["S2", "S1"] and checked.plan_slot_id == "S2"
+
+
 def test_gemini_problems_fall_back(database, client, monkeypatch):
     def broken(facts):
         raise GeminiUnavailable("timeout")

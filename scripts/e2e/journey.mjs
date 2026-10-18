@@ -180,6 +180,38 @@ await check("5b. Friends can message each other", async () => {
   await pb.getByText("Hi B! Library on Tuesday?").waitFor();
 });
 
+// ---------- Memories ----------
+await check("Memories: A shares a friends-only memory and B (a friend) sees it", async () => {
+  await pa.goto(`${BASE}/memories`);
+  await pa.getByLabel("Caption").fill(`Library day ${run}`);
+  expect((await pa.getByLabel("Who can see this?").inputValue()) === "friends", "memories aren't friends-only by default");
+  await pa.getByRole("button", { name: "Post memory" }).click();
+  await pa.getByText("Posted.").waitFor();
+  await pb.goto(`${BASE}/memories`);
+  await pb.getByText(`Library day ${run}`).waitFor();
+});
+
+// ---------- Planning ----------
+await check("Plan: B adds a private class, A finds free times with B without seeing it", async () => {
+  await pb.goto(`${BASE}/plan?tab=schedule`);
+  await pb.getByRole("heading", { name: "My private schedule" }).waitFor();
+  await pb.getByRole("button", { name: "+ Add" }).click();
+  const dialog = pb.getByRole("dialog");
+  await dialog.getByLabel("Name").fill(`Secret lecture ${run}`);
+  await dialog.getByLabel("Day").selectOption({ label: "Tuesday" });
+  await dialog.getByLabel("Starts").fill("10:00");
+  await dialog.getByLabel("Ends").fill("11:00");
+  await dialog.getByRole("button", { name: "Add", exact: true }).click();
+  await pb.getByText(`Secret lecture ${run}`).waitFor();
+
+  await pa.goto(`${BASE}/plan`);
+  await pa.getByRole("checkbox", { name: new RegExp(B.name) }).check();
+  await pa.getByRole("button", { name: "Find times" }).click();
+  await pa.getByRole("heading", { name: "Times that work for everyone" }).waitFor();
+  await pa.getByText(/Public times only|Included|Not shared/).first().waitFor();
+  expect(!(await pa.content()).includes(`Secret lecture ${run}`), "A can see B's private commitment");
+});
+
 // ---------- 9. Gemini ----------
 await check(`9. Match note appears${EXPECT_GEMINI ? " and is written by Gemini" : ""}`, async () => {
   const bId = await pb.evaluate(async () => (await (await fetch("/api/me", { headers: { Authorization: `Bearer ${localStorage.getItem("ff_token")}` } })).json()).id);
@@ -262,7 +294,7 @@ await check("8. A's bell shows acceptance, group join and RSVP; mark all read", 
 await check("Screen time goal can be saved", async () => {
   await pa.keyboard.press("Escape");
   await pa.goto(`${BASE}/screen-time`);
-  await pa.getByText("What counts").waitFor();
+  await pa.getByRole("heading", { name: "What the numbers mean" }).waitFor();
   await pa.getByLabel("Minutes per day").fill("30");
   await pa.getByRole("button", { name: "Save goal" }).click();
   await pa.getByText("Goal saved.").waitFor();
@@ -281,6 +313,22 @@ await check("12. The server refuses requests without login or for other people",
   expect(JSON.stringify(result) === "[401,422,404]", `got ${result}`);
 });
 
+// ---------- Settings ----------
+await check("Settings: a notification switch and who sees your free times stay changed after a refresh", async () => {
+  await pa.goto(`${BASE}/settings`);
+  // The switch is drawn over a hidden checkbox, so click its label like a person would.
+  await pa.getByText("Hangout plans", { exact: true }).click();
+  await pa.getByText("Saved.").first().waitFor();
+  await Promise.all([
+    pa.waitForResponse((r) => r.url().endsWith("/api/me") && r.request().method() === "PATCH" && r.ok()),
+    pa.getByRole("radio", { name: /Friends only/ }).click(), // it only shows as picked once the server saved it
+  ]);
+  await pa.reload();
+  await pa.getByRole("heading", { name: "Notifications" }).waitFor();
+  expect(!(await pa.getByRole("switch", { name: /Hangout plans/ }).isChecked()), "the switch went back on");
+  expect(await pa.getByRole("radio", { name: /Friends only/ }).isChecked(), "the free-times choice wasn't saved");
+});
+
 // ---------- Remove friend ----------
 await check("Remove friend asks first, then removes", async () => {
   const bId = await pb.evaluate(async () => (await (await fetch("/api/me", { headers: { Authorization: `Bearer ${localStorage.getItem("ff_token")}` } })).json()).id);
@@ -288,6 +336,46 @@ await check("Remove friend asks first, then removes", async () => {
   await pa.getByRole("button", { name: "Remove friend" }).click();
   await pa.getByRole("dialog").getByRole("button", { name: "Remove friend" }).click();
   await pa.getByRole("button", { name: "Add friend" }).waitFor();
+});
+
+// ---------- Safety ----------
+await check("Report and block from a profile, then unblock in Settings", async () => {
+  const bId = await pb.evaluate(async () => (await (await fetch("/api/me", { headers: { Authorization: `Bearer ${localStorage.getItem("ff_token")}` } })).json()).id);
+  await pa.goto(`${BASE}/profile?id=${bId}`);
+  await pa.getByRole("button", { name: "Report profile" }).click();
+  const report = pa.getByRole("dialog");
+  await report.getByRole("radio", { name: "Spam, scam or fake account" }).check();
+  await report.getByRole("button", { name: "Send report" }).click();
+  await report.getByText("Report sent.").waitFor();
+  await report.getByRole("button", { name: "Close" }).last().click(); // the last one: the dialog's × is also "Close"
+
+  await pa.getByRole("button", { name: "Block" }).click();
+  await pa.getByRole("dialog").getByRole("button", { name: "Block" }).click();
+  await pa.waitForURL(`${BASE}/feed`);
+  const seen = await pb.evaluate(async (id) => (await fetch(`/api/people/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem("ff_token")}` } })).status,
+    await pa.evaluate(async () => (await (await fetch("/api/me", { headers: { Authorization: `Bearer ${localStorage.getItem("ff_token")}` } })).json()).id));
+  expect(seen === 404, `B can still see A's profile (status ${seen})`);
+
+  await pa.goto(`${BASE}/settings`);
+  const blocked = pa.locator("#blocked");
+  await blocked.getByText(B.name).waitFor();
+  await blocked.getByRole("button", { name: "Unblock" }).click();
+  await blocked.getByText("You haven't blocked anyone.").waitFor();
+});
+await check("Moderation area is closed to members (page and server)", async () => {
+  await pa.goto(`${BASE}/moderation`);
+  await pa.getByText("This area is only for Meerkat moderators.").waitFor();
+  const status = await pa.evaluate(async () => (await fetch("/api/moderation/reports", { headers: { Authorization: `Bearer ${localStorage.getItem("ff_token")}` } })).status);
+  expect(status === 403, `the server allowed it (status ${status})`);
+});
+await check("Terms, Privacy and Guidelines open without an account, marked as drafts", async () => {
+  const visitor = await newPage();
+  for (const [path, heading] of [["/terms", /Terms/], ["/privacy", /Privacy/], ["/guidelines", /Guidelines/]]) {
+    await visitor.goto(`${BASE}${path}`);
+    await visitor.getByRole("heading", { level: 1, name: heading }).waitFor();
+    await visitor.getByText(/draft/i).first().waitFor();
+  }
+  await visitor.context().close();
 });
 
 // ---------- Demo mode ----------

@@ -69,7 +69,7 @@ export default function MySchedule() {
           {loading && <Loading />}
           {error && <ErrorBox message={error} onRetry={reload} />}
           {data && data.commitments.length === 0 && (
-            <div className="mt-4 text-pine">
+            <div className="mt-4 rounded-2xl bg-cream text-pine">
               <Empty title="No commitments yet">Add your classes and shifts, or import them, so plans avoid them.</Empty>
             </div>
           )}

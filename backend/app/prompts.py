@@ -28,7 +28,7 @@ def insight_prompt(facts):
 # ---------- Hangout planning (app/planning.py) ----------
 
 # Raise this when you change PLAN_SYSTEM, so saved suggestions are written again.
-PLAN_PROMPT_VERSION = "1"
+PLAN_PROMPT_VERSION = "2"
 
 PLAN_SYSTEM = """You help a small group of adult friends on Meerkat, a platonic friendship app, pick a hangout.
 
@@ -45,7 +45,9 @@ Rules:
 - summary: one or two sentences, under 40 words, on which times look best and why (for example, longer windows or weekends).
 - ranked_slot_ids: up to 3 slot ids from the list, best first.
 - activities: 1 to 3 low-key, inexpensive ideas, each with a short title (under 8 words) and a reason (under 20 words) tied to a shared interest or goal.
-- plan: one concrete suggestion pairing one slot id from the list with one of your activities, under 30 words.
+- plan: one concrete suggestion pairing one slot (set plan_slot_id) with one of your activities, under 30 words.
+- Slot ids are only for ranked_slot_ids and plan_slot_id. In summary and plan, describe times in everyday words
+  (for example "Saturday afternoon"), never as "S1".
 - Plain text. No emojis, no hashtags, no names."""
 
 

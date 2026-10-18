@@ -46,6 +46,7 @@ call fails), we return plain "search on Google Maps" links that Meerkat hasn't c
 import hashlib
 import json
 import logging
+import re
 from datetime import date, datetime, timedelta, timezone
 from typing import Annotated, Literal
 from urllib.parse import quote_plus
@@ -389,7 +390,13 @@ def check_plan(result, facts):
     words = " ".join([result.summary, result.plan, *[a.title + " " + a.reason for a in result.activities]]).lower()
     if any(word in words for word in BLOCKED_WORDS):
         raise GeminiUnavailable("invalid_response")
-    return result
+    # Slot ids ("S2") mean nothing to people: swap any that slipped into the text for the real time.
+    when = {s["id"]: s["when"] for s in facts["slots"]}
+    readable = lambda text: SLOT_ID.sub(lambda m: when.get(m.group(0).split()[-1], m.group(0)), text)
+    return result.model_copy(update={"summary": readable(result.summary), "plan": readable(result.plan)})
+
+
+SLOT_ID = re.compile(r"(?:\b[Ss]lot )?\bS\d+\b")
 
 
 def fallback_plan(facts):

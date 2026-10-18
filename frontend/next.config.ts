@@ -24,7 +24,8 @@ export default function config(phase: string): NextConfig {
     const backend = process.env.BACKEND_URL ?? "http://127.0.0.1:8000";
     return {
       ...shared,
-      devIndicators: { position: "bottom-right" },
+      // No Next.js badge: on phones it sits on top of the tab bar's "More" button.
+      devIndicators: false,
       // Codespaces opens the dev site on a *.app.github.dev address.
       allowedDevOrigins: ["*.app.github.dev"],
       async rewrites() {
