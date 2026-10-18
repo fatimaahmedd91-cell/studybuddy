@@ -35,12 +35,13 @@ Last checked: 18 October 2026, on branch `claude/friendfinder-mvp`.
 
 | Check | Result |
 |---|---|
-| API tests (`pytest`, 117 tests) on PostgreSQL 16 | ✅ all pass, including one that calls the real Gemini API |
+| API tests (`pytest`, 122 tests) on PostgreSQL 16 | ✅ all pass, including one that calls the real Gemini API |
 | API tests on TimescaleDB 2.30.2 (same engine as TigerData) | ✅ all pass. The hypertable and `time_bucket` path is used. |
 | Website type check and production build | ✅ |
 | Browser journey (`scripts/e2e/journey.mjs`, 29 steps: two new users, demo mode, phone size, delete account) on the dev server with a real Gemini key | ✅ 29 / 29, the match note was written by Gemini |
 | The same browser journey on the production build served by Caddy, without a Gemini key (fallback labelled) | ✅ 29 / 29 |
 | API journey (`scripts/smoke_test.py`, 39 checks) through Caddy | ✅ 39 / 39 |
+| The Docker image Render builds, run locally with a new empty database and a real Gemini key | ✅ builds, sets itself up, smoke test 39 / 39, browser journey 29 / 29 (one earlier run had a one-off timing failure in the messaging step; 4 runs since were clean) |
 | A fresh copy of the repo, set up by following README.md (Mac/Linux steps) with a new empty database | ✅ tests 115 pass + 2 Gemini tests skipped (no key in that copy), typecheck and build pass, smoke test 39 / 39, browser journey 29 / 29. The Windows commands weren't run (no Windows machine). |
 
 ## Sponsor integrations
@@ -49,8 +50,9 @@ Last checked: 18 October 2026, on branch `claude/friendfinder-mvp`.
 |---|---|---|---|
 | **Google Gemini** | ✅ working | Server-side only, key in `backend/.env`, model set by `GEMINI_MODEL`, JSON output checked, cached, timeout, rate limit, labelled fallback. Only shared interests, goals, university and free times are sent. Tested with a real key (~2 s per note). | Put the key on the server's `.env` when deploying. |
 | **TigerData** (Timescale) | 🟡 ready, not connected | Numbered migrations, seed command, local Postgres fallback. Screen time uses a TimescaleDB hypertable and `time_bucket` when available. Tested on TimescaleDB 2.30.2 locally. The app never falls back to keeping data only in memory. | Create a TigerData service, then paste its URL into `DATABASE_URL`. |
+| **Render** (hosting, not a sponsor) | 🟡 ready, not deployed | One button: `render.yaml` + `Dockerfile` create the site and a free database. The image was built and tested locally. | A Render account (sign in with GitHub) and your Gemini key. See `DEPLOY.md`. |
 | **Vultr** | 🟡 ready, not deployed | `deploy/setup.sh` (one command on Ubuntu 24.04), systemd service, firewall, `deploy/update.sh`. Caddy config tested locally. | A Vultr server (**costs money**: needs the team's OK), then follow `DEPLOY.md`. |
-| **GoDaddy** | 🟡 documented, not done | DNS steps with placeholders in `DEPLOY.md`. Caddy gets the HTTPS certificate by itself. | The domain (MLH code), then two A records pointing at the server. |
+| **GoDaddy** | 🟡 documented, not done | DNS steps for Render and for Vultr in `DEPLOY.md`. HTTPS certificates are automatic on both. | The domain (MLH code), then the DNS records Render (or Vultr) shows. |
 | **Solana** | ❌ deferred | Nothing is built, on purpose (see below). The app never asks for wallets, keys or seed phrases. | A team decision on whether it's worth the time. |
 | **GitHub** | 🟡 | Work is on branch `claude/friendfinder-mvp` with clear commits. `CONTRIBUTING.md` explains branches and pull requests. | Push the branch and open a pull request (waiting for the team's OK). |
 

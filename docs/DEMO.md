@@ -20,8 +20,8 @@
 | 10 | Make the browser phone-sized (or open it on a phone). | "Works on phones, with a bottom tab bar." |
 
 **Tech, if they ask:** Next.js + TypeScript + Tailwind website, FastAPI + PostgreSQL API, and Gemini structured output with caching and a fallback.
-Screen time uses a TimescaleDB hypertable on TigerData. 117 API tests plus an end-to-end browser test.
-Deployed with Caddy on a Vultr server and a GoDaddy domain (once deployed).
+On a TigerData database, screen time uses a TimescaleDB hypertable (on plain PostgreSQL it uses ordinary tables). 122 API tests plus an end-to-end browser test.
+Hosted on Render from one Docker image, with a GoDaddy domain (once set up). The Settings page shows which database is in use.
 
 **Be honest about:** no block/report yet, no password reset, Solana not built (see `docs/STATUS.md`).
 

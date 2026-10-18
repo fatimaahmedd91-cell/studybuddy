@@ -14,7 +14,7 @@ import psycopg2
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
-from app import ai, auth, demo, events, friends, groups, messages, notifications, people, profiles, screen_time
+from app import ai, auth, demo, events, friends, groups, messages, notifications, people, profiles, screen_time, website
 from app import config
 from app.db import DatabaseNotConfigured, get_connection, run_migrations, timescale_in_use
 from app.health import check_database, check_gemini
@@ -77,3 +77,17 @@ def health():
     }
     # 200 means the app works. 503 ("service unavailable") means the database is not reachable.
     return JSONResponse(body, status_code=200 if database["ok"] else 503)
+
+
+# On hosts that run the whole site as one program (the Dockerfile, Render), also send the website.
+# This comes last, so every /api/... address above is matched first.
+if config.SERVE_WEBSITE:
+    @app.middleware("http")
+    async def security_headers(request, call_next):
+        response = await call_next(request)
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+        response.headers.setdefault("X-Frame-Options", "DENY")
+        return response
+
+    app.include_router(website.router)

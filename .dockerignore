@@ -1,0 +1,19 @@
+# Never copy secrets or build leftovers into the Docker image.
+**/.env
+**/.env.*
+!backend/.env.example
+**/node_modules
+**/.next
+**/__pycache__
+**/.pytest_cache
+backend/.venv
+frontend/out
+.git
+.devcontainer
+# The first prototype in the repo root isn't part of the site.
+src
+public
+index.html
+vite.config.js
+package.json
+package-lock.json

@@ -112,7 +112,7 @@ Errors always look like `{"detail": "A message you can show the user"}`.
 
 ## Tests
 
-`pytest` runs 117 tests. They cover every endpoint, the permission checks (the wrong person trying each action), input checks, demo mode, the seed command, and Gemini.
+`pytest` runs 122 tests. They cover every endpoint, the website serving, the permission checks (the wrong person trying each action), input checks, demo mode, the seed command, and Gemini.
 
 - Most tests need a database. They work in a temporary private schema that's deleted afterwards, so your real data is never touched.
   With no database set, those tests are skipped.

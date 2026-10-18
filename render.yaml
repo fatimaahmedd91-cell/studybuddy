@@ -1,0 +1,34 @@
+# Render Blueprint: one click sets up the whole site on Render.com (free plan).
+#   - friendfinder: the website and API, built from the Dockerfile
+#   - friendfinder-db: a free PostgreSQL database (Render deletes free databases after 30 days)
+# During setup, Render asks you for GEMINI_API_KEY. It's stored in Render's settings, never in the code.
+# Steps for people: DEPLOY.md, "Easiest: Render".
+
+services:
+  - type: web
+    name: friendfinder
+    runtime: docker
+    plan: free
+    region: ohio
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: friendfinder-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-flash-lite-latest
+      - key: DEMO_MODE_ENABLED
+        value: "true"
+
+databases:
+  - name: friendfinder-db
+    plan: free
+    region: ohio
+    databaseName: friendfinder
+    user: friendfinder

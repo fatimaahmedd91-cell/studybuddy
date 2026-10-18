@@ -31,3 +31,8 @@ GEMINI_TIMEOUT_SECONDS = int(os.getenv("GEMINI_TIMEOUT_SECONDS", "12"))
 
 # Lets judges click "Try the demo" without signing up. Set to "false" to turn it off.
 DEMO_MODE_ENABLED = os.getenv("DEMO_MODE_ENABLED", "true").lower() == "true"
+
+# When the whole site runs as one program (the Dockerfile, Render), the API also sends the
+# website's pages from WEBSITE_DIR. On a Vultr server Caddy does that instead, so it's off by default.
+SERVE_WEBSITE = os.getenv("SERVE_WEBSITE", "false").lower() == "true"
+WEBSITE_DIR = Path(os.getenv("WEBSITE_DIR", BACKEND_DIR.parent / "frontend" / "out"))

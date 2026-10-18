@@ -25,7 +25,36 @@ In this guide, replace:
 
 Budget about 30 minutes. DNS changes can take a few minutes, and sometimes up to an hour, to work everywhere.
 
-## Fastest way: one paste, no domain needed yet
+## Easiest: Render (free, one button, no server to manage)
+
+`render.yaml` and `Dockerfile` describe the whole site, so Render sets everything up by itself:
+the website and API as one program, plus a free PostgreSQL database.
+
+1. Have your Gemini key ready (https://aistudio.google.com/apikey).
+2. Open **https://render.com/deploy?repo=https://github.com/fatimaahmedd91-cell/studybuddy** and sign in with GitHub.
+3. Render lists what it will create: **friendfinder** (the site) and **friendfinder-db** (the database).
+   It asks for **GEMINI_API_KEY**: paste your key there. That's the only place it goes.
+4. Click **Deploy Blueprint** (or **Apply**). The first build takes about 10 minutes.
+5. Open **friendfinder** in the Render dashboard. When it says **Live**, click its address (`https://friendfinder-….onrender.com`).
+   Check `…/api/health` says `"status":"ok"` and `"gemini": {"ok": true`.
+
+Free-plan things to know:
+- The site **sleeps after about 15 minutes without visitors**. The next visit takes about a minute to wake it, so open it a couple of minutes before a demo.
+- The free database is **deleted after 30 days**. That's fine for a hackathon. Upgrade it in Render, or switch `DATABASE_URL` to TigerData, to keep it longer.
+
+### Put your GoDaddy domain on Render
+
+1. In Render: **friendfinder → Settings → Custom Domains → Add Custom Domain**. Add `your-domain.com`, then `www.your-domain.com`.
+2. Render shows the DNS records to create. In GoDaddy: **My Products → your domain → DNS → Manage DNS**:
+
+   | Type | Name | Value |
+   |---|---|---|
+   | A | `@` | the IP address Render shows (edit GoDaddy's existing "parked" `@` record instead of adding a second one) |
+   | CNAME | `www` | your Render address, like `friendfinder-abcd.onrender.com` |
+
+3. Back in Render, click **Verify**. Once DNS has updated (minutes, sometimes up to an hour), Render adds the HTTPS certificate by itself.
+
+## Another way: your own Vultr server, one paste
 
 This gets a working site on a Vultr server without typing anything on the server.
 

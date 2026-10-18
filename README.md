@@ -20,7 +20,7 @@ What works today, and what doesn't yet: [docs/STATUS.md](docs/STATUS.md).
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | understand how the pieces fit together |
 | [docs/STATUS.md](docs/STATUS.md) | see what's done, what's missing, and the sponsor integrations |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | work on the code with the team (branches, pull requests, tests) |
-| [DEPLOY.md](DEPLOY.md) | put the site live on Vultr with a GoDaddy domain |
+| [DEPLOY.md](DEPLOY.md) | put the site live: one button on Render (free), or a Vultr server, plus your GoDaddy domain |
 | [backend/README.md](backend/README.md) | see every API endpoint |
 | [frontend/README.md](frontend/README.md) | see every page and component |
 
@@ -119,7 +119,7 @@ Check that everything is connected at http://localhost:3000/api/health (you want
 
 | What | Command (run from…) |
 |---|---|
-| API tests (117 tests, need a database; the 2 that call Gemini are skipped without a key) | `pytest` (from `backend`, with `.venv` active) |
+| API tests (122 tests, need a database; the 2 that call Gemini are skipped without a key) | `pytest` (from `backend`, with `.venv` active) |
 | Website type check | `npm run typecheck` (from `frontend`) |
 | Website production build | `npm run build` (from `frontend`) |
 | Whole journey against a running site, PASS/FAIL per step | `python scripts/smoke_test.py` (from the repo root; add `https://your-domain.com` for the live site) |
@@ -138,7 +138,8 @@ Check that everything is connected at http://localhost:3000/api/health (you want
 |---|---|
 | `frontend/` | The website |
 | `backend/` | The API, the database tables (`backend/app/migrations/`) and the tests (`backend/tests/`) |
-| `deploy/` | Server setup for Vultr: Caddy (HTTPS), systemd service, setup and update scripts |
+| `deploy/` | Server setup for Vultr: one-paste launch, Caddy (HTTPS), systemd service, setup and update scripts |
+| `Dockerfile`, `render.yaml` | The whole site as one program, and the one-button Render setup |
 | `scripts/` | `smoke_test.py` (API journey) and `e2e/journey.mjs` (browser journey) |
 | `.devcontainer/` | GitHub Codespaces setup |
 | `docs/` | The guides listed above |
