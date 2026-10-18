@@ -15,8 +15,8 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
 from app import (
-    account, ai, auth, demo, events, friends, groups, messages, notifications, people, profiles, safety, screen_time,
-    website,
+    account, ai, auth, commitments, demo, events, friends, groups, messages, notifications, people, planning, profiles,
+    safety, screen_time, website,
 )
 from app import config
 from app.db import DatabaseNotConfigured, get_connection, run_migrations, timescale_in_use
@@ -43,6 +43,7 @@ app = FastAPI(title="Meerkat API", lifespan=lifespan)
 
 for feature in (
     auth, demo, profiles, account, people, friends, messages, groups, events, notifications, screen_time, ai, safety,
+    commitments, planning,
 ):
     app.include_router(feature.router)
 
