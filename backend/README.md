@@ -1,4 +1,4 @@
-# Meerkat API (Python + FastAPI)
+# Meetkat API (Python + FastAPI)
 
 (Some internal names still say "friendfinder", the project's first name: the server service, the logger, the database name in examples.)
 
@@ -27,9 +27,9 @@ Then call `POST /api/me/accept-terms` with `{"accept": true, "version": "<the cu
 | `APP_ENV` | no | `development` (default) or `production`. Production protects demo data from an accidental reset and switches off the age-check test mode. | |
 | `MIN_AGE` | no | minimum age to join. Default 18, the **proposed** policy (a team decision, see `docs/PRE_LAUNCH_CHECKLIST.md`). | |
 | `TERMS_VERSION` | no | the Terms version people must accept. Raise it after a material change and everyone is asked again. | |
-| `GEMINI_API_KEY` | no | Gemini match notes, hangout suggestions and timetable import | labelled "Suggested by Meerkat (not AI)" notes and suggestions; timetable import says it's unavailable (manual entry and `.ics` import still work) |
+| `GEMINI_API_KEY` | no | Gemini match notes, hangout suggestions and timetable import | labelled "Suggested by Meetkat (not AI)" notes and suggestions; timetable import says it's unavailable (manual entry and `.ics` import still work) |
 | `GEMINI_MODEL`, `GEMINI_TIMEOUT_SECONDS` | no | default `gemini-flash-lite-latest` and 12 | |
-| `GOOGLE_MAPS_API_KEY` | no | real places near a halfway point (Places API (New), server key) | plain "search on Google Maps" links, labelled "not checked by Meerkat" |
+| `GOOGLE_MAPS_API_KEY` | no | real places near a halfway point (Places API (New), server key) | plain "search on Google Maps" links, labelled "not checked by Meetkat" |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` | no | emails 6-digit codes for email verification | email verification shows "not set up" (503) |
 | `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_VERIFY_SERVICE_SID` | no | texts codes through Twilio Verify for phone verification | phone verification shows "not set up" (503) |
 | `AGE_CHECK_PROVIDER` | no | the hosted selfie age-check provider. **No real provider is integrated yet.** `mock` is a labelled test mode that only works with `APP_ENV=development` and never shows a badge. | "not available" (503), and no badge |
@@ -97,7 +97,7 @@ All start with `/api`.
 | `POST /verification/email/confirm` | 🔒 | `{code}` |
 | `POST /verification/phone/send` | 🔒 | Texts a code through Twilio Verify. Needs the `TWILIO_*` settings (503 without them). Add a phone number first. |
 | `POST /verification/phone/confirm` | 🔒 | `{code}` |
-| `POST /verification/age/start` | 🔒 | `{consent: true}`. Would start a selfie age check with a hosted provider. No provider is integrated, so this answers 503 "not available". With `AGE_CHECK_PROVIDER=mock` and `APP_ENV=development` it records a **test** result that never shows a badge. Meerkat never looks at faces itself or asks Gemini to guess ages. |
+| `POST /verification/age/start` | 🔒 | `{consent: true}`. Would start a selfie age check with a hosted provider. No provider is integrated, so this answers 503 "not available". With `AGE_CHECK_PROVIDER=mock` and `APP_ENV=development` it records a **test** result that never shows a badge. Meetkat never looks at faces itself or asks Gemini to guess ages. |
 
 ### People and friends (`people.py`, `ai.py`, `friends.py`)
 
@@ -199,8 +199,8 @@ Free times are worked out exactly in code (`app/scheduling.py`); Gemini never de
 | `GET /notifications` | 🔒 | `{items, unread_count}`, newest first. Only the kinds you switched on, never from blocked people. |
 | `POST /notifications/{id}/read` | 🔒 | Mark one as read |
 | `POST /notifications/read-all` | 🔒 | Mark all as read |
-| `POST /screen-time/heartbeat` | 🔒 | The website sends this every 30 s while you're using it. Each one adds 30 s, but beats less than 25 s apart don't count. This is **time in Meerkat** only. |
-| `GET /screen-time?tz=America/Toronto` | 🔒 | Time in Meerkat today and the last 7 days, your goal, and `storage` (`timescaledb` or `postgresql`) |
+| `POST /screen-time/heartbeat` | 🔒 | The website sends this every 30 s while you're using it. Each one adds 30 s, but beats less than 25 s apart don't count. This is **time in Meetkat** only. |
+| `GET /screen-time?tz=America/Toronto` | 🔒 | Time in Meetkat today and the last 7 days, your goal, and `storage` (`timescaledb` or `postgresql`) |
 | `GET /screen-time/entries?days=14` | 🔒 | Your **self-reported** phone screen time (typed in by you) |
 | `PUT /screen-time/entries/{day}` | 🔒 | `{minutes}` for today or up to 13 days back |
 | `DELETE /screen-time/entries/{day}` | 🔒 | Remove one day |
@@ -213,7 +213,7 @@ Free times are worked out exactly in code (`app/scheduling.py`); Gemini never de
 | `POST /screen-time/groups/{id}/leave` | 🔒 | Stop sharing (the group stops seeing all your numbers). The last member leaving deletes the group. |
 | `GET /screen-time/groups/{id}/leaderboard?day=` | 🔒 | Highest first. People with no entry are listed separately as "No entry", never counted as zero. |
 
-Device-wide screen time (from a phone's settings) is **not** available: a website can't read it, so Meerkat never claims to.
+Device-wide screen time (from a phone's settings) is **not** available: a website can't read it, so Meetkat never claims to.
 
 ### Safety (`safety.py`)
 

@@ -92,16 +92,16 @@ export default function ScheduleImport({ onSaved }: { onSaved: (message: string)
         <Dialog title="Send your timetable to Gemini?" onClose={() => setAiConsentOpen(false)}>
           <div className="space-y-3 text-sm">
             <p>
-              To extract your timetable, Meerkat will send this file to Google Gemini. It may contain class, work, location,
+              To extract your timetable, Meetkat will send this file to Google Gemini. It may contain class, work, location,
               and other personal information. Upload only information you are authorized to share. Review the extracted
               entries before saving.
             </p>
             <p>
-              Processing and retention: <b>[TO BE CONFIRMED — see the pre-launch checklist]</b>. Meerkat itself doesn&apos;t
+              Processing and retention: <b>[TO BE CONFIRMED — see the pre-launch checklist]</b>. Meetkat itself doesn&apos;t
               store the file: it&apos;s only kept in memory while Gemini reads it.
             </p>
             <label className="flex min-h-11 items-start gap-3">
-              <input type="checkbox" checked={aiChosen} onChange={(e) => setAiChosen(e.target.checked)} className="mt-0.5 h-5 w-5 shrink-0 accent-pine" />
+              <input type="checkbox" checked={aiChosen} onChange={(e) => setAiChosen(e.target.checked)} className="mt-0.5 h-5 w-5 shrink-0 accent-bark" />
               <span>I choose to send this file for AI-assisted schedule extraction.</span>
             </label>
             <div className="flex flex-wrap gap-2">
@@ -193,10 +193,10 @@ function ImportReview({
           {rows.map((row, i) => {
             const flagged = Object.entries(row.proposal.flags).filter(([, on]) => on) as [keyof Proposal["flags"], boolean][];
             return (
-              <li key={i} className={`rounded-inner border-2 p-3 ${row.include ? "border-forest bg-sage" : "border-pine/20 bg-sand opacity-80"}`}>
+              <li key={i} className={`rounded-inner border-2 p-3 ${row.include ? "border-forest bg-sky" : "border-bark/20 bg-sand opacity-80"}`}>
                 <label className="flex min-h-11 items-center gap-2 font-semibold">
                   <input type="checkbox" checked={row.include} onChange={(e) => update(i, { include: e.target.checked })}
-                    className="h-5 w-5 accent-pine" />
+                    className="h-5 w-5 accent-bark" />
                   Keep “{row.value.title || "Untitled"}”
                 </label>
                 {flagged.length > 0 && (

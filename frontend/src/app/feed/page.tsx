@@ -31,7 +31,7 @@ function PersonCard({ person, onRelationship }: { person: Person; onRelationship
         </Link>
         <div className="min-w-0 flex-1 space-y-3">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="rounded-full bg-pine px-3 py-1 text-lg font-bold text-cream">{person.match.score}% match</span>
+            <span className="rounded-full bg-bark px-3 py-1 text-lg font-bold text-cream">{person.match.score}% match</span>
             {person.hook && <span className="italic">&ldquo;{person.hook}&rdquo;</span>}
           </div>
           {person.match.reasons.length > 0 ? (
@@ -47,7 +47,7 @@ function PersonCard({ person, onRelationship }: { person: Person; onRelationship
           <div className="flex flex-wrap items-start gap-2 pt-1">
             <FriendButton compact personId={person.id} personName={person.name} relationship={person.relationship}
               onChange={(relationship) => onRelationship({ ...person, relationship })} />
-            <Link href={`/profile?id=${person.id}`} className="inline-flex min-h-11 items-center rounded-xl border-2 border-pine px-4 font-semibold hover:bg-cream">
+            <Link href={`/profile?id=${person.id}`} className="inline-flex min-h-11 items-center rounded-xl border-2 border-bark px-4 font-semibold hover:bg-cream">
               View profile
             </Link>
           </div>
@@ -111,7 +111,7 @@ export default function FeedPage() {
         <div className="flex flex-col justify-end gap-2">
           <label className="flex min-h-11 items-center gap-2 text-sm font-semibold">
             <input type="checkbox" checked={filters.free_together}
-              onChange={(e) => setFilters({ ...filters, free_together: e.target.checked })} className="h-5 w-5 accent-pine" />
+              onChange={(e) => setFilters({ ...filters, free_together: e.target.checked })} className="h-5 w-5 accent-bark" />
             Free when I&apos;m free
           </label>
           {active && (

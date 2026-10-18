@@ -1,4 +1,4 @@
-"""Meerkat backend (the code still calls itself "friendfinder" in a few internal names).
+"""Meetkat backend (the code still calls itself "friendfinder" in a few internal names).
 
 Start it from the backend folder with:
     uvicorn app.main:app --reload
@@ -57,7 +57,7 @@ async def lifespan(app):
     yield
 
 
-app = FastAPI(title="Meerkat API", lifespan=lifespan)
+app = FastAPI(title="Meetkat API", lifespan=lifespan)
 
 for feature in (
     auth,

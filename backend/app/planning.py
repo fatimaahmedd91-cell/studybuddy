@@ -40,7 +40,7 @@ Other people's areas are never returned. With exactly two people, you could work
 point to the other person's area, so it's rounded to about 5 km instead; it still hints at the rough
 direction, and the website says so.
 With GOOGLE_MAPS_API_KEY set, Google Places finds real places near the halfway point. Without it (or if the
-call fails), we return plain "search on Google Maps" links that Meerkat hasn't checked.
+call fails), we return plain "search on Google Maps" links that Meetkat hasn't checked.
 """
 
 import hashlib
@@ -706,7 +706,7 @@ def meeting_area(body: AreaRequest, me: CurrentUser):
     result["source"] = "links"
     result["links"] = [
         {"label": f"Search “{q}” near the halfway point", "url": maps_search_link(q, lat, lng),
-         "note": "Opens Google Maps — not checked by Meerkat"}
+         "note": "Opens Google Maps — not checked by Meetkat"}
         for q in queries[:3]
     ]
     return result

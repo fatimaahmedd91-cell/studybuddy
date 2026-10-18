@@ -1,13 +1,13 @@
-"""The instructions Meerkat sends to Gemini. Edit the wording here.
+"""The instructions Meetkat sends to Gemini. Edit the wording here.
 
 If you change a prompt, raise PROMPT_VERSION so saved notes are written again with the new prompt.
 """
 
 import json
 
-PROMPT_VERSION = "2"
+PROMPT_VERSION = "3"
 
-INSIGHT_SYSTEM = """You help two adults who matched on Meerkat, a platonic friendship app, start talking.
+INSIGHT_SYSTEM = """You help two adults who matched on Meetkat, a platonic friendship app, start talking.
 
 Rules:
 - Use ONLY the facts in the JSON you are given. Never invent hobbies, schedules, personality traits, or life experiences.
@@ -28,9 +28,9 @@ def insight_prompt(facts):
 # ---------- Hangout planning (app/planning.py) ----------
 
 # Raise this when you change PLAN_SYSTEM, so saved suggestions are written again.
-PLAN_PROMPT_VERSION = "2"
+PLAN_PROMPT_VERSION = "3"
 
-PLAN_SYSTEM = """You help a small group of adult friends on Meerkat, a platonic friendship app, pick a hangout.
+PLAN_SYSTEM = """You help a small group of adult friends on Meetkat, a platonic friendship app, pick a hangout.
 
 You are given:
 - "slots": times when everyone is free, each with an id like "S1". These were calculated exactly from their schedules.

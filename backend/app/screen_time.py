@@ -1,9 +1,9 @@
-"""Time in Meerkat: how long you've had the app open and in use.
+"""Time in Meetkat: how long you've had the app open and in use.
 
-This only measures Meerkat. It cannot see your phone's screen time or other apps.
+This only measures Meetkat. It cannot see your phone's screen time or other apps.
 
 How time is counted:
-  - While a Meerkat tab is visible and you've used it in the last minute, the website
+  - While a Meetkat tab is visible and you've used it in the last minute, the website
     sends a "heartbeat" every 30 seconds. Each heartbeat adds 30 seconds.
   - Heartbeats closer than 25 seconds apart are ignored, so two open tabs don't count double.
   - A hidden tab, or one you haven't touched for a minute, sends nothing.

@@ -7,7 +7,7 @@ shared interests, shared friendship goals, the university (only if it's the same
 times both are free. Never names, emails, ages, bios, or photos.
 
 When Gemini isn't available (no key, timeout, quota used up, or an unusable answer), the app
-writes a note from fixed templates instead and labels it "Suggested by Meerkat".
+writes a note from fixed templates instead and labels it "Suggested by Meetkat".
 """
 
 import hashlib

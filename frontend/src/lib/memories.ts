@@ -6,8 +6,8 @@ export type MemoryAudience = "friends" | "everyone" | "only_me";
 
 // What each audience means, in the words the website shows. Change the wording here.
 export const AUDIENCES: { value: MemoryAudience; label: string; hint: string }[] = [
-  { value: "friends", label: "Friends", hint: "Only your Meerkat friends can see it." },
-  { value: "everyone", label: "Everyone on Meerkat", hint: "Anyone logged in to Meerkat can see it." },
+  { value: "friends", label: "Friends", hint: "Only your Meetkat friends can see it." },
+  { value: "everyone", label: "Everyone on Meetkat", hint: "Anyone logged in to Meetkat can see it." },
   { value: "only_me", label: "Only me", hint: "A private memory just for you." },
 ];
 

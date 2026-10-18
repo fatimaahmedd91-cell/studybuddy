@@ -100,9 +100,9 @@ def smtp_server(tmp_path, monkeypatch):
     threading.Thread(target=server.serve_forever, daemon=True).start()
     monkeypatch.setattr(config, "SMTP_HOST", "localhost")
     monkeypatch.setattr(config, "SMTP_PORT", server.server_address[1])
-    monkeypatch.setattr(config, "SMTP_USER", "meerkat-mailer")
+    monkeypatch.setattr(config, "SMTP_USER", "meetkat-mailer")
     monkeypatch.setattr(config, "SMTP_PASSWORD", "mail-password")
-    monkeypatch.setattr(config, "SMTP_FROM", "Meerkat <hello@meerkat.example>")
+    monkeypatch.setattr(config, "SMTP_FROM", "Meetkat <hello@meetkat.example>")
     server.trust = lambda: monkeypatch.setattr(
         verification, "tls_context", lambda: ssl.create_default_context(cafile=str(cert_file)))
     yield server
@@ -115,8 +115,8 @@ def test_email_code_goes_through_an_encrypted_login_to_the_mail_server(database,
     assert client.post("/api/verification/email/send", headers=headers).status_code == 200
     [message] = smtp_server.messages
     assert message["encrypted"] is True
-    assert smtp_server.logins == [[b"meerkat-mailer", b"mail-password"]]
-    assert f"To: {user['email']}" in message["text"] and "Subject: Your Meerkat verification code" in message["text"]
+    assert smtp_server.logins == [[b"meetkat-mailer", b"mail-password"]]
+    assert f"To: {user['email']}" in message["text"] and "Subject: Your Meetkat verification code" in message["text"]
     code = re.search(r"\b(\d{6})\b", message["text"]).group(1)
     confirmed = client.post("/api/verification/email/confirm", json={"code": code}, headers=headers).json()
     assert confirmed["email_verified"] is True
@@ -135,7 +135,7 @@ def test_password_reset_email_is_really_sent(database, client, smtp_server):
     _, user = signup(client, password="old-password-1")
     assert client.post("/api/auth/password-reset/request", json={"email": user["email"]}).status_code == 200
     [message] = smtp_server.messages
-    assert "Subject: Reset your Meerkat password" in message["text"]
+    assert "Subject: Reset your Meetkat password" in message["text"]
     code = re.search(r"\b(\d{6})\b", message["text"]).group(1)
     response = client.post("/api/auth/password-reset/confirm",
                            json={"email": user["email"], "code": code, "new_password": "new-password-2"})
@@ -248,7 +248,7 @@ def test_places_search_is_sent_the_way_google_documents_it(database, client, web
     assert sent["headers"]["X-Goog-Api-Key"] == "maps-key"
     assert "places.displayName" in sent["headers"]["X-Goog-FieldMask"]
     body = json.loads(sent["body"])
-    # Only the halfway point and the kind of place leave Meerkat: nobody's own area.
+    # Only the halfway point and the kind of place leave Meetkat: nobody's own area.
     assert body["textQuery"] == "board game cafe" and body["priceLevels"] == ["PRICE_LEVEL_INEXPENSIVE"]
     assert body["locationBias"]["circle"]["center"] == {"latitude": result["midpoint"]["lat"],
                                                         "longitude": result["midpoint"]["lng"]}

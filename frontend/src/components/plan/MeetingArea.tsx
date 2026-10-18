@@ -183,7 +183,7 @@ export function HalfwayArea({ people, defaultActivity }: { people: PlanPeople; d
         <div className="space-y-3">
           <p className="text-sm">Based on {result.used_count} of {result.total} people&apos;s chosen meeting areas.</p>
           {result.midpoint && (
-            <div className="rounded-inner bg-sage px-4 py-3">
+            <div className="rounded-inner bg-sky px-4 py-3">
               <p className="font-semibold">{result.midpoint.label}</p>
               <a href={result.midpoint.maps_url} target="_blank" rel="noreferrer" className="text-sm font-semibold underline">
                 See the halfway point on Google Maps
@@ -194,7 +194,7 @@ export function HalfwayArea({ people, defaultActivity }: { people: PlanPeople; d
           {result.venues.length > 0 && (
             <ul className="space-y-2" aria-label="Places from Google Maps">
               {result.venues.map((v) => (
-                <li key={`${v.name}-${v.address}`} className="rounded-inner border-2 border-sage-strong px-4 py-3">
+                <li key={`${v.name}-${v.address}`} className="rounded-inner border-2 border-sky-strong px-4 py-3">
                   <p className="font-semibold">{v.name}</p>
                   {v.address && <p className="text-sm">{v.address}</p>}
                   <p className="text-xs">

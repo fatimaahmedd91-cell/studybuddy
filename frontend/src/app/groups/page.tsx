@@ -77,7 +77,7 @@ function GroupList({ deleted }: { deleted: string | null }) {
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Name or description" className={`${inputClass} mt-1 font-normal`} />
         </label>
         <label className="flex min-h-11 items-center gap-2 text-sm font-semibold">
-          <input type="checkbox" checked={mine} onChange={(e) => setMine(e.target.checked)} className="h-5 w-5 accent-pine" />
+          <input type="checkbox" checked={mine} onChange={(e) => setMine(e.target.checked)} className="h-5 w-5 accent-bark" />
           Only my groups
         </label>
       </div>
@@ -147,7 +147,7 @@ function Discussion({ groupId }: { groupId: number }) {
   }
 
   return (
-    <section aria-labelledby="discussion-title" className="rounded-frame bg-pine p-5 text-cream sm:p-6">
+    <section aria-labelledby="discussion-title" className="rounded-frame bg-bark p-5 text-cream sm:p-6">
       <h2 id="discussion-title" className="text-2xl font-bold">Discussion</h2>
       {loading && <Loading />}
       {error && <ErrorBox message={error} onRetry={reload} />}
@@ -156,7 +156,7 @@ function Discussion({ groupId }: { groupId: number }) {
         {data?.map((p) => (
           <li key={p.id} className="flex gap-3">
             <Avatar person={p.author} size="sm" />
-            <div className="min-w-0 rounded-2xl bg-cream px-4 py-2 text-pine">
+            <div className="min-w-0 rounded-2xl bg-cream px-4 py-2 text-bark">
               <p className="text-xs font-semibold">
                 {p.mine ? "You" : p.author.name} · {timeAgo(p.created_at)}
                 {!p.mine && <button type="button" onClick={() => setReporting(p.id)} className="ml-2 font-normal underline">Report</button>}
@@ -169,7 +169,7 @@ function Discussion({ groupId }: { groupId: number }) {
       <form onSubmit={post} className="mt-4 flex gap-2">
         <label htmlFor="post" className="sr-only">Write a post</label>
         <input id="post" value={body} maxLength={1000} onChange={(e) => setBody(e.target.value)}
-          placeholder="Write something to the group…" className="min-h-11 flex-1 rounded-full bg-cream px-4 text-pine" />
+          placeholder="Write something to the group…" className="min-h-11 flex-1 rounded-full bg-cream px-4 text-bark" />
         <Button type="submit" variant="light" disabled={busy || !body.trim()}>{busy ? "Posting…" : "Post"}</Button>
       </form>
       {sendError && <p role="alert" className="mt-2 rounded-lg bg-cream px-3 py-2 text-sm font-medium text-danger">{sendError}</p>}
@@ -338,7 +338,7 @@ function GroupDetail({ id }: { id: number }) {
               <ul className="mt-2 space-y-2">
                 {group.events.map((e) => (
                   <li key={e.id}>
-                    <Link href={`/events?id=${e.id}`} className="block rounded-xl bg-sage px-3 py-2 hover:brightness-95">
+                    <Link href={`/events?id=${e.id}`} className="block rounded-xl bg-sky px-3 py-2 hover:brightness-95">
                       <span className="font-semibold">{e.title}</span>
                       <span className="block text-sm">{formatDateTime(e.starts_at)} · {e.going_count} going</span>
                     </Link>

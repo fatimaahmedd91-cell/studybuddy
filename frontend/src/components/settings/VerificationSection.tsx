@@ -22,7 +22,7 @@ type Status = {
 function Badge({ ok, children }: { ok: boolean; children: React.ReactNode }) {
   return (
     <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-sm font-semibold ${
-      ok ? "bg-success text-white" : "bg-sage-strong text-pine"}`}>
+      ok ? "bg-success text-white" : "bg-sky-strong text-bark"}`}>
       {ok ? "✓" : "○"} {children}
     </span>
   );
@@ -98,8 +98,8 @@ function AgeCheck({ age, onChanged }: { age: Status["age"]; onChanged: () => voi
   return (
     <div className="space-y-2">
       <p className="text-sm">
-        A selfie age check would be done by an outside age-assurance provider, never by Meerkat or by AI guessing from
-        photos. Meerkat would keep only the result, never your image, and wouldn&apos;t use the selfie as your profile photo.
+        A selfie age check would be done by an outside age-assurance provider, never by Meetkat or by AI guessing from
+        photos. Meetkat would keep only the result, never your image, and wouldn&apos;t use the selfie as your profile photo.
       </p>
       {age.provider === "mock" && <Notice kind="warning">You ran a TEST-MODE check. It is not a real age check and never shows a badge.</Notice>}
       {!age.available ? (
@@ -113,13 +113,13 @@ function AgeCheck({ age, onChanged }: { age: Status["age"]; onChanged: () => voi
       {open && (
         <Dialog title="Selfie age check" onClose={() => setOpen(false)}>
           <p>
-            [PROVIDER] will process [ACTUAL IMAGE/DATA] to [ESTIMATE AGE / VERIFY AGE ATTRIBUTE]. Meerkat will receive
+            [PROVIDER] will process [ACTUAL IMAGE/DATA] to [ESTIMATE AGE / VERIFY AGE ATTRIBUTE]. Meetkat will receive
             [RESULT]. Information will be retained for [VERIFIED PERIOD]. Read the provider&apos;s privacy information
             before continuing.
           </p>
           {age.test_mode && <p className="mt-2 font-semibold">In test mode, nothing is processed: you just get a test result.</p>}
           <label className="mt-3 flex min-h-11 items-start gap-3">
-            <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-1 h-5 w-5 accent-pine" />
+            <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-1 h-5 w-5 accent-bark" />
             <span>I agree to this described age-check process.</span>
           </label>
           {save.message && <Notice kind={save.message.kind}>{save.message.text}</Notice>}

@@ -298,7 +298,7 @@ def test_halfway_point_needs_two_areas_and_hides_each_persons_area(database, cli
     assert "not based on travel time" in body["midpoint"]["label"]
     # Without a Maps key: plain, clearly labelled search links, and nobody's own area.
     assert body["source"] == "links" and body["venues"] == []
-    assert all("not checked by Meerkat" in link["note"] for link in body["links"])
+    assert all("not checked by Meetkat" in link["note"] for link in body["links"])
     assert "-79.19" not in two.text and "UofT Scarborough (UTSC)" not in two.text
 
 

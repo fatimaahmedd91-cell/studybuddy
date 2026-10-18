@@ -2,7 +2,7 @@
 import LegalPage from "@/components/LegalPage";
 import { TERMS } from "@/content/legal";
 
-export const metadata = { title: "Terms of Service · Meerkat" };
+export const metadata = { title: "Terms of Service · Meetkat" };
 
 export default function TermsPage() {
   return <LegalPage doc={TERMS} />;

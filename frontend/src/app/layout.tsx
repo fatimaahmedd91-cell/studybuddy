@@ -4,12 +4,12 @@ import { AuthProvider } from "@/lib/auth";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Meerkat",
-  description: "Finding your mob shouldn't be up to chance. Meerkat helps adults find platonic friends, groups and events through shared interests and free time.",
+  title: "Meetkat",
+  description: "Finding your mob shouldn't be up to chance. Meetkat helps adults find platonic friends, groups and events through shared interests and free time.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#1f3a2b",
+  themeColor: "#43150e",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

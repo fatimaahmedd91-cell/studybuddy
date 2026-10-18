@@ -7,7 +7,7 @@ import pytest
 from app import config, db, verification
 from tests.helpers import signup
 
-GENERIC = "If that email belongs to a Meerkat account"
+GENERIC = "If that email belongs to a Meetkat account"
 
 
 def run(sql, params=()):
@@ -20,7 +20,7 @@ def outbox(monkeypatch):
     """Pretends SMTP is set up and collects the emails instead of sending them."""
     sent = []
     monkeypatch.setattr(config, "SMTP_HOST", "smtp.example.com")
-    monkeypatch.setattr(config, "SMTP_FROM", "Meerkat <hello@example.com>")
+    monkeypatch.setattr(config, "SMTP_FROM", "Meetkat <hello@example.com>")
     monkeypatch.setattr(verification, "send_email", lambda to, subject, body: sent.append((to, subject, body)))
     return sent
 

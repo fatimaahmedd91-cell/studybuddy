@@ -1,10 +1,10 @@
-# Meerkat in Codespaces
+# Meetkat in Codespaces
 
 Everything starts by itself: the database, the API (with demo data), and the website.
 
 1. Wait about 4 minutes the first time (it installs everything, then builds the website).
    When the pop-up says **port 8000** is available, click **Open in Browser**.
-   (No pop-up? Open the **Ports** tab at the bottom, find **8000 · Meerkat (open this one)** and click its globe icon.)
+   (No pop-up? Open the **Ports** tab at the bottom, find **8000 · Meetkat (open this one)** and click its globe icon.)
 2. Click **Try the demo**, or sign up.
 3. Test everything at once. In the **Terminal** tab, run:
    ```
@@ -13,7 +13,7 @@ Everything starts by itself: the database, the API (with demo data), and the web
    Every line should say PASS (lines starting with INFO are just information).
 
 **Gemini key:** add it as a Codespaces secret named `GEMINI_API_KEY` (GitHub → Settings → Codespaces → Secrets, and allow this repository), then restart the Codespace.
-Without it, match notes are labelled **"Suggested by Meerkat (not AI)"**. With it, they say **"Written by Gemini"**.
+Without it, match notes are labelled **"Suggested by Meetkat (not AI)"**. With it, they say **"Written by Gemini"**.
 
 **Run the API tests:** `cd backend && .venv/bin/pytest`
 

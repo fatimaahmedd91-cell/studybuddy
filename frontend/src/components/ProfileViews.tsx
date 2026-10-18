@@ -102,7 +102,7 @@ export function ProfileExpressive({ person, actions }: { person: PublicProfile; 
               <span
                 key={sticker}
                 aria-hidden="true"
-                className="pointer-events-none absolute flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-pine bg-sage text-2xl shadow-md sm:h-14 sm:w-14 sm:text-3xl"
+                className="pointer-events-none absolute flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-bark bg-sky text-2xl shadow-md sm:h-14 sm:w-14 sm:text-3xl"
                 style={{ left: `${50 + 47 * Math.cos(angle)}%`, top: `${50 + 47 * Math.sin(angle)}%`, rotate: `${(i % 2 ? 1 : -1) * 10}deg` }}
               >
                 {sticker}
@@ -116,7 +116,7 @@ export function ProfileExpressive({ person, actions }: { person: PublicProfile; 
         </div>
         {subtitle(person) && <p className="mt-2 text-xl">{subtitle(person)}</p>}
         {person.hook && (
-          <p className="mt-5 max-w-xl rounded-2xl bg-forest px-6 py-4 text-2xl font-bold text-cream sm:text-3xl">
+          <p className="mt-5 max-w-xl rounded-2xl bg-bark px-6 py-4 text-2xl font-bold text-cream sm:text-3xl">
             &ldquo;{person.hook}&rdquo;
           </p>
         )}
@@ -132,13 +132,13 @@ export function ProfileExpressive({ person, actions }: { person: PublicProfile; 
 
 export function ViewToggle({ view, onChange }: { view: "info" | "expressive"; onChange: (v: "info" | "expressive") => void }) {
   return (
-    <div role="group" aria-label="Profile view" className="inline-flex rounded-xl border-2 border-pine p-1">
+    <div role="group" aria-label="Profile view" className="inline-flex rounded-xl border-2 border-bark p-1">
       {(["info", "expressive"] as const).map((v) => (
         <button
           key={v}
           aria-pressed={view === v}
           onClick={() => onChange(v)}
-          className={`min-h-10 rounded-lg px-4 text-sm font-semibold ${view === v ? "bg-pine text-cream" : "hover:bg-cream"}`}
+          className={`min-h-10 rounded-lg px-4 text-sm font-semibold ${view === v ? "bg-bark text-cream" : "hover:bg-cream"}`}
         >
           {v === "info" ? "Info view" : "Expressive view"}
         </button>

@@ -68,22 +68,22 @@ function Calendar({ events }: { events: FriendEvent[] }) {
 
   return (
     <section aria-labelledby="calendar-title" className="rounded-frame bg-cream p-4 sm:p-6">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-pine pb-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-bark pb-3">
         <h2 id="calendar-title" className="text-3xl tracking-[0.2em]">CALENDAR</h2>
         <div className="flex items-center gap-1">
-          <button aria-label="Previous month" onClick={() => setShown(new Date(year, month - 1, 1))} className="h-11 w-11 rounded-full text-2xl hover:bg-sage">‹</button>
+          <button aria-label="Previous month" onClick={() => setShown(new Date(year, month - 1, 1))} className="h-11 w-11 rounded-full text-2xl hover:bg-sky">‹</button>
           <span className="w-36 text-center font-semibold">{shown.toLocaleDateString(undefined, { month: "long", year: "numeric" })}</span>
-          <button aria-label="Next month" onClick={() => setShown(new Date(year, month + 1, 1))} className="h-11 w-11 rounded-full text-2xl hover:bg-sage">›</button>
+          <button aria-label="Next month" onClick={() => setShown(new Date(year, month + 1, 1))} className="h-11 w-11 rounded-full text-2xl hover:bg-sky">›</button>
         </div>
       </div>
       <div className="mt-2 grid grid-cols-7 text-center text-xs font-semibold" aria-hidden="true">
         {WEEKDAYS.map((d) => <div key={d} className="py-1">{d}</div>)}
       </div>
-      <div className="grid grid-cols-7 border-l-2 border-t-2 border-pine">
+      <div className="grid grid-cols-7 border-l-2 border-t-2 border-bark">
         {cells.map((date, i) => {
           const list = date ? onDay(date) : [];
           return (
-            <div key={i} className={`min-h-[64px] border-b-2 border-r-2 border-pine p-1 sm:min-h-[80px] ${date?.toDateString() === today ? "bg-sage" : ""}`}>
+            <div key={i} className={`min-h-[64px] border-b-2 border-r-2 border-bark p-1 sm:min-h-[80px] ${date?.toDateString() === today ? "bg-sky" : ""}`}>
               {date && (
                 <>
                   <p className="text-xs font-semibold">{date.getDate()}</p>
@@ -91,7 +91,7 @@ function Calendar({ events }: { events: FriendEvent[] }) {
                     {list.slice(0, 2).map((e) => (
                       <li key={e.id}>
                         <Link href={`/events?id=${e.id}`} title={`${e.title}, ${formatTime(e.starts_at)}`}
-                          className="block truncate rounded bg-pine px-1 text-[10px] leading-4 text-cream">
+                          className="block truncate rounded bg-bark px-1 text-[10px] leading-4 text-cream">
                           {e.title}
                         </Link>
                       </li>
@@ -115,7 +115,7 @@ function FriendTime() {
   const person = useApi(() => (friendId ? api.person(friendId) : Promise.resolve(null)), [friendId]);
 
   return (
-    <section aria-labelledby="friend-time-title" className="rounded-frame bg-forest p-5 text-cream">
+    <section aria-labelledby="friend-time-title" className="rounded-frame bg-sky-strong p-5 text-bark">
       <h2 id="friend-time-title" className="text-2xl font-bold">View a friend&apos;s free time</h2>
       {friends.data && friends.data.friends.length === 0 ? (
         <p className="mt-2 text-xl font-bold">Add friends to compare when you&apos;re both free.</p>
@@ -130,7 +130,7 @@ function FriendTime() {
             </select>
           </label>
           {person.data && options && (
-            <div className="mt-3 rounded-xl bg-cream p-2 text-pine">
+            <div className="mt-3 rounded-xl bg-cream p-2 text-bark">
               {person.data.match.overlap.length ? (
                 <AvailabilityGrid days={options.days} slots={options.slots} value={{}} highlight={person.data.match.overlap} />
               ) : (
@@ -168,10 +168,10 @@ function EventList({ cancelled }: { cancelled: string | null }) {
       )}
       <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
         <h1 className="text-3xl font-bold sm:text-4xl">Events</h1>
-        <div role="group" aria-label="Which events" className="inline-flex rounded-xl border-2 border-pine p-1">
+        <div role="group" aria-label="Which events" className="inline-flex rounded-xl border-2 border-bark p-1">
           {(["upcoming", "past"] as const).map((w) => (
             <button key={w} aria-pressed={when === w} onClick={() => setWhen(w)}
-              className={`min-h-10 rounded-lg px-4 text-sm font-semibold capitalize ${when === w ? "bg-pine text-cream" : "hover:bg-cream"}`}>
+              className={`min-h-10 rounded-lg px-4 text-sm font-semibold capitalize ${when === w ? "bg-bark text-cream" : "hover:bg-cream"}`}>
               {w}
             </button>
           ))}
@@ -189,7 +189,7 @@ function EventList({ cancelled }: { cancelled: string | null }) {
             {data && events.length === 0 && <p className="mt-3">No {when} events. Plan one!</p>}
             <ul className="mt-3 space-y-3">
               {events.map((e) => (
-                <li key={e.id} className="rounded-2xl bg-cream p-4 text-pine">
+                <li key={e.id} className="rounded-2xl bg-cream p-4 text-bark">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0">
                       <Link href={`/events?id=${e.id}`} className="text-lg font-bold underline-offset-4 hover:underline">{e.title}</Link>
@@ -207,10 +207,10 @@ function EventList({ cancelled }: { cancelled: string | null }) {
         </div>
 
         <div className="space-y-5">
-          <section aria-labelledby="timetable-title" className="rounded-frame bg-forest p-5 text-cream">
-            <h2 id="timetable-title" className="border-b border-cream/70 pb-2 text-3xl">Your timetable</h2>
+          <section aria-labelledby="timetable-title" className="rounded-frame bg-sky-strong p-5 text-bark">
+            <h2 id="timetable-title" className="border-b border-bark/30 pb-2 text-3xl">Your timetable</h2>
             {options && (
-              <div className="mt-3 rounded-xl bg-cream p-2 text-pine">
+              <div className="mt-3 rounded-xl bg-cream p-2 text-bark">
                 <AvailabilityGrid days={options.days} slots={options.slots} value={me.availability} />
               </div>
             )}

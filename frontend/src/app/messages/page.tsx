@@ -67,7 +67,7 @@ function Chat({ friendId, onSent }: { friendId: number; onSent: () => void }) {
         {data.messages.map((m) => (
           <div key={m.id} className={`flex ${m.from_me ? "justify-end" : "items-end gap-2"}`}>
             {!m.from_me && <span className="h-5 w-5 shrink-0 rounded-full border-2 border-cream" aria-hidden="true" />}
-            <div className={`max-w-[78%] rounded-2xl px-4 py-2 text-pine ${m.from_me ? "bg-sage" : "bg-cream"}`}>
+            <div className={`max-w-[78%] rounded-2xl px-4 py-2 text-bark ${m.from_me ? "bg-sky" : "bg-cream"}`}>
               <p className="whitespace-pre-wrap break-words">{m.body}</p>
               <p className="mt-0.5 text-right text-[11px] opacity-70">
                 {m.from_me ? "You" : data.friend.name.split(" ")[0]} · {formatTime(m.created_at)}
@@ -85,9 +85,9 @@ function Chat({ friendId, onSent }: { friendId: number; onSent: () => void }) {
       <form onSubmit={send} className="flex gap-2">
         <label htmlFor="message" className="sr-only">Message {data.friend.name}</label>
         <input id="message" value={draft} maxLength={1000} onChange={(e) => setDraft(e.target.value)}
-          placeholder={`Message ${data.friend.name.split(" ")[0]}…`} className="min-h-11 flex-1 rounded-full bg-cream px-4 text-pine" />
+          placeholder={`Message ${data.friend.name.split(" ")[0]}…`} className="min-h-11 flex-1 rounded-full bg-cream px-4 text-bark" />
         <button type="submit" aria-label="Send" disabled={sending || !draft.trim()}
-          className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-cream text-cream hover:bg-cream hover:text-pine disabled:opacity-50">
+          className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-cream text-cream hover:bg-cream hover:text-bark disabled:opacity-50">
           <SendIcon className="h-5 w-5" />
         </button>
       </form>
@@ -108,8 +108,8 @@ function MessagesContent() {
     <div>
       <h1 className="mb-4 text-3xl font-bold">Messages</h1>
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1fr_340px]">
-        <div className={`rounded-frame bg-forest p-2.5 sm:p-3.5 ${friendId ? "" : "hidden lg:block"}`}>
-          <div className="flex h-[min(70vh,640px)] flex-col rounded-inner bg-pine p-4 sm:p-6">
+        <div className={`rounded-frame bg-bark p-2.5 sm:p-3.5 ${friendId ? "" : "hidden lg:block"}`}>
+          <div className="flex h-[min(70vh,640px)] flex-col rounded-inner bg-bark p-4 sm:p-6">
             {friendId ? (
               <Chat key={friendId} friendId={friendId} onSent={conversations.reload} />
             ) : (
@@ -124,9 +124,9 @@ function MessagesContent() {
           </div>
         </div>
 
-        <div className={`rounded-frame bg-forest p-2.5 sm:p-3.5 ${friendId ? "hidden lg:block" : ""}`}>
-          <div className="flex h-full max-h-[min(70vh,640px)] flex-col rounded-inner bg-sage p-4">
-            <label className="flex items-center gap-2 rounded-full border-2 border-pine px-4">
+        <div className={`rounded-frame bg-bark p-2.5 sm:p-3.5 ${friendId ? "hidden lg:block" : ""}`}>
+          <div className="flex h-full max-h-[min(70vh,640px)] flex-col rounded-inner bg-sky p-4">
+            <label className="flex items-center gap-2 rounded-full border-2 border-bark px-4">
               <SearchIcon className="h-4 w-4" />
               <span className="sr-only">Search friends</span>
               <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search"

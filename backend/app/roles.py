@@ -16,7 +16,7 @@ ROLES = ("member", "moderator", "admin")
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description="Manage Meerkat moderator and admin roles.")
+    parser = argparse.ArgumentParser(description="Manage Meetkat moderator and admin roles.")
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("list", help="show everyone who is a moderator or admin")
     setter = sub.add_parser("set", help="give someone a role")

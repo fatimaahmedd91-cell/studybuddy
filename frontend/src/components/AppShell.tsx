@@ -13,7 +13,7 @@ import { useEffect, useRef, useState } from "react";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { BRAND } from "@/lib/brand";
-import { MeerkatMark } from "./Brand";
+import { MeetkatMark } from "./Brand";
 import { CreateMenu, NotificationBell } from "./HeaderActions";
 import {
   FeedIcon,
@@ -77,7 +77,7 @@ function useHeartbeat() {
 export function Logo({ href = "/feed" }: { href?: string }) {
   return (
     <Link href={href} className="flex min-h-11 items-center gap-2 text-xl font-extrabold tracking-wide sm:text-2xl">
-      <MeerkatMark className="h-9 w-9" />
+      <MeetkatMark className="h-9 w-9" />
       {BRAND.name}
     </Link>
   );
@@ -90,7 +90,7 @@ function Header({ withActions }: { withActions: boolean }) {
       <div className="flex min-w-0 items-center gap-2">
         <Logo />
         {me?.is_demo && (
-          <span className="hidden rounded-full border-2 border-pine bg-sage px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider sm:inline"
+          <span className="hidden rounded-full border-2 border-bark bg-sky px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider sm:inline"
             title="This is a demo account with fictional data">
             Demo account
           </span>
@@ -100,7 +100,7 @@ function Header({ withActions }: { withActions: boolean }) {
         <div className="flex items-center gap-1">
           <CreateMenu />
           <NotificationBell />
-          <Link href="/settings" aria-label="Settings" className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-sage md:hidden">
+          <Link href="/settings" aria-label="Settings" className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-sky md:hidden">
             <SettingsIcon className="h-6 w-6" />
           </Link>
         </div>
@@ -114,10 +114,10 @@ function Sidebar() {
   const { me } = useAuth();
   const item = (active: boolean) =>
     `flex h-[66px] w-[70px] flex-col items-center justify-center gap-1 rounded-full border-2 text-cream transition ${
-      active ? "border-sage-strong bg-cream/10" : "border-transparent hover:border-sage-strong/60"
+      active ? "border-sky-strong bg-cream/10" : "border-transparent hover:border-sky-strong/60"
     }`;
   return (
-    <nav aria-label="Main" className="fixed bottom-0 left-0 top-16 z-30 hidden w-[92px] flex-col items-center bg-pine py-3 md:flex">
+    <nav aria-label="Main" className="fixed bottom-0 left-0 top-16 z-30 hidden w-[92px] flex-col items-center bg-bark py-3 md:flex">
       <ul className="flex flex-1 flex-col items-center gap-1 overflow-y-auto">
         {NAV.map(({ href, label, Icon }) => (
           <li key={href}>
@@ -166,7 +166,7 @@ function MobileNav() {
   const tab = (active: boolean) =>
     `flex min-h-14 w-full flex-col items-center justify-center gap-0.5 text-cream ${active ? "bg-forest" : ""}`;
   return (
-    <nav aria-label="Main" className="fixed inset-x-0 bottom-0 z-30 border-t-2 border-forest bg-pine md:hidden">
+    <nav aria-label="Main" className="fixed inset-x-0 bottom-0 z-30 border-t-2 border-sky-strong bg-bark md:hidden">
       <ul className="grid grid-cols-5">
         {NAV.filter((n) => n.phone).map(({ href, label, Icon }) => {
           const active = isActive(pathname, href);
@@ -187,18 +187,18 @@ function MobileNav() {
               <span className="text-[10px] leading-tight">More</span>
             </button>
             {moreOpen && (
-              <ul role="menu" className="absolute bottom-full right-1 mb-2 w-52 overflow-hidden rounded-2xl border-2 border-forest bg-cream text-pine shadow-lg">
+              <ul role="menu" className="absolute bottom-full right-1 mb-2 w-52 overflow-hidden rounded-2xl border-2 border-bark bg-cream text-bark shadow-lg">
                 {extra.map(({ href, label, Icon }) => (
                   <li key={href} role="none">
                     <Link role="menuitem" href={href} aria-current={isActive(pathname, href) ? "page" : undefined}
-                      className="flex min-h-12 items-center gap-3 px-4 hover:bg-sage">
+                      className="flex min-h-12 items-center gap-3 px-4 hover:bg-sky">
                       <Icon className="h-5 w-5" /> {label}
                     </Link>
                   </li>
                 ))}
                 {me && me.role !== "member" && (
                   <li role="none">
-                    <Link role="menuitem" href="/moderation" className="flex min-h-12 items-center gap-3 px-4 hover:bg-sage">
+                    <Link role="menuitem" href="/moderation" className="flex min-h-12 items-center gap-3 px-4 hover:bg-sky">
                       <ShieldIcon className="h-5 w-5" /> Moderation
                     </Link>
                   </li>
@@ -251,7 +251,7 @@ function LoggedIn({ onboarding, children }: { onboarding: boolean; children: Rea
   useHeartbeat();
   return (
     <>
-      <a href="#main" className="sr-only z-50 rounded bg-pine px-4 py-2 text-cream focus:not-sr-only focus:fixed focus:left-2 focus:top-2">
+      <a href="#main" className="sr-only z-50 rounded bg-bark px-4 py-2 text-cream focus:not-sr-only focus:fixed focus:left-2 focus:top-2">
         Skip to content
       </a>
       <Header withActions={!onboarding} />

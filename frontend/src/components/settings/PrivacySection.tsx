@@ -13,7 +13,7 @@ import { useApi } from "@/lib/useApi";
 import { useSave } from "./useSave";
 
 const AUDIENCES: { value: Audience; label: string; hint: string }[] = [
-  { value: "everyone", label: "Everyone on Meerkat", hint: "Matches and planning can use your public free times." },
+  { value: "everyone", label: "Everyone on Meetkat", hint: "Matches and planning can use your public free times." },
   { value: "friends", label: "Friends only", hint: "Only friends see times you're both free and can plan around them." },
   { value: "nobody", label: "Nobody", hint: "Your public free times are only used for your own planning." },
 ];
@@ -52,7 +52,7 @@ export function PrivacySection() {
           {AUDIENCES.map((a) => (
             <label key={a.value} className="flex min-h-11 items-start gap-3">
               <input type="radio" name="availability-audience" checked={me.availability_audience === a.value}
-                onChange={() => update({ availability_audience: a.value }, "Saved.")} className="mt-1 h-5 w-5 accent-pine" />
+                onChange={() => update({ availability_audience: a.value }, "Saved.")} className="mt-1 h-5 w-5 accent-bark" />
               <span><b>{a.label}</b><span className="block text-sm">{a.hint}</span></span>
             </label>
           ))}

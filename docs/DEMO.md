@@ -8,7 +8,7 @@
 
 | # | Do | Say |
 |---|---|---|
-| 1 | Landing page → **Try the demo** → tick the box → **Accept and continue**. | "Meerkat: finding your mob shouldn't be up to chance. It's for adults looking for *friends*, not dates. Even the demo asks you to accept the Terms, and everything in the demo is fictional and marked *Demo*." |
+| 1 | Landing page → **Try the demo** → tick the box → **Accept and continue**. | "Meetkat: finding your mob shouldn't be up to chance. It's for adults looking for *friends*, not dates. Even the demo asks you to accept the Terms, and everything in the demo is fictional and marked *Demo*." |
 | 2 | **Discover**. Point at the match % and its reasons. Use the **Interest** filter. | "Matching is simple and explainable: shared interests, goals, campus and free time. No AI decides who you see." |
 | 3 | **View profile** on someone. Scroll to the **match note** → open **"What was sent to Gemini?"** | "Gemini writes the conversation starter, from only what you two share. Never names, photos or messages. AI is a choice each person makes in Settings, and both people have to say yes." |
 | 4 | **Plan** → tick Daniel → **Find times**. Point at **Daniel: Included**. | "These free times are calculated exactly, not by AI. Daniel let friends' plans use his private schedule, so his classes and shifts are avoided, but we never see what they are. Friends only ever see *when* you're both free." |

@@ -1,4 +1,4 @@
-# Meerkat
+# Meetkat
 
 **Finding your mob shouldn't be up to chance.**
 
@@ -159,5 +159,5 @@ Check that everything is connected at http://localhost:3000/api/health (you want
 | `python` / `npm` is not recognized | Install it (see "You need"), then open a new terminal. On Windows try `py` instead of `python`. |
 | The website says the server isn't reachable | Is terminal 1 (the API) still running? Open http://127.0.0.1:8000/api/health |
 | `/api/health` says the database isn't available | Check `DATABASE_URL` in `backend/.env`, and that Postgres is running. TigerData URLs need `?sslmode=require` on the end. |
-| Match notes say "Suggested by Meerkat (not AI)" | That's the fallback, and the note says why. Either AI is off for one of you (Settings → Privacy), or Gemini isn't set up or failed (check `GEMINI_API_KEY`). |
+| Match notes say "Suggested by Meetkat (not AI)" | That's the fallback, and the note says why. Either AI is off for one of you (Settings → Privacy), or Gemini isn't set up or failed (check `GEMINI_API_KEY`). |
 | `Too many sign-ups from this network` | The sign-up limit is 10 per hour per network. Restart the API to clear it locally. |

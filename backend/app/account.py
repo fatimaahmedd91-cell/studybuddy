@@ -141,9 +141,9 @@ def change_password(body: PasswordChange, me: CurrentUser):
 
 
 RESET_MINUTES = 15
-RESET_UNAVAILABLE = "Password reset by email isn't set up on this server yet. Ask the Meerkat team for help."
+RESET_UNAVAILABLE = "Password reset by email isn't set up on this server yet. Ask the Meetkat team for help."
 RESET_REQUESTED = (
-    "If that email belongs to a Meerkat account, we'll send a reset code there. "
+    "If that email belongs to a Meetkat account, we'll send a reset code there. "
     "It can take a few minutes, so check your spam folder too."
 )
 RESET_BAD_CODE = "That code is wrong or has expired."
@@ -167,8 +167,8 @@ def send_reset_email(email, code, record_id):
     try:
         verification.send_email(
             email,
-            "Reset your Meerkat password",
-            f"Your Meerkat password reset code is {code}. It expires in {RESET_MINUTES} minutes.\n\n"
+            "Reset your Meetkat password",
+            f"Your Meetkat password reset code is {code}. It expires in {RESET_MINUTES} minutes.\n\n"
             "If you didn't ask to reset your password, you can ignore this email. Your password stays the same.",
         )
     except verification.SendFailed:
@@ -182,7 +182,7 @@ def request_password_reset(body: ResetRequest, request: Request, background: Bac
     """Emails a 6-digit reset code (15 minutes, 5 tries), if this server has SMTP set up.
 
     The answer is the same whether or not the email has an account, so this can't be used to find
-    out who uses Meerkat. For the same reason, a resend limit or a failed send is only logged, not
+    out who uses Meetkat. For the same reason, a resend limit or a failed send is only logged, not
     reported: the person is told to check their email and can try again later. That's a deliberate
     privacy trade-off. Demo and suspended accounts never get a code.
     The email is sent after the answer goes out, so the answer doesn't take longer for real accounts
@@ -333,7 +333,7 @@ EXPORT_QUERIES = [
 
 @router.get("/me/export")
 def export_my_data(me: CurrentUser):
-    """Everything Meerkat stores about you (photo files are listed, not included)."""
+    """Everything Meetkat stores about you (photo files are listed, not included)."""
     data = {"profile": own_profile(me)}
     with get_connection() as conn, conn.cursor() as cur:
         for name, table, sql in EXPORT_QUERIES:

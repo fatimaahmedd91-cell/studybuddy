@@ -1,6 +1,6 @@
-# Meerkat website (Next.js + TypeScript + Tailwind)
+# Meetkat website (Next.js + TypeScript + Tailwind)
 
-Forest and sage greens on warm neutral backgrounds: a dark pine sidebar, a cream header, a sand page, and green-framed cards.
+Colours from the logo: its dark brown (sidebar, text, card frames), its light blue (inside cards and highlighted panels) and its cream (page background), with green only for the main buttons and switches.
 Everything you see comes from the API. There's no fake data in the website.
 The name and slogan ("Finding your mob shouldn't be up to chance.") live in `src/lib/brand.ts`. Change them there only.
 
@@ -38,7 +38,7 @@ While developing, `/api/...` requests are forwarded to the API on 127.0.0.1:8000
 | `/messages?with=3` | `messages/page.tsx` | Chats with friends (report a message, block) |
 | `/groups`, `?id=2` | `groups/page.tsx` | Group list, one group (members, events, discussion, report). The owner can edit it, delete it (typing its name to confirm) and remove members. |
 | `/events`, `?id=5` | `events/page.tsx` | Calendar, upcoming and past events, one event, free times with a friend. The organiser can edit or cancel an event (using the create form in `components/CreateForms.tsx`). |
-| `/screen-time`, `?tab=groups`, `?group=7` | `screen-time/page.tsx` | **My time**: time in Meerkat, daily goal, self-reported phone screen time. **Groups**: screen-time groups and leaderboards |
+| `/screen-time`, `?tab=groups`, `?group=7` | `screen-time/page.tsx` | **My time**: time in Meetkat, daily goal, self-reported phone screen time. **Groups**: screen-time groups and leaderboards |
 | `/settings` | `settings/page.tsx` | Profile, account and contact, verification, privacy and availability, notifications, blocked people, Terms and privacy (download your data, privacy requests, delete account), system status |
 | `/moderation` | `moderation/page.tsx` | Report queue, suspensions, action log, privacy requests (admins). Members see "only for moderators", and the server refuses them too. |
 | `/terms`, `/privacy`, `/guidelines` | `terms/`, `privacy/`, `guidelines/` | The **draft** Terms of Service, Privacy Policy and Community Guidelines. Open to everyone, logged in or not. |
@@ -53,7 +53,7 @@ If someone hasn't accepted the current Terms, every app page shows the Terms scr
 | File | What it is |
 |---|---|
 | `AppShell.tsx` | header, sidebar, phone tab bar, which pages need you to be logged in, and the Terms gate |
-| `Brand.tsx` | the meerkat logo |
+| `Brand.tsx` | the logo (the image `public/logo.png`; the browser-tab icons are `src/app/icon.png` and `src/app/apple-icon.png`) |
 | `HeaderActions.tsx` | the **+** create menu and the notifications bell |
 | `ui.tsx` | buttons (`primary`, `dark`, `outline`, `light`, `danger`), `FrameCard`, `DarkPanel`, form fields, chips, the Demo badge, page headings, `Toggle` switches, `SettingsSection` |
 | `States.tsx` | loading, error (with "Try again"), empty, and success/error/warning/info notices |
@@ -66,7 +66,7 @@ If someone hasn't accepted the current Terms, every app page shows the Terms scr
 | `ProfileViews.tsx` | the info view and the expressive (stickers) view |
 | `VerificationBadges.tsx` | specific labels like "Email verified". Never a general "Verified". |
 | `FriendButton.tsx` | Add friend → Request sent → Friends, or Accept / Decline |
-| `MatchInsight.tsx` | the Gemini note or the "Suggested by Meerkat (not AI)" fallback, with "What was sent to Gemini?" |
+| `MatchInsight.tsx` | the Gemini note or the "Suggested by Meetkat (not AI)" fallback, with "What was sent to Gemini?" |
 | `SafetyActions.tsx` | the **Report** dialog and the **Block** button (the server enforces both) |
 | `CreateForms.tsx` | create a group, create an event |
 | `ScreenTimeGroups.tsx` | screen-time group list, invitations, one group and its leaderboard |
@@ -89,14 +89,14 @@ If someone hasn't accepted the current Terms, every app page shows the Terms scr
 | `content/legal.ts` | the Terms, Privacy Policy and Guidelines text. `LEGAL_CONFIG` holds the placeholders (company name, contact email…) the team must fill in; pages show them highlighted until then. |
 
 **Colours** live in `src/app/globals.css` under `@theme` (with Tailwind v4 that replaces `tailwind.config.js`).
-Change a colour there and it changes everywhere. Use them as classes, for example `bg-pine`, `text-cream`, `bg-forest`, `border-sage-strong`:
+Change a colour there and it changes everywhere. Use them as classes, for example `bg-bark`, `text-cream`, `bg-forest`, `border-sky-strong`:
 
 | Token | Used for |
 |---|---|
-| `pine` | deepest green: sidebar, dark panels, main text |
-| `forest` | main buttons, card frames, strong accents |
-| `sage-strong`, `sage` | selected items; soft highlights inside cards |
-| `cream`, `sand` | header, inputs and cards; the page background |
+| `bark` | the logo's brown: sidebar, dark panels, card frames, main text |
+| `forest` | green, used sparingly: main buttons, switches, unread dots, progress bars |
+| `sky-strong`, `sky` | the logo's blue: highlighted panels and selected items; the light blue inside cards |
+| `cream`, `sand` | header, inputs and cards; the page background (the logo's cream) |
 | `danger`, `warning`, `success` (+ `-soft`) | errors and destructive buttons; "check this" notes; success messages |
 
 Corner sizes are tokens too: `rounded-frame` (outer frames) and `rounded-inner` (cards inside them).

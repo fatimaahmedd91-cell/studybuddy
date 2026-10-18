@@ -24,7 +24,7 @@ export default function SettingsPage() {
       <PageHeading title="Settings" />
       <nav aria-label="Settings sections" className="mb-5 flex flex-wrap gap-2">
         {SECTIONS.map(([id, label]) => (
-          <a key={id} href={`#${id}`} className="inline-flex min-h-11 items-center rounded-full border-2 border-forest bg-cream px-4 text-sm font-semibold hover:bg-sage">
+          <a key={id} href={`#${id}`} className="inline-flex min-h-11 items-center rounded-full border-2 border-bark bg-cream px-4 text-sm font-semibold hover:bg-sky">
             {label}
           </a>
         ))}

@@ -68,13 +68,13 @@ function PhotoField({ form, setForm }: { form: Form; setForm: (f: Form) => void 
     photo_url: me?.photo_url ?? null };
 
   return (
-    <fieldset className="rounded-2xl border-2 border-pine/20 p-4">
+    <fieldset className="rounded-2xl border-2 border-bark/20 p-4">
       <legend className="px-1 text-sm font-semibold">Profile picture</legend>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
         <Avatar person={preview} size="lg" />
         <div className="flex-1 space-y-3">
           <div className="flex flex-wrap gap-2">
-            <label className={`inline-flex min-h-11 cursor-pointer items-center rounded-xl bg-pine px-4 font-semibold text-cream ${busy ? "opacity-50" : ""}`}>
+            <label className={`inline-flex min-h-11 cursor-pointer items-center rounded-xl bg-bark px-4 font-semibold text-cream ${busy ? "opacity-50" : ""}`}>
               {busy ? "Working…" : me?.photo_url ? "Change photo" : "Upload a photo"}
               <input type="file" accept="image/*" className="sr-only" disabled={busy}
                 onChange={(e) => upload(e.target.files?.[0])} />
@@ -91,7 +91,7 @@ function PhotoField({ form, setForm }: { form: Form; setForm: (f: Form) => void 
               {EMOJIS.map((emoji) => (
                 <button key={emoji} type="button" aria-pressed={form.avatar_emoji === emoji}
                   onClick={() => setForm({ ...form, avatar_emoji: emoji })}
-                  className={`h-11 w-11 rounded-lg text-2xl ${form.avatar_emoji === emoji ? "bg-pine/15 ring-2 ring-pine" : "hover:bg-cream"}`}>
+                  className={`h-11 w-11 rounded-lg text-2xl ${form.avatar_emoji === emoji ? "bg-bark/15 ring-2 ring-bark" : "hover:bg-cream"}`}>
                   {emoji}
                 </button>
               ))}
@@ -100,7 +100,7 @@ function PhotoField({ form, setForm }: { form: Form; setForm: (f: Form) => void 
               {COLOURS.map((colour) => (
                 <button key={colour} type="button" aria-pressed={form.avatar_color === colour}
                   aria-label={`Colour ${colour}`} onClick={() => setForm({ ...form, avatar_color: colour })}
-                  className={`h-11 w-11 rounded-full border-4 ${form.avatar_color === colour ? "border-pine" : "border-cream"}`}
+                  className={`h-11 w-11 rounded-full border-4 ${form.avatar_color === colour ? "border-bark" : "border-cream"}`}
                   style={{ background: colour }} />
               ))}
             </div>
@@ -223,7 +223,7 @@ export default function ProfileForm({
         <select id="availability-audience" value={form.availability_audience}
           onChange={(e) => set("availability_audience", e.target.value as Form["availability_audience"])}
           className={`${inputClass} mt-1`}>
-          <option value="everyone">Everyone on Meerkat (for matching and planning)</option>
+          <option value="everyone">Everyone on Meetkat (for matching and planning)</option>
           <option value="friends">Friends only</option>
           <option value="nobody">Nobody (only for my own planning)</option>
         </select>
@@ -233,7 +233,7 @@ export default function ProfileForm({
 
       <label className="flex min-h-11 items-center gap-3 text-sm font-semibold">
         <input type="checkbox" checked={form.stickers} onChange={(e) => set("stickers", e.target.checked)}
-          className="h-5 w-5 accent-pine" />
+          className="h-5 w-5 accent-bark" />
         Show playful stickers around my photo on my expressive profile
       </label>
 

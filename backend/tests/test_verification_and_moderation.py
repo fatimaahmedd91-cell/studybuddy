@@ -18,7 +18,7 @@ def outbox(monkeypatch):
     """Pretends SMTP is set up and collects the emails instead of sending them."""
     sent = []
     monkeypatch.setattr(config, "SMTP_HOST", "smtp.example.com")
-    monkeypatch.setattr(config, "SMTP_FROM", "Meerkat <hello@example.com>")
+    monkeypatch.setattr(config, "SMTP_FROM", "Meetkat <hello@example.com>")
     monkeypatch.setattr(verification, "send_email", lambda to, subject, body: sent.append((to, body)))
     return sent
 

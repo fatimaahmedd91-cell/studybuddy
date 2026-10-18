@@ -8,7 +8,7 @@
 // The Terms version people accept is TERMS_VERSION in backend/.env; raise it when the Terms change materially.
 
 export const LEGAL_CONFIG = {
-  operator: "[INSERT LEGAL NAME OF INDIVIDUAL(S) OR ENTITY OPERATING MEERKAT]",
+  operator: "[INSERT LEGAL NAME OF INDIVIDUAL(S) OR ENTITY OPERATING MEETKAT]",
   supportEmail: "[INSERT MONITORED SUPPORT EMAIL]",
   privacyContact: "[INSERT NAME OR ROLE AND EMAIL]",
   privacyEmail: "[INSERT MONITORED EMAIL]",
@@ -29,7 +29,7 @@ export type LegalDoc = { title: string; meta: [string, string][]; intro: Block[]
 const C = LEGAL_CONFIG;
 
 export const TERMS: LegalDoc = {
-  title: "Meerkat Terms of Service",
+  title: "Meetkat Terms of Service",
   meta: [
     ["Effective date", C.termsEffectiveDate],
     ["Operator", C.operator],
@@ -38,11 +38,11 @@ export const TERMS: LegalDoc = {
   intro: [],
   sections: [
     {
-      heading: "1. About Meerkat",
+      heading: "1. About Meetkat",
       blocks: [
-        "Meerkat is a platform intended to help people form platonic friendships, discover groups and events, share memories, and coordinate activities using shared interests and availability.",
-        "In these Terms, “Meerkat,” “we,” “us,” and “our” refer to the operator identified above. “You” refers to the person using the service.",
-        "These Terms govern your access to Meerkat. Our Community Guidelines form part of these Terms. Our Privacy Policy explains how we handle personal information.",
+        "Meetkat is a platform intended to help people form platonic friendships, discover groups and events, share memories, and coordinate activities using shared interests and availability.",
+        "In these Terms, “Meetkat,” “we,” “us,” and “our” refer to the operator identified above. “You” refers to the person using the service.",
+        "These Terms govern your access to Meetkat. Our Community Guidelines form part of these Terms. Our Privacy Policy explains how we handle personal information.",
         "Some features may be experimental, unavailable, or offered only to selected users. A description of a feature does not mean it is currently available.",
       ],
     },
@@ -73,7 +73,7 @@ export const TERMS: LegalDoc = {
     {
       heading: "4. Verification and badges",
       blocks: [
-        "Meerkat may offer email, phone, age, university, or other verification features.",
+        "Meetkat may offer email, phone, age, university, or other verification features.",
         "Each verification label refers only to the particular check described alongside it. For example:",
         { list: [
           "Email verification indicates completion of an email-control check.",
@@ -89,10 +89,10 @@ export const TERMS: LegalDoc = {
     {
       heading: "5. Friendship, groups, and offline activities",
       blocks: [
-        "Meerkat is intended for platonic social connection. Other users are responsible for their own statements, invitations, and conduct.",
+        "Meetkat is intended for platonic social connection. Other users are responsible for their own statements, invitations, and conduct.",
         "You decide whether to communicate, share information, join a group, or attend an activity. Use reasonable precautions, including meeting in public places, protecting private addresses, and independently checking activity details.",
-        "Unless expressly identified otherwise, Meerkat is not the organizer, venue operator, transportation provider, or supervisor of user-created activities.",
-        "Meerkat is not an emergency service. Contact the appropriate emergency services if someone is in immediate danger.",
+        "Unless expressly identified otherwise, Meetkat is not the organizer, venue operator, transportation provider, or supervisor of user-created activities.",
+        "Meetkat is not an emergency service. Contact the appropriate emergency services if someone is in immediate danger.",
         "Nothing in this section excludes responsibilities that cannot lawfully be excluded.",
       ],
     },
@@ -119,7 +119,7 @@ export const TERMS: LegalDoc = {
     {
       heading: "8. Screen-time features",
       blocks: [
-        "Meerkat may provide in-app activity tracking, self-reported screen-time entries, or separately identified supported integrations.",
+        "Meetkat may provide in-app activity tracking, self-reported screen-time entries, or separately identified supported integrations.",
         "These are different measurements. In-app activity is not a measurement of all device use. Self-reported entries are not independently verified unless expressly stated.",
         "Group targets, progress indicators, and leaderboards are social accountability features, not medical advice or an assessment of someone’s health, productivity, or character.",
         "You must not use these features to coerce, humiliate, threaten, or monitor another person without permission.",
@@ -130,7 +130,7 @@ export const TERMS: LegalDoc = {
       heading: "9. Your content and permissions",
       blocks: [
         "You retain ownership of content you submit, subject to any rights held by others.",
-        "You grant Meerkat a non-exclusive, worldwide, royalty-free license to host, store, reproduce, technically adapt, and display that content only as reasonably necessary to:",
+        "You grant Meetkat a non-exclusive, worldwide, royalty-free license to host, store, reproduce, technically adapt, and display that content only as reasonably necessary to:",
         { list: [
           "Operate the service.",
           "Deliver the sharing features and audience choices you select.",
@@ -158,7 +158,7 @@ export const TERMS: LegalDoc = {
           "Upload malicious software or attempt unauthorized access.",
           "Scrape private data, evade access controls, or bypass suspensions.",
           "Manipulate verification, requests, reports, or leaderboards.",
-          "Use Meerkat for sexual exploitation or to target minors.",
+          "Use Meetkat for sexual exploitation or to target minors.",
           "Use another person’s schedules or location information to follow or surveil them.",
         ] },
       ],
@@ -176,8 +176,8 @@ export const TERMS: LegalDoc = {
     {
       heading: "12. Third-party services and optional blockchain features",
       blocks: [
-        "Meerkat may rely on third parties for hosting, authentication, AI, maps, storage, verification, or other functions. Relevant third-party terms may apply when you use their services.",
-        "The presence of a provider or sponsor name does not mean that provider endorses Meerkat or every activity offered through it.",
+        "Meetkat may rely on third parties for hosting, authentication, AI, maps, storage, verification, or other functions. Relevant third-party terms may apply when you use their services.",
+        "The presence of a provider or sponsor name does not mean that provider endorses Meetkat or every activity offered through it.",
         "If an optional blockchain feature is offered:",
         { list: [
           "We will identify whether it uses a test network or main network.",
@@ -201,7 +201,7 @@ export const TERMS: LegalDoc = {
     {
       heading: "14. Account closure and data requests",
       blocks: [
-        `You may stop using Meerkat and request account closure through ${C.closurePath}.`,
+        `You may stop using Meetkat and request account closure through ${C.closurePath}.`,
         "Account closure and personal-information deletion are related but distinct processes. Some information may need to be retained for legitimate security, dispute, or legal purposes as described in the Privacy Policy.",
         "You may contact us to request access to, correction of, or deletion of your personal information, subject to applicable law.",
       ],
@@ -209,7 +209,7 @@ export const TERMS: LegalDoc = {
     {
       heading: "15. Disclaimers and responsibility",
       blocks: [
-        "To the extent permitted by applicable law, Meerkat is provided on an “as available” basis, without a guarantee of uninterrupted operation, error-free output, successful friendships, or the conduct of other users.",
+        "To the extent permitted by applicable law, Meetkat is provided on an “as available” basis, without a guarantee of uninterrupted operation, error-free output, successful friendships, or the conduct of other users.",
         "We are not responsible for every act of another user or independent third-party provider. Responsibility for a particular loss depends on the circumstances and applicable law.",
         "Nothing in these Terms excludes liability that cannot lawfully be excluded, excuses our own fraud or wilful misconduct, or removes mandatory privacy, consumer, or other statutory rights.",
       ],
@@ -244,9 +244,9 @@ export const TERMS: LegalDoc = {
 };
 
 export const GUIDELINES: LegalDoc = {
-  title: "Meerkat Community Guidelines",
+  title: "Meetkat Community Guidelines",
   meta: [],
-  intro: ["Meerkat exists to help people find their mob through respectful, platonic connection."],
+  intro: ["Meetkat exists to help people find their mob through respectful, platonic connection."],
   sections: [
     { heading: "1. Be respectful", blocks: [
       "No bullying, harassment, threats, hateful conduct, discriminatory abuse, or repeated unwanted contact.",
@@ -269,7 +269,7 @@ export const GUIDELINES: LegalDoc = {
     { heading: "5. Keep the platform appropriate", blocks: [
       "Do not post sexual exploitation, non-consensual intimate material, explicit sexual solicitation, graphic threats, or content promoting abuse.",
       "Content involving the sexual exploitation of children is prohibited.",
-      "Meerkat is not a service for targeting minors or arranging exploitative relationships.",
+      "Meetkat is not a service for targeting minors or arranging exploitative relationships.",
     ] },
     { heading: "6. No scams or harmful conduct", blocks: [
       "No fraud, phishing, malware, deceptive fundraising, illegal sales, or instructions intended to facilitate harm against another person.",
@@ -296,7 +296,7 @@ export const GUIDELINES: LegalDoc = {
 };
 
 export const PRIVACY: LegalDoc = {
-  title: "Meerkat Privacy Policy",
+  title: "Meetkat Privacy Policy",
   meta: [
     ["Effective date", C.privacyEffectiveDate],
     ["Version", C.privacyVersion],
@@ -304,9 +304,9 @@ export const PRIVACY: LegalDoc = {
   intro: [],
   sections: [
     { heading: "1. Who is responsible", blocks: [
-      `Meerkat is operated by ${C.operator}.`,
+      `Meetkat is operated by ${C.operator}.`,
       `Our privacy contact is ${C.privacyContact}, reachable at ${C.privacyEmail}.`,
-      "This Policy explains how we collect, use, disclose, retain, and protect personal information when you use Meerkat.",
+      "This Policy explains how we collect, use, disclose, retain, and protect personal information when you use Meetkat.",
     ] },
     { heading: "2. Information we collect", blocks: [
       "Depending on the features you use, we may collect:",
@@ -346,9 +346,9 @@ export const PRIVACY: LegalDoc = {
       "Private commitments are not intended to be public. Planning participants may see shared free-time results without seeing the underlying private event titles or reasons you are unavailable.",
       "Email addresses, phone numbers, verification materials, and private starting locations are not intended to be public profile fields.",
       "Members of a screen-time group can see the usage entries you choose to share within that group.",
-      "Recipients may copy or screenshot information they can access. Audience controls cannot prevent every action taken outside Meerkat.",
+      "Recipients may copy or screenshot information they can access. Audience controls cannot prevent every action taken outside Meetkat.",
       "[CONFIRM DEFAULT AUDIENCES AND THE EXACT VISIBILITY OF EVERY FIELD BEFORE PUBLICATION.]",
-      { note: "Defaults in the code today: profiles are visible to logged-in members (you can hide yourself from Discover); public free-time slots: everyone on Meerkat (changeable to friends or nobody); memories: friends; email, phone, private commitments and meeting areas: never shown to others." },
+      { note: "Defaults in the code today: profiles are visible to logged-in members (you can hide yourself from Discover); public free-time slots: everyone on Meetkat (changeable to friends or nobody); memories: friends; email, phone, private commitments and meeting areas: never shown to others." },
     ] },
     { heading: "5. AI processing", blocks: [
       "When you use [IDENTIFY AI FEATURES], we send [IDENTIFY ACTUAL DATA FIELDS] to [IDENTIFY PROVIDER AND RELEVANT SERVICE] to produce the requested result.",
@@ -366,12 +366,12 @@ export const PRIVACY: LegalDoc = {
         "Whether the method estimates age or verifies a stated age attribute.",
         "Who receives the information.",
         "How long it is kept.",
-        "What result Meerkat receives.",
+        "What result Meetkat receives.",
         "Any available alternative or review process.",
       ] },
-      "Meerkat receives and stores [INSERT VERIFIED DATA FIELDS]. Raw images and any biometric information are handled as follows: [INSERT VERIFIED STORAGE AND DELETION PRACTICES].",
+      "Meetkat receives and stores [INSERT VERIFIED DATA FIELDS]. Raw images and any biometric information are handled as follows: [INSERT VERIFIED STORAGE AND DELETION PRACTICES].",
       "[DO NOT ENABLE THIS FLOW UNTIL THIS SECTION CAN BE COMPLETED ACCURATELY.]",
-      { note: "Today: no age-assurance provider is integrated, the selfie check is switched off, and Meerkat never takes, stores or analyses selfies." },
+      { note: "Today: no age-assurance provider is integrated, the selfie check is switched off, and Meetkat never takes, stores or analyses selfies." },
     ] },
     { heading: "7. Service providers and disclosures", blocks: [
       "We use the following providers where configured:",
@@ -423,7 +423,7 @@ export const PRIVACY: LegalDoc = {
       { note: "Working routes today: Settings → Privacy (AI and location choices), Settings → Terms and privacy (download your data, send a privacy request, delete your account). Requests go to the admins' queue." },
     ] },
     { heading: "12. Age restriction", blocks: [
-      "Meerkat’s initial launch is intended for adults aged 18 and over.",
+      "Meetkat’s initial launch is intended for adults aged 18 and over.",
       `If you believe an ineligible person has created an account, contact ${C.supportEmail} so we can investigate and take appropriate action.`,
     ] },
     { heading: "13. Policy changes", blocks: [
@@ -449,7 +449,7 @@ export const PRIVACY_SUMMARY: string[] = [
   "Your private schedule (classes, shifts) is only ever seen by you. Planning can use it to find free times only for the friends or groups you allow, and they see the resulting free times, never your events.",
   "AI (Google Gemini) is off unless you turn it on. When it's on, only shared interests, goals, university and shared free times are sent, never your name, photo, messages or contact details.",
   "Location is optional: you can choose an approximate meeting area (about 1 km precision). Others never see it.",
-  "There's no selfie age check yet, and Meerkat never analyses faces.",
+  "There's no selfie age check yet, and Meetkat never analyses faces.",
   "You can download your data or delete your account at any time in Settings → Terms and privacy.",
 ];
 

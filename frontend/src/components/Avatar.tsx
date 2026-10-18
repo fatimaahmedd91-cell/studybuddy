@@ -19,7 +19,7 @@ export default function Avatar({
 }) {
   return (
     <div
-      className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-full border-pine ${SIZES[size]}`}
+      className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-full border-bark ${SIZES[size]}`}
       style={{ background: person.photo_url ? "var(--color-cream)" : `${person.avatar_color}33` }}
     >
       {person.photo_url ? (

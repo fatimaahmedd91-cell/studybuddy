@@ -1,39 +1,39 @@
 // Small building blocks used on every page, so the whole site matches the design.
-// Colours come from the tokens in src/app/globals.css (pine, forest, sage, cream, sand, danger...).
+// Colours come from the tokens in src/app/globals.css (bark, forest, sky, cream, sand, danger...).
 import Link from "next/link";
 
-// The thick forest-green frame with a soft sage inside, used for most cards.
+// The thick brown frame with a soft blue inside (like the logo), used for most cards.
 export function FrameCard({
   children,
   className = "",
-  inner = "bg-sage",
+  inner = "bg-sky",
 }: {
   children: React.ReactNode;
   className?: string;
   inner?: string;
 }) {
   return (
-    <div className={`rounded-frame bg-forest p-2.5 sm:p-3.5 ${className}`}>
+    <div className={`rounded-frame bg-bark p-2.5 sm:p-3.5 ${className}`}>
       <div className={`h-full rounded-inner ${inner}`}>{children}</div>
     </div>
   );
 }
 
-// A dark pine-green panel with cream text, like "Upcoming Events!" in the design.
+// A dark brown panel with cream text, like "Upcoming Events!" in the design.
 export function DarkPanel({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <section className={`rounded-frame bg-pine p-5 text-cream sm:p-6 ${className}`}>{children}</section>;
+  return <section className={`rounded-frame bg-bark p-5 text-cream sm:p-6 ${className}`}>{children}</section>;
 }
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "dark" | "outline" | "light" | "danger";
 };
 
-// primary: forest green, for the main action on a screen. dark: pine, for actions on light cards.
+// primary: green, for the main action on a screen. dark: brown, for actions on light cards.
 const VARIANTS = {
-  primary: "bg-forest text-cream hover:bg-pine",
-  dark: "bg-pine text-cream hover:brightness-125",
-  outline: "border-2 border-pine text-pine hover:bg-cream",
-  light: "bg-cream text-pine hover:bg-sage",
+  primary: "bg-forest text-cream hover:bg-bark",
+  dark: "bg-bark text-cream hover:brightness-125",
+  outline: "border-2 border-bark text-bark hover:bg-cream",
+  light: "bg-cream text-bark hover:bg-sky",
   danger: "border-2 border-danger text-danger hover:bg-cream",
 };
 
@@ -102,12 +102,12 @@ export function Field({
 }
 
 export const inputClass =
-  "w-full min-h-11 rounded-xl border-2 border-pine/30 bg-cream px-3 py-2 text-pine placeholder:text-pine/50 focus:border-pine";
+  "w-full min-h-11 rounded-xl border-2 border-bark/30 bg-cream px-3 py-2 text-bark placeholder:text-bark/50 focus:border-bark";
 
 export function Chip({ children, strong = false }: { children: React.ReactNode; strong?: boolean }) {
   return (
     <span
-      className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${strong ? "bg-pine text-cream" : "bg-cream text-pine"}`}
+      className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${strong ? "bg-bark text-cream" : "bg-cream text-bark"}`}
     >
       {children}
     </span>
@@ -117,7 +117,7 @@ export function Chip({ children, strong = false }: { children: React.ReactNode; 
 export function DemoBadge() {
   return (
     <span
-      className="rounded-full border border-pine/40 bg-sand px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-pine"
+      className="rounded-full border border-bark/40 bg-sand px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-bark"
       title="Fictional demo data"
     >
       Demo
@@ -159,7 +159,7 @@ export function Toggle({
         <input type="checkbox" role="switch" checked={checked} disabled={disabled}
           onChange={(e) => onChange(e.target.checked)} className="peer sr-only" />
         <span aria-hidden="true"
-          className="h-7 w-12 rounded-full bg-sage-strong transition peer-checked:bg-forest peer-focus-visible:outline peer-focus-visible:outline-3 peer-focus-visible:outline-forest peer-disabled:opacity-50" />
+          className="h-7 w-12 rounded-full bg-sky-strong transition peer-checked:bg-forest peer-focus-visible:outline peer-focus-visible:outline-3 peer-focus-visible:outline-forest peer-disabled:opacity-50" />
         <span aria-hidden="true"
           className="absolute left-1 top-1 h-5 w-5 rounded-full bg-cream shadow transition peer-checked:translate-x-5" />
       </span>

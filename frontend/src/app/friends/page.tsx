@@ -15,7 +15,7 @@ import { useApi } from "@/lib/useApi";
 function RequestRow({ entry, kind, onDone }: { entry: FriendEntry; kind: "incoming" | "outgoing"; onDone: () => void }) {
   const p = entry.person;
   return (
-    <li className="flex flex-col gap-3 rounded-2xl bg-sage p-3 sm:flex-row sm:items-center">
+    <li className="flex flex-col gap-3 rounded-2xl bg-sky p-3 sm:flex-row sm:items-center">
       <Link href={`/profile?id=${p.id}`} className="flex min-w-0 flex-1 items-center gap-3">
         <Avatar person={p} size="sm" />
         <span className="min-w-0">

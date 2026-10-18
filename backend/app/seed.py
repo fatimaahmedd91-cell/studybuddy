@@ -1,4 +1,4 @@
-"""Demo data for Meerkat: fictional students, groups and events, all marked as demo (is_demo).
+"""Demo data for Meetkat: fictional students, groups and events, all marked as demo (is_demo).
 
     python -m app.seed                   add the demo data (skips what's already there)
     python -m app.seed --reset --yes     delete ALL demo data, then add it again
@@ -214,7 +214,7 @@ def reset(cur):
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description="Add or reset Meerkat demo data.")
+    parser = argparse.ArgumentParser(description="Add or reset Meetkat demo data.")
     parser.add_argument("--reset", action="store_true", help="delete all demo data first")
     parser.add_argument("--yes", action="store_true", help="confirm --reset")
     parser.add_argument("--allow-production", action="store_true", help="allow --reset when APP_ENV=production")

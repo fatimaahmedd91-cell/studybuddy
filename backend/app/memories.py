@@ -15,7 +15,7 @@ GET    /api/memory-photos/{uuid}?exp=&sig= a photo, through a short-lived signed
 
 Who can see a memory (checked here, on the server, for every endpoint including photos):
 - The author always sees their own memories.
-- "everyone": anyone logged in to Meerkat.  "friends" (the default): the author's friends.
+- "everyone": anyone logged in to Meetkat.  "friends" (the default): the author's friends.
   "only_me": nobody else.
 - Never anyone who blocked the author or was blocked by them (app/safety.py).
 - Never memories a moderator removed, or memories by a suspended account.

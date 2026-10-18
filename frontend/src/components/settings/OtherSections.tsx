@@ -26,7 +26,7 @@ export function NotificationsSection() {
   const categories = options?.notification_categories ?? {};
   return (
     <SettingsSection id="notifications" title="Notifications">
-      <p className="text-sm">Choose what appears under the bell. Meerkat doesn&apos;t send push notifications or emails for these.</p>
+      <p className="text-sm">Choose what appears under the bell. Meetkat doesn&apos;t send push notifications or emails for these.</p>
       {Object.entries(categories).map(([key, label]) => {
         const on = me.notification_prefs[key] ?? !DEFAULT_OFF.includes(key);
         return (
@@ -123,7 +123,7 @@ function PrivacyRequests() {
       <form className="space-y-2" onSubmit={async (e) => {
         e.preventDefault();
         if (await save.run(() => api.createPrivacyRequest(kind, details),
-          "Request sent to the Meerkat team. We'll reply to your account email.")) {
+          "Request sent to the Meetkat team. We'll reply to your account email.")) {
           setDetails("");
           requests.reload();
         }
@@ -164,10 +164,10 @@ export function TermsSection() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = "my-meerkat-data.json";
+      link.download = "my-meetkat-data.json";
       link.click();
       URL.revokeObjectURL(url);
-    }, "Downloaded my-meerkat-data.json.");
+    }, "Downloaded my-meetkat-data.json.");
   }
 
   return (

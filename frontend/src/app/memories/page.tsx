@@ -123,7 +123,7 @@ function Composer({ onPosted }: { onPosted: (memory: Memory) => void }) {
                   <img src={photo} alt={`Photo ${i + 1} you're adding`} className="aspect-square w-full rounded-lg object-cover" />
                   <button type="button" onClick={() => setPhotos(photos.filter((_, j) => j !== i))} disabled={busy}
                     aria-label={`Remove photo ${i + 1}`}
-                    className="absolute right-1 top-1 flex h-8 w-8 items-center justify-center rounded-full bg-pine/80 text-cream">
+                    className="absolute right-1 top-1 flex h-8 w-8 items-center justify-center rounded-full bg-bark/80 text-cream">
                     ×
                   </button>
                 </li>
@@ -131,7 +131,7 @@ function Composer({ onPosted }: { onPosted: (memory: Memory) => void }) {
             </ul>
           )}
           {photos.length < MAX_PHOTOS && (
-            <label className="mt-2 inline-flex min-h-11 cursor-pointer items-center rounded-xl border-2 border-pine px-4 font-semibold hover:bg-cream">
+            <label className="mt-2 inline-flex min-h-11 cursor-pointer items-center rounded-xl border-2 border-bark px-4 font-semibold hover:bg-cream">
               + Add photos
               <input ref={fileInput} type="file" accept="image/*" multiple className="sr-only" disabled={busy}
                 onChange={(e) => addPhotos(e.target.files)} />
@@ -170,7 +170,7 @@ function PhotoGrid({ memory }: { memory: Memory }) {
         <a key={photo.url} href={photo.url} target="_blank" rel="noreferrer" className="block">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={photo.url} alt={`Photo ${i + 1} shared by ${memory.author.name}`} loading="lazy"
-            className={`w-full bg-sage object-cover ${single ? "max-h-[28rem]" : "aspect-square"}`} />
+            className={`w-full bg-sky object-cover ${single ? "max-h-[28rem]" : "aspect-square"}`} />
         </a>
       ))}
     </div>
@@ -306,7 +306,7 @@ function DeleteDialog({ memory, onClose, onDeleted }: { memory: Memory; onClose:
   return (
     <Dialog title="Delete this memory?" onClose={onClose}>
       <p>Its photos, ❤️s and comments are deleted too. This can&apos;t be undone.</p>
-      <p className="mt-1 text-sm opacity-80">Copies other people already saved or screenshotted are outside Meerkat&apos;s control.</p>
+      <p className="mt-1 text-sm opacity-80">Copies other people already saved or screenshotted are outside Meetkat&apos;s control.</p>
       {error && <div className="mt-2"><Notice kind="error">{error}</Notice></div>}
       <div className="mt-4 flex gap-2">
         <Button variant="danger" onClick={confirm} disabled={busy}>{busy ? "Deleting…" : "Delete forever"}</Button>
@@ -337,8 +337,8 @@ function MemoryCard({ memory, onChange, onDeleted }: {
   }
 
   return (
-    <article className="rounded-frame bg-forest p-2.5" aria-labelledby={`memory-${memory.id}-by`}>
-      <div className="rounded-inner bg-sage p-4 sm:p-5">
+    <article className="rounded-frame bg-bark p-2.5" aria-labelledby={`memory-${memory.id}-by`}>
+      <div className="rounded-inner bg-sky p-4 sm:p-5">
         <header className="flex items-start gap-3">
           <Avatar person={memory.author} size="sm" />
           <div className="min-w-0 flex-1">

@@ -128,7 +128,7 @@ export default function PlanHangout() {
             <div className="flex flex-wrap gap-x-5">
               {([["friends", "Friends"], ["group", "A group"]] as const).map(([m, label]) => (
                 <label key={m} className="flex min-h-11 items-center gap-2">
-                  <input type="radio" name="plan-mode" checked={mode === m} onChange={() => setMode(m)} className="h-5 w-5 accent-pine" />
+                  <input type="radio" name="plan-mode" checked={mode === m} onChange={() => setMode(m)} className="h-5 w-5 accent-bark" />
                   {label}
                 </label>
               ))}
@@ -147,9 +147,9 @@ export default function PlanHangout() {
                 <ul className="mt-1 grid grid-cols-1 gap-1 sm:grid-cols-2">
                   {friends.data?.friends.map(({ person }) => (
                     <li key={person.id}>
-                      <label className="flex min-h-11 items-center gap-2 rounded-xl px-2 hover:bg-sage">
+                      <label className="flex min-h-11 items-center gap-2 rounded-xl px-2 hover:bg-sky">
                         <input type="checkbox" checked={friendIds.includes(person.id)} onChange={() => toggleFriend(person.id)}
-                          className="h-5 w-5 accent-pine" />
+                          className="h-5 w-5 accent-bark" />
                         <Avatar person={person} size="xs" />
                         <span className="truncate">{person.name}</span>
                       </label>
@@ -190,13 +190,13 @@ export default function PlanHangout() {
         </form>
 
         {result && (
-          <section aria-labelledby="slots-title" className="space-y-4 rounded-frame bg-pine p-5 text-cream sm:p-6">
+          <section aria-labelledby="slots-title" className="space-y-4 rounded-frame bg-bark p-5 text-cream sm:p-6">
             <h2 id="slots-title" className="text-2xl font-bold">Times that work for everyone</h2>
             <p className="text-sm opacity-90">Times in {tz}. Worked out exactly from schedules, not by AI.</p>
             <ul className="flex flex-wrap gap-2" aria-label="Who's included">
               {result.plan.participants.map((p) => (
                 <li key={p.person.id} title={p.note}
-                  className="flex items-center gap-2 rounded-full bg-cream py-1 pl-1 pr-3 text-sm text-pine">
+                  className="flex items-center gap-2 rounded-full bg-cream py-1 pl-1 pr-3 text-sm text-bark">
                   <Avatar person={p.person} size="xs" />
                   <span>{p.person.name.split(" ")[0]}: <b>{STATUS_LABELS[p.status]}</b></span>
                 </li>
@@ -218,9 +218,9 @@ export default function PlanHangout() {
                 <h3 className="font-semibold">{day}</h3>
                 <ul className="mt-1 space-y-2">
                   {slots.map((slot) => (
-                    <li key={slot.id} className="flex flex-wrap items-center justify-between gap-2 rounded-inner bg-cream px-3 py-2 text-pine">
+                    <li key={slot.id} className="flex flex-wrap items-center justify-between gap-2 rounded-inner bg-cream px-3 py-2 text-bark">
                       <label className="flex min-h-11 items-center gap-2">
-                        <input type="checkbox" checked={chosen.includes(slot.id)} className="h-5 w-5 accent-pine"
+                        <input type="checkbox" checked={chosen.includes(slot.id)} className="h-5 w-5 accent-bark"
                           aria-label={`Use ${clock(slot.start, tz)} to ${clock(slot.end, tz)} for suggestions`}
                           onChange={() => setChosen(chosen.includes(slot.id) ? chosen.filter((c) => c !== slot.id)
                             : chosen.length < MAX_CHOSEN ? [...chosen, slot.id] : chosen)} />
@@ -284,13 +284,13 @@ function SuggestionCard({
   onUseSlot: (slot: Slot) => void;
 }) {
   return (
-    <section aria-labelledby="suggest-title" className="space-y-3 rounded-frame border-2 border-pine bg-cream p-5">
+    <section aria-labelledby="suggest-title" className="space-y-3 rounded-frame border-2 border-bark bg-cream p-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 id="suggest-title" className="text-xl font-bold">Suggestions</h2>
-        <p className="inline-block rounded-full bg-pine px-3 py-1 text-xs font-semibold text-cream">
+        <p className="inline-block rounded-full bg-bark px-3 py-1 text-xs font-semibold text-cream">
           {suggestion.source === "gemini"
             ? "✨ Written by Gemini"
-            : `Suggested by Meerkat (not AI): ${FALLBACK_REASONS[suggestion.fallback_reason ?? "error"] ?? "Gemini unavailable"}`}
+            : `Suggested by Meetkat (not AI): ${FALLBACK_REASONS[suggestion.fallback_reason ?? "error"] ?? "Gemini unavailable"}`}
         </p>
       </div>
       <p className="text-lg">{suggestion.summary}</p>
@@ -311,7 +311,7 @@ function SuggestionCard({
         </ul>
       </div>
       {suggestion.plan.slot && (
-        <div className="rounded-inner bg-sage px-4 py-3">
+        <div className="rounded-inner bg-sky px-4 py-3">
           <p className="text-sm font-semibold">Suggested plan</p>
           <p>{suggestion.plan.text}</p>
           <Button variant="dark" className="mt-2 min-h-9 px-3 text-sm" onClick={() => onUseSlot(suggestion.plan.slot!)}>Make this an event</Button>
@@ -400,7 +400,7 @@ function PlanEventForm({
           <input id="plan-event-end" type="datetime-local" value={end} min={start} onChange={(e) => setEnd(e.target.value)} className={inputClass} />
         </Field>
       </div>
-      <Field label="Where" htmlFor="plan-event-location" hint="Events are visible to everyone on Meerkat, like other events. Pick a public place.">
+      <Field label="Where" htmlFor="plan-event-location" hint="Events are visible to everyone on Meetkat, like other events. Pick a public place.">
         <input id="plan-event-location" value={location} maxLength={120} placeholder="Library café"
           onChange={(e) => setLocation(e.target.value)} className={inputClass} />
       </Field>
@@ -413,7 +413,7 @@ function PlanEventForm({
           <legend className="text-sm font-semibold">Invite</legend>
           {invitees.map((p) => (
             <label key={p.id} className="flex min-h-11 items-center gap-2">
-              <input type="checkbox" checked={invite.includes(p.id)} className="h-5 w-5 accent-pine"
+              <input type="checkbox" checked={invite.includes(p.id)} className="h-5 w-5 accent-bark"
                 onChange={() => setInvite(invite.includes(p.id) ? invite.filter((i) => i !== p.id) : [...invite, p.id])} />
               {p.name}
             </label>

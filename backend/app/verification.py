@@ -13,7 +13,7 @@ Honest rules:
 - If a provider isn't set up, the endpoint says so (503). Nothing is faked.
 - Codes expire after 10 minutes, allow 5 tries, can be resent after 60 seconds, at most 5 a day.
 - Codes are never logged. Only a hash of an email code is stored; phone codes are made and checked by Twilio.
-- Age checks: Meerkat never looks at faces itself and never uses Gemini to guess ages. It would hand
+- Age checks: Meetkat never looks at faces itself and never uses Gemini to guess ages. It would hand
   people to a hosted provider and keep only the result (status, provider, reference, time).
   No provider is integrated yet, so this stays "not available". AGE_CHECK_PROVIDER=mock is a clearly
   labelled TEST MODE that only works when APP_ENV=development and never shows an "Age checked" badge.
@@ -273,8 +273,8 @@ def send_email_code(me: CurrentUser):
     try:
         send_email(
             me["email"],
-            "Your Meerkat verification code",
-            f"Your Meerkat code is {code}. It expires in {CODE_MINUTES} minutes.\n\n"
+            "Your Meetkat verification code",
+            f"Your Meetkat code is {code}. It expires in {CODE_MINUTES} minutes.\n\n"
             "If you didn't ask for this, you can ignore this email.",
         )
     except SendFailed:

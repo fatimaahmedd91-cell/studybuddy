@@ -4,6 +4,12 @@ import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
 // Tailwind runs as a Turbopack loader for every CSS file.
 // root: this folder is the project, even though the repo root has its own package-lock.json.
 const shared: NextConfig = {
+  // Turbopack's on-disk cache (in .next) kept serving old colours after globals.css changed,
+  // in both `npm run dev` and `npm run build`. This site is small, so we turn it off.
+  experimental: {
+    turbopackFileSystemCacheForDev: false,
+    turbopackFileSystemCacheForBuild: false,
+  },
   turbopack: {
     root: __dirname,
     rules: {

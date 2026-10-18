@@ -1,5 +1,5 @@
 // Self-reported screen time and screen-time groups. Matches backend/app/screen_time_groups.py.
-// (Time spent in Meerkat itself is in lib/api.ts: api.screenTime and api.heartbeat.)
+// (Time spent in Meetkat itself is in lib/api.ts: api.screenTime and api.heartbeat.)
 import { get, query, send } from "./api";
 import type { MiniProfile } from "./types";
 
@@ -8,7 +8,7 @@ export type Metric = "self_reported" | "in_app";
 
 export const METRIC_BADGE: Record<Metric, string> = {
   self_reported: "Self-reported",
-  in_app: "Time in Meerkat",
+  in_app: "Time in Meetkat",
 };
 
 export type Entry = { day: string; minutes: number; updated_at: string };

@@ -24,7 +24,7 @@ export function ProfileSection() {
       </div>
       <p className="text-sm">
         Your photo, university, interests, what you&apos;re looking for, bio and public free times are edited on your
-        profile. Interests and preferences are only what you write yourself: Meerkat never guesses things about you.
+        profile. Interests and preferences are only what you write yourself: Meetkat never guesses things about you.
       </p>
       <ButtonLink href="/profile?edit=1">Edit my profile</ButtonLink>
     </SettingsSection>
@@ -42,7 +42,7 @@ function DisplayName() {
       save.run(async () => setMe(await api.updateMe({ name })), "Display name saved.");
     }}>
       <Field label="Display name" htmlFor="display-name"
-        hint="What other people see. It doesn't have to be your legal name, and Meerkat doesn't ask for one.">
+        hint="What other people see. It doesn't have to be your legal name, and Meetkat doesn't ask for one.">
         <input id="display-name" required maxLength={60} value={name} onChange={(e) => setName(e.target.value)} className={inputClass} />
       </Field>
       <Button type="submit" variant="outline" disabled={save.busy || name.trim() === me.name}>Save name</Button>
@@ -188,19 +188,19 @@ export function AccountSection() {
   return (
     <SettingsSection id="account" title="Account and contact">
       <DisplayName />
-      <hr className="border-sage-strong" />
+      <hr className="border-sky-strong" />
       <EmailChange />
-      <hr className="border-sage-strong" />
+      <hr className="border-sky-strong" />
       <PasswordChange />
-      <hr className="border-sage-strong" />
+      <hr className="border-sky-strong" />
       <PhoneNumber />
-      <hr className="border-sage-strong" />
+      <hr className="border-sky-strong" />
       <p className="text-sm">
         <span className="font-semibold">Age:</span>{" "}
         {me.terms.accepted_at
           ? `you confirmed you're 18 or older on ${formatDateTime(me.terms.accepted_at)}.`
           : "not confirmed yet."}{" "}
-        This is your own confirmation, not a verified age. Meerkat doesn&apos;t ask for your date of birth.{" "}
+        This is your own confirmation, not a verified age. Meetkat doesn&apos;t ask for your date of birth.{" "}
         <Link href="#verification" className="underline">Age checks</Link>
       </p>
       <Button variant="outline" onClick={logout}>Log out</Button>

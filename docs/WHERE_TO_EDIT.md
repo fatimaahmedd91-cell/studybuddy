@@ -8,8 +8,8 @@ The API reloads if you started it with `--reload`.
 | I want to change… | Open | Notes |
 |---|---|---|
 | The app's name, slogan or description | `frontend/src/lib/brand.ts` | Used by the landing page, header, page titles and legal pages. |
-| The logo (the meerkat drawing) | `MeerkatMark` in `frontend/src/components/Brand.tsx` | |
-| The colours | `frontend/src/app/globals.css` (the `@theme` block) | `pine` (dark green, text and frames), `forest` (main buttons), `sage` and `sage-strong` (light greens), `cream` and `sand` (warm backgrounds), and `danger`, `warning`, `success` with `-soft` versions for messages. Use them as classes like `bg-forest`, `text-pine`. Change a colour here and it changes everywhere. Check contrast if you darken or lighten one. |
+| The logo | `frontend/public/logo.png` (shown by `MeetkatMark` in `frontend/src/components/Brand.tsx`) | The browser-tab and phone home-screen icons are `frontend/src/app/icon.png` and `apple-icon.png`. Replace all three with the same picture. |
+| The colours | `frontend/src/app/globals.css` (the `@theme` block) | From the logo: `bark` (its brown: text, sidebar, frames), `sky` and `sky-strong` (its blue), `sand` and `cream` (its cream backgrounds), plus `forest` (green, only for main buttons and switches), and `danger`, `warning`, `success` with `-soft` versions for messages. Use them as classes like `bg-sky`, `text-bark`. Change a colour here and it changes everywhere. Check contrast if you darken or lighten one. |
 | Corner roundness | `--radius-frame` and `--radius-inner` in `globals.css` | |
 | The font | `frontend/src/app/globals.css` (`--font-sans`) | |
 | Buttons, cards, switches, chips, settings blocks, the "Demo" badge | `frontend/src/components/ui.tsx` | Used on every page. |

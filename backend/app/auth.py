@@ -54,7 +54,7 @@ def signup(body: SignupRequest, request: Request):
     if not body.accept_terms:
         raise HTTPException(
             status_code=422,
-            detail=f"To join Meerkat you need to be {config.MIN_AGE} or older and agree to the Terms of Service.",
+            detail=f"To join Meetkat you need to be {config.MIN_AGE} or older and agree to the Terms of Service.",
         )
     if body.terms_version and body.terms_version != config.TERMS_VERSION:
         raise HTTPException(status_code=409, detail="The Terms have changed. Reload the page and read the new version.")
@@ -99,7 +99,7 @@ def login(body: LoginRequest, request: Request):
 # auto_error=False lets us send our own 401 message when the header is missing.
 bearer = HTTPBearer(auto_error=False)
 
-SUSPENDED = "This account is suspended. If you think this is a mistake, contact Meerkat's moderators."
+SUSPENDED = "This account is suspended. If you think this is a mistake, contact Meetkat's moderators."
 
 # What someone can still do before accepting the current Terms: see their account, accept,
 # delete their account, download their data, or send a privacy request.

@@ -1,10 +1,10 @@
 """Self-reported screen time, screen-time groups, and leaderboards.
 
 Three different measurements, never mixed up or ranked against each other:
-  1. Time in Meerkat: how long you actively used this app (app/screen_time.py, "in_app").
+  1. Time in Meetkat: how long you actively used this app (app/screen_time.py, "in_app").
   2. Self-reported: daily phone/device screen time that you type in yourself ("self_reported").
   3. Device-wide screen time from a real integration: NOT available. A website can't read your
-     phone's screen time, so Meerkat never claims to.
+     phone's screen time, so Meetkat never claims to.
 
 Your own self-reported entries:
 GET    /api/screen-time/entries?days=14   your entries for the last N days
@@ -58,7 +58,7 @@ LEADERBOARD_MAX_DAYS_BACK = 90
 
 METRIC_LABELS = {
     "self_reported": "Self-reported phone screen time",
-    "in_app": "Time in Meerkat (only this app)",
+    "in_app": "Time in Meetkat (only this app)",
 }
 METRIC_SHORT = {"self_reported": "self-reported", "in_app": "in-app"}
 

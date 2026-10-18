@@ -2,7 +2,7 @@
 
 // The landing page for visitors who aren't logged in.
 import { useState } from "react";
-import { MeerkatMark } from "@/components/Brand";
+import { MeetkatMark } from "@/components/Brand";
 import LegalLinks from "@/components/LegalLinks";
 import { ErrorBox } from "@/components/States";
 import { Button, ButtonLink, DarkPanel, FrameCard } from "@/components/ui";
@@ -36,7 +36,7 @@ export default function Landing() {
   return (
     <main className="mx-auto max-w-5xl px-4 py-10 sm:py-16">
       <div className="flex items-center gap-3">
-        <MeerkatMark className="h-12 w-12" />
+        <MeetkatMark className="h-16 w-16" />
         <span className="text-3xl font-extrabold tracking-wide">{BRAND.name}</span>
       </div>
 
@@ -82,7 +82,7 @@ export default function Landing() {
         ))}
       </section>
 
-      <footer className="mt-12 border-t-2 border-sage-strong pt-4">
+      <footer className="mt-12 border-t-2 border-sky-strong pt-4">
         <LegalLinks />
       </footer>
     </main>

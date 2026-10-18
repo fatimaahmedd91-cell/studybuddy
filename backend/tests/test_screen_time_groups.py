@@ -229,18 +229,18 @@ def test_metrics_are_never_mixed(database, client):
     a = make_person(client, "Amira Khan")
     b = make_person(client, "Tariq Aziz")
     befriend(client, a, b)
-    in_app = make_group(client, a, metric="in_app", name="Meerkat minutes")
+    in_app = make_group(client, a, metric="in_app", name="Meetkat minutes")
     self_reported = make_group(client, a, metric="self_reported", name="Phone time")
     join(client, in_app, a, b)
     join(client, self_reported, a, b)
     yesterday = today() - timedelta(days=1)
     log(client, a, yesterday, 300)  # a self-reported number
     noon = datetime.combine(yesterday, time(12), TORONTO)
-    for minute in range(3):  # 3 heartbeats of 60 seconds in Meerkat yesterday
+    for minute in range(3):  # 3 heartbeats of 60 seconds in Meetkat yesterday
         run("INSERT INTO app_time (user_id, at, seconds) VALUES (%s, %s, 60)", (a[1]["id"], noon + timedelta(minutes=minute)))
 
     in_app_board = client.get(f"/api/screen-time/groups/{in_app['id']}/leaderboard", headers=a[0]).json()
-    assert in_app_board["metric_label"] == "Time in Meerkat (only this app)"
+    assert in_app_board["metric_label"] == "Time in Meetkat (only this app)"
     assert [(r["person"]["name"], r["minutes"]) for r in in_app_board["ranked"]] == [("Amira Khan", 3)]
     assert [x["person"]["name"] for x in in_app_board["no_entry"]] == ["Tariq Aziz"]
 

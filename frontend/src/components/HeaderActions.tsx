@@ -37,7 +37,7 @@ export function CreateMenu() {
   const [dialog, setDialog] = useState<"group" | "event" | null>(null);
   const ref = useDismiss(open, () => setOpen(false));
 
-  const item = "flex min-h-11 w-full items-center rounded-lg px-3 text-left font-medium hover:bg-sage";
+  const item = "flex min-h-11 w-full items-center rounded-lg px-3 text-left font-medium hover:bg-sky";
   return (
     <div ref={ref} className="relative">
       <button
@@ -45,12 +45,12 @@ export function CreateMenu() {
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label="Create"
-        className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-sage"
+        className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-sky"
       >
         <PlusCircleIcon className="h-7 w-7" />
       </button>
       {open && (
-        <div role="menu" className="absolute right-0 top-12 z-50 w-56 rounded-2xl border-2 border-pine bg-cream p-2 shadow-xl">
+        <div role="menu" className="absolute right-0 top-12 z-50 w-56 rounded-2xl border-2 border-bark bg-cream p-2 shadow-xl">
           <button role="menuitem" className={item} onClick={() => { setOpen(false); setDialog("group"); }}>
             👥 Create a group
           </button>
@@ -100,7 +100,7 @@ export function NotificationBell() {
         }}
         aria-expanded={open}
         aria-label={unread ? `Notifications, ${unread} unread` : "Notifications"}
-        className="relative flex h-11 w-11 items-center justify-center rounded-full hover:bg-sage"
+        className="relative flex h-11 w-11 items-center justify-center rounded-full hover:bg-sky"
       >
         <BellIcon className="h-7 w-7" />
         {unread > 0 && (
@@ -110,7 +110,7 @@ export function NotificationBell() {
         )}
       </button>
       {open && (
-        <div className="absolute right-0 top-12 z-50 w-[min(92vw,360px)] rounded-2xl border-2 border-pine bg-cream p-3 shadow-xl">
+        <div className="absolute right-0 top-12 z-50 w-[min(92vw,360px)] rounded-2xl border-2 border-bark bg-cream p-3 shadow-xl">
           <div className="mb-2 flex items-center justify-between gap-2">
             <p className="font-bold">Notifications</p>
             {unread > 0 && (
@@ -134,7 +134,7 @@ export function NotificationBell() {
               <li key={n.id}>
                 <button
                   onClick={() => openItem(n.id, n.link, n.read)}
-                  className={`flex w-full items-start gap-3 rounded-xl px-2 py-2 text-left hover:bg-sage ${n.read ? "opacity-70" : "bg-sage/60"}`}
+                  className={`flex w-full items-start gap-3 rounded-xl px-2 py-2 text-left hover:bg-sky ${n.read ? "opacity-70" : "bg-sky/60"}`}
                 >
                   {n.actor ? <Avatar person={n.actor} size="xs" /> : <span className="h-8 w-8" />}
                   <span className="flex-1 text-sm">

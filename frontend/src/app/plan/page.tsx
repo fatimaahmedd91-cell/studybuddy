@@ -19,10 +19,10 @@ function PlanContent() {
   return (
     <div>
       <PageHeading title="Plan">
-        <nav aria-label="Plan sections" className="flex rounded-2xl border-2 border-pine p-1">
+        <nav aria-label="Plan sections" className="flex rounded-2xl border-2 border-bark p-1">
           {TABS.map((t) => (
             <Link key={t.key} href={t.href} aria-current={tab === t.key ? "page" : undefined}
-              className={`flex min-h-11 items-center rounded-xl px-4 font-semibold ${tab === t.key ? "bg-pine text-cream" : "hover:bg-sage"}`}>
+              className={`flex min-h-11 items-center rounded-xl px-4 font-semibold ${tab === t.key ? "bg-bark text-cream" : "hover:bg-sky"}`}>
               {t.label}
             </Link>
           ))}

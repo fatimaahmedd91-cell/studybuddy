@@ -9,7 +9,7 @@ import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { BRAND } from "@/lib/brand";
 import { useOptions } from "@/lib/options";
-import { MeerkatMark } from "./Brand";
+import { MeetkatMark } from "./Brand";
 import { ErrorBox, Notice } from "./States";
 import { Button, Field, FrameCard, inputClass } from "./ui";
 
@@ -54,7 +54,7 @@ export default function AuthForm({ mode }: { mode: "login" | "signup" }) {
     <main className="flex min-h-screen items-center justify-center px-4 py-10">
       <div className="w-full max-w-md">
         <Link href="/" className="mb-4 flex items-center justify-center gap-2 text-2xl font-extrabold">
-          <MeerkatMark className="h-10 w-10" /> {BRAND.name}
+          <MeetkatMark className="h-10 w-10" /> {BRAND.name}
         </Link>
         <FrameCard>
           <form onSubmit={submit} className="space-y-4 p-6 sm:p-8">
@@ -84,7 +84,7 @@ export default function AuthForm({ mode }: { mode: "login" | "signup" }) {
               <div className="space-y-2">
                 <label className="flex min-h-11 items-start gap-3 text-sm">
                   <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)}
-                    className="mt-0.5 h-5 w-5 shrink-0 accent-pine" />
+                    className="mt-0.5 h-5 w-5 shrink-0 accent-bark" />
                   <span>
                     I am at least {minAge} years old, and I agree to the{" "}
                     <Link href="/terms" target="_blank" className="font-semibold underline">Terms of Service</Link> and{" "}

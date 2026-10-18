@@ -81,7 +81,7 @@ export function ReportDialog({ targetType, targetId, onClose }: { targetType: Re
               {reasons.map((r) => (
                 <label key={r.value} className="flex min-h-10 items-center gap-2">
                   <input type="radio" name="reason" value={r.value} checked={reason === r.value}
-                    onChange={() => setReason(r.value)} className="h-5 w-5 accent-pine" />
+                    onChange={() => setReason(r.value)} className="h-5 w-5 accent-bark" />
                   {r.label}
                 </label>
               ))}

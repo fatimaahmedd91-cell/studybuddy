@@ -40,6 +40,6 @@ cd ../frontend
 BACKEND_URL=http://127.0.0.1:8000 setsid nohup npm run dev -- --port 3000 --hostname 0.0.0.0 \
   > "$LOGS/web.log" 2>&1 < /dev/null &
 
-echo "Meerkat is starting. Open port 8000 (the Ports tab) in about 10 seconds."
+echo "Meetkat is starting. Open port 8000 (the Ports tab) in about 10 seconds."
 echo "After changing website code, either use port 3000 (updates live) or run this script again."
 echo "Logs: $LOGS/api.log, $LOGS/web.log and $LOGS/build.log"

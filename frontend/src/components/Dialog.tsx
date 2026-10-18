@@ -32,9 +32,9 @@ export default function Dialog({
       onClick={(e) => {
         if (e.target === ref.current) onClose(); // click on the dark background
       }}
-      className="m-auto max-h-[90vh] w-[min(94vw,520px)] overflow-y-auto rounded-frame bg-forest p-2.5 text-pine backdrop:bg-pine/60"
+      className="m-auto max-h-[90vh] w-[min(94vw,520px)] overflow-y-auto rounded-frame bg-bark p-2.5 text-bark backdrop:bg-bark/60"
     >
-      <div className="rounded-inner bg-sage p-5 sm:p-6">
+      <div className="rounded-inner bg-sky p-5 sm:p-6">
         <div className="mb-4 flex items-start justify-between gap-3">
           <h2 id={titleId} className="text-2xl font-bold">
             {title}

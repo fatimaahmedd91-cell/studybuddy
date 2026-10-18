@@ -216,7 +216,7 @@ await check("Plan: B adds a private class, A finds free times with B without see
 await check(`9. Match note appears${EXPECT_GEMINI ? " and is written by Gemini" : ""}`, async () => {
   const bId = await pb.evaluate(async () => (await (await fetch("/api/me", { headers: { Authorization: `Bearer ${localStorage.getItem("ff_token")}` } })).json()).id);
   await pa.goto(`${BASE}/profile?id=${bId}`);
-  const label = pa.getByText(/Written by Gemini|Suggested by Meerkat/);
+  const label = pa.getByText(/Written by Gemini|Suggested by Meetkat/);
   await label.waitFor({ timeout: 30_000 });
   if (EXPECT_GEMINI) expect((await label.innerText()).includes("Gemini"), `got: ${await label.innerText()}`);
   await pa.getByText("Conversation starter").waitFor();
@@ -427,7 +427,7 @@ await check("Report and block from a profile, then unblock in Settings", async (
 });
 await check("Moderation area is closed to members (page and server)", async () => {
   await pa.goto(`${BASE}/moderation`);
-  await pa.getByText("This area is only for Meerkat moderators.").waitFor();
+  await pa.getByText("This area is only for Meetkat moderators.").waitFor();
   const status = await pa.evaluate(async () => (await fetch("/api/moderation/reports", { headers: { Authorization: `Bearer ${localStorage.getItem("ff_token")}` } })).status);
   expect(status === 403, `the server allowed it (status ${status})`);
 });

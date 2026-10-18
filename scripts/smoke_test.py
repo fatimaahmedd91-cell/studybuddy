@@ -1,4 +1,4 @@
-"""Checks that a running Meerkat site works from end to end, and prints PASS or FAIL per step.
+"""Checks that a running Meetkat site works from end to end, and prints PASS or FAIL per step.
 
     python scripts/smoke_test.py                            # the site on your computer (Next.js dev server)
     python scripts/smoke_test.py http://localhost:8000      # just the backend
@@ -90,7 +90,7 @@ status, body = request("GET", "/")
 if BASE.endswith(":8000") and status == 404:
     info("Website", "skipped, this address is just the backend")
 else:
-    check("Website loads", status == 200 and "Meerkat" in str(body), f"status {status}")
+    check("Website loads", status == 200 and "Meetkat" in str(body), f"status {status}")
 
 status, health = request("GET", "/api/health")
 if not check("Backend is running", isinstance(health, dict) and "database" in health,

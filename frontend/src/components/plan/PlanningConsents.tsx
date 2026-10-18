@@ -43,7 +43,7 @@ export default function PlanningConsents() {
       {error && <ErrorBox message={error} onRetry={reload} />}
       {data && (
         <ul className="space-y-2">
-          <li className="flex flex-wrap items-center justify-between gap-2 rounded-inner bg-sage px-3 py-2">
+          <li className="flex flex-wrap items-center justify-between gap-2 rounded-inner bg-sky px-3 py-2">
             <span>
               <b>Plans friends make with me</b>
               <span className="block text-xs">{data.friends ? "Allowed" : "Not allowed: only your public free times are used"}</span>
@@ -58,7 +58,7 @@ export default function PlanningConsents() {
             )}
           </li>
           {data.groups.map((g) => (
-            <li key={g.id} className="flex flex-wrap items-center justify-between gap-2 rounded-inner bg-sage px-3 py-2">
+            <li key={g.id} className="flex flex-wrap items-center justify-between gap-2 rounded-inner bg-sky px-3 py-2">
               <span>
                 <b>{g.name}</b>
                 <span className="block text-xs">{g.allowed ? "Allowed for this group" : "Not allowed"}</span>

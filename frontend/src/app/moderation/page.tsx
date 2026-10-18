@@ -100,7 +100,7 @@ function ReportCard({ report, onDone }: { report: Report; onDone: () => void }) 
       </article>
       {suspending && person && (
         <Dialog title={`Suspend ${person.name}?`} onClose={() => setSuspending(false)}>
-          <p className="text-sm">They won&apos;t be able to log in or use Meerkat until a moderator unsuspends them.</p>
+          <p className="text-sm">They won&apos;t be able to log in or use Meetkat until a moderator unsuspends them.</p>
           <Field label="Reason (saved in the log)" htmlFor="suspend-reason">
             <input id="suspend-reason" value={reason} minLength={3} maxLength={500} onChange={(e) => setReason(e.target.value)} className={inputClass} />
           </Field>
@@ -144,7 +144,7 @@ export default function ModerationPage() {
   const log = useApi(() => get<Action[]>("/api/moderation/actions"), []);
 
   if (me.role === "member") {
-    return <Notice kind="info">This area is only for Meerkat moderators.</Notice>;
+    return <Notice kind="info">This area is only for Meetkat moderators.</Notice>;
   }
   const refresh = () => {
     reports.reload();
@@ -161,7 +161,7 @@ export default function ModerationPage() {
       <div role="tablist" aria-label="Report status" className="flex flex-wrap gap-2">
         {STATUSES.map((s) => (
           <button key={s} role="tab" aria-selected={status === s} onClick={() => setStatus(s)}
-            className={`min-h-11 rounded-full border-2 border-forest px-4 font-semibold capitalize ${status === s ? "bg-forest text-cream" : "bg-cream"}`}>
+            className={`min-h-11 rounded-full border-2 border-bark px-4 font-semibold capitalize ${status === s ? "bg-bark text-cream" : "bg-cream"}`}>
             {s}
           </button>
         ))}

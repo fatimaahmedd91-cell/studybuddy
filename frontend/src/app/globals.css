@@ -1,18 +1,20 @@
 @import "tailwindcss";
 
 /* ============================================================================
-   Meerkat design tokens: change the look of the whole site here.
-   Each colour becomes Tailwind classes, for example bg-forest, text-pine, border-sage-strong.
-   Keep text on forest green or pine at a normal size or larger; both have strong contrast with cream.
+   Meetkat design tokens: change the look of the whole site here.
+   The colours come from the logo (frontend/public/logo.png): its brown outline, blue background and
+   cream, plus one green for the main buttons. Each colour becomes Tailwind classes, for example
+   bg-sky, text-bark, border-sky-strong.
+   Text on bark brown or forest green has strong contrast with cream; keep it normal size or larger.
    ========================================================================== */
 @theme {
-  /* Brand: a calm, nature-inspired palette */
-  --color-pine: #1f3a2b;          /* deepest green: sidebar, dark panels, main text */
-  --color-forest: #2e6b46;        /* forest green: primary buttons, card frames, strong accents */
-  --color-sage-strong: #c5d9b8;   /* sage: selected items, bars on dark panels */
-  --color-sage: #e3ecdb;          /* soft sage: inside framed cards, gentle highlights */
-  --color-cream: #fbf8f1;         /* warm off-white: header, inputs, chat bubbles */
-  --color-sand: #f1ede2;          /* warm neutral: page background */
+  /* Brand */
+  --color-bark: #43150e;          /* the logo's brown: text, sidebar, card frames, dark panels */
+  --color-forest: #2e6b46;        /* green, used sparingly: main buttons, switches, unread dots, progress */
+  --color-sky-strong: #c6e8fe;    /* the logo's blue: highlighted panels, selected items */
+  --color-sky: #e6f4fe;           /* light blue: inside framed cards, gentle highlights */
+  --color-cream: #fffaf5;         /* warm white: header, inputs, chat bubbles */
+  --color-sand: #fef4ea;          /* the logo's cream: page background */
 
   /* Meaning colours: use these for messages, never the brand colours */
   --color-danger: #b42318;        /* errors, destructive buttons */
@@ -32,13 +34,13 @@
 
 body {
   background: var(--color-sand);
-  color: var(--color-pine);
+  color: var(--color-bark);
 }
 
 /* Thin, on-brand scrollbars for sideways rows. */
 .scroll-row {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-forest) transparent;
+  scrollbar-color: var(--color-bark) transparent;
 }
 
 /* Visible keyboard focus everywhere. */

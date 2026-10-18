@@ -69,22 +69,22 @@ export default function MatchInsight({ personId }: { personId: number }) {
   const { data, error, loading, reload } = useApi(() => api.insight(personId), [personId]);
 
   return (
-    <section aria-labelledby="insight-title" className="rounded-2xl border-2 border-pine bg-cream p-5">
+    <section aria-labelledby="insight-title" className="rounded-2xl border-2 border-bark bg-cream p-5">
       <h2 id="insight-title" className="text-xl font-bold">Why you might connect</h2>
       {loading && <Loading label="Asking Gemini… (a few seconds the first time)" />}
       {error && <ErrorBox message={error} onRetry={reload} />}
       {data && (
         <div className="mt-2 space-y-3" aria-live="polite">
-          <p className="inline-block rounded-full bg-pine px-3 py-1 text-xs font-semibold text-cream">
+          <p className="inline-block rounded-full bg-bark px-3 py-1 text-xs font-semibold text-cream">
             {data.source === "gemini"
               ? "✨ Written by Gemini"
-              : `Suggested by Meerkat (not AI): ${FALLBACK_REASONS[data.fallback_reason ?? "error"] ?? "Gemini unavailable"}`}
+              : `Suggested by Meetkat (not AI): ${FALLBACK_REASONS[data.fallback_reason ?? "error"] ?? "Gemini unavailable"}`}
           </p>
           <p className="text-lg">{data.explanation}</p>
           <div>
             <p className="text-sm font-semibold">Conversation starter</p>
             <div className="mt-1 flex flex-wrap items-center gap-2">
-              <p className="rounded-xl bg-sage px-3 py-2">{data.conversation_starter}</p>
+              <p className="rounded-xl bg-sky px-3 py-2">{data.conversation_starter}</p>
               <CopyButton text={data.conversation_starter} />
             </div>
           </div>

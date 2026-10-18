@@ -7,7 +7,7 @@ import { type Block, type LegalDoc, placeholders } from "@/content/legal";
 import { useAuth } from "@/lib/auth";
 import { BRAND } from "@/lib/brand";
 import { useOptions } from "@/lib/options";
-import { MeerkatMark } from "./Brand";
+import { MeetkatMark } from "./Brand";
 import LegalLinks from "./LegalLinks";
 
 const PLACEHOLDER = /(\[[A-Z][A-Z0-9 ,.'’()/:;\-–—“”"]+\])/g;
@@ -43,12 +43,12 @@ function BlockView({ block }: { block: Block }) {
       <div className="mt-2 overflow-x-auto">
         <table className="w-full border-collapse text-left text-sm">
           <thead>
-            <tr>{head.map((h) => <th key={h} className="border-b-2 border-forest p-2">{h}</th>)}</tr>
+            <tr>{head.map((h) => <th key={h} className="border-b-2 border-bark p-2">{h}</th>)}</tr>
           </thead>
           <tbody>
             {rows.map((row) => (
               <tr key={row[0]} className="align-top">
-                {row.map((cell, i) => <td key={i} className="border-b border-sage-strong p-2"><Text text={cell} /></td>)}
+                {row.map((cell, i) => <td key={i} className="border-b border-sky-strong p-2"><Text text={cell} /></td>)}
               </tr>
             ))}
           </tbody>
@@ -73,7 +73,7 @@ export default function LegalPage({ doc, summary }: { doc: LegalDoc; summary?: s
     <main className="mx-auto max-w-3xl px-4 py-8 sm:py-12">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Link href={status === "ready" ? "/feed" : "/"} className="flex min-h-11 items-center gap-2 text-xl font-extrabold">
-          <MeerkatMark className="h-9 w-9" /> {BRAND.name}
+          <MeetkatMark className="h-9 w-9" /> {BRAND.name}
         </Link>
         <Link href={status === "ready" ? "/settings" : "/"} className="font-semibold underline">
           ← Back
@@ -107,7 +107,7 @@ export default function LegalPage({ doc, summary }: { doc: LegalDoc; summary?: s
         </dl>
 
         {summary && (
-          <section aria-labelledby="summary-title" className="mt-6 rounded-xl bg-sage p-4">
+          <section aria-labelledby="summary-title" className="mt-6 rounded-xl bg-sky p-4">
             <h2 id="summary-title" className="text-xl font-bold">In plain language</h2>
             <ul className="mt-2 list-disc space-y-1 pl-6">
               {summary.map((line) => <li key={line}>{line}</li>)}

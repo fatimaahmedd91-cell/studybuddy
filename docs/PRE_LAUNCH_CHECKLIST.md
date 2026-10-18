@@ -1,6 +1,6 @@
 # Pre-launch checklist
 
-Meerkat works as a hackathon demo. Before real people use it, the team needs to decide or finish everything below.
+Meetkat works as a hackathon demo. Before real people use it, the team needs to decide or finish everything below.
 Nothing here has been reviewed by a lawyer, and nothing in the app claims legal compliance.
 
 Legend: **Decision** = the team has to choose · **Legal** = needs qualified legal/privacy review · **Setup** = configuration · **Build** = code still to write

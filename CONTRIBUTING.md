@@ -1,4 +1,4 @@
-# Working on Meerkat together
+# Working on Meetkat together
 
 ## The golden rules
 

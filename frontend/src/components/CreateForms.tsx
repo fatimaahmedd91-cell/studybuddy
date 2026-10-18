@@ -166,7 +166,7 @@ export function EventForm({
         <div className="mt-1 flex gap-4">
           {(["place", "online"] as const).map((w) => (
             <label key={w} className="flex min-h-11 items-center gap-2">
-              <input type="radio" name="where" checked={where === w} onChange={() => setWhere(w)} className="h-5 w-5 accent-pine" />
+              <input type="radio" name="where" checked={where === w} onChange={() => setWhere(w)} className="h-5 w-5 accent-bark" />
               {w === "place" ? "In person" : "Online"}
             </label>
           ))}

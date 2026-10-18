@@ -1,4 +1,4 @@
-# How Meerkat fits together
+# How Meetkat fits together
 
 ```
  Browser (phone or laptop)
@@ -102,7 +102,7 @@ Gemini is only used when a person has turned **AI features** on (both people for
 | Hangout suggestion | group size, shared interests and goals, the calculated slots (by id) | may only pick slot ids it was given; slot codes in the text are replaced by the real times; saved for an hour |
 | Timetable reading | the image or PDF the person chose to send, once | file type and size checked; nothing saved until the person reviews it; the file isn't kept |
 
-If there's no key, a timeout, a quota error, a bad answer or too many requests, a template is used instead, labelled **"Suggested by Meerkat (not AI)"** with the reason.
+If there's no key, a timeout, a quota error, a bad answer or too many requests, a template is used instead, labelled **"Suggested by Meetkat (not AI)"** with the reason.
 Keys are only in `backend/.env`.
 
 ## Meeting areas (`planning.py`)
@@ -113,8 +113,8 @@ With `GOOGLE_MAPS_API_KEY`, Google Places gets only the halfway point and the ki
 
 ## Screen time
 
-- **In Meerkat:** while a tab is open, visible and used in the last minute, the website sends a heartbeat every 30 seconds. Too-close heartbeats are ignored, so two tabs don't count double.
-- **Self-reported:** numbers people type in, always labelled. A website can't read a phone's screen time, so Meerkat never claims to.
+- **In Meetkat:** while a tab is open, visible and used in the last minute, the website sends a heartbeat every 30 seconds. Too-close heartbeats are ignored, so two tabs don't count double.
+- **Self-reported:** numbers people type in, always labelled. A website can't read a phone's screen time, so Meetkat never claims to.
 - **Groups** use one of these two for everyone. Members join only by choosing to share. Missing days show as "No entry", never zero.
 
 ## Demo mode

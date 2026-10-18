@@ -7,7 +7,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { MeerkatMark } from "@/components/Brand";
+import { MeetkatMark } from "@/components/Brand";
 import { ErrorBox, Notice } from "@/components/States";
 import { Button, Field, FrameCard, inputClass } from "@/components/ui";
 import { api } from "@/lib/api";
@@ -54,7 +54,7 @@ export default function ForgotPasswordPage() {
     <main className="flex min-h-screen items-center justify-center px-4 py-10">
       <div className="w-full max-w-md">
         <Link href="/" className="mb-4 flex items-center justify-center gap-2 text-2xl font-extrabold">
-          <MeerkatMark className="h-10 w-10" /> {BRAND.name}
+          <MeetkatMark className="h-10 w-10" /> {BRAND.name}
         </Link>
         <FrameCard>
           <div className="space-y-4 p-6 sm:p-8">

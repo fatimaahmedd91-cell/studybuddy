@@ -3,7 +3,7 @@
 // Screen-time accountability groups (the "Groups" tab of /screen-time).
 // The server decides who can see what (backend/app/screen_time_groups.py); this file only shows it.
 // Ground rules shown to people:
-//   - Each group uses ONE kind of number (self-reported OR time in Meerkat), never mixed.
+//   - Each group uses ONE kind of number (self-reported OR time in Meetkat), never mixed.
 //   - The target is per person, per day.
 //   - Joining needs an explicit "Join and share". Leaving hides all of your numbers from the group.
 //   - Missing entries are listed as "No entry", never counted as zero.
@@ -31,7 +31,7 @@ import { Button, Field, FrameCard, inputClass } from "./ui";
 
 export function MetricBadge({ metric }: { metric: Metric }) {
   return (
-    <span className="inline-block rounded-full bg-pine px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-cream">
+    <span className="inline-block rounded-full bg-bark px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-cream">
       {METRIC_BADGE[metric]}
     </span>
   );
@@ -186,11 +186,11 @@ const METRIC_CHOICES: { value: Metric; title: string; text: string }[] = [
   {
     value: "self_reported",
     title: "Self-reported phone screen time",
-    text: "Everyone types in their own daily total from their phone. Meerkat doesn't check it.",
+    text: "Everyone types in their own daily total from their phone. Meetkat doesn't check it.",
   },
   {
     value: "in_app",
-    title: "Time in Meerkat",
+    title: "Time in Meetkat",
     text: "Measured automatically, but only time spent in this app, not your whole phone.",
   },
 ];
@@ -235,9 +235,9 @@ function CreateGroupDialog({ onClose, onCreated }: { onClose: () => void; onCrea
           <legend className="text-sm font-semibold">What will the group compare?</legend>
           <div className="mt-1 space-y-2">
             {METRIC_CHOICES.map((choice) => (
-              <label key={choice.value} className="flex min-h-11 items-start gap-3 rounded-xl border-2 border-pine/20 bg-cream p-3">
+              <label key={choice.value} className="flex min-h-11 items-start gap-3 rounded-xl border-2 border-bark/20 bg-cream p-3">
                 <input type="radio" name="metric" value={choice.value} checked={metric === choice.value}
-                  onChange={() => setMetric(choice.value)} className="mt-1 h-5 w-5 shrink-0 accent-pine" />
+                  onChange={() => setMetric(choice.value)} className="mt-1 h-5 w-5 shrink-0 accent-bark" />
                 <span>
                   <span className="block font-semibold">{choice.title}</span>
                   <span className="block text-sm">{choice.text}</span>
@@ -387,8 +387,8 @@ function InviteDialog({ group, onClose, onInvited }: { group: StGroup; onClose: 
         <ul className="max-h-72 space-y-1 overflow-y-auto">
           {friends.map((friend) => (
             <li key={friend.id}>
-              <label className="flex min-h-12 items-center gap-3 rounded-xl px-2 hover:bg-sage">
-                <input type="checkbox" checked={chosen.includes(friend.id)} className="h-5 w-5 accent-pine"
+              <label className="flex min-h-12 items-center gap-3 rounded-xl px-2 hover:bg-sky">
+                <input type="checkbox" checked={chosen.includes(friend.id)} className="h-5 w-5 accent-bark"
                   onChange={(e) => setChosen(e.target.checked ? [...chosen, friend.id] : chosen.filter((x) => x !== friend.id))} />
                 <Avatar person={friend} size="xs" />
                 {friend.name}
@@ -477,13 +477,13 @@ function LeaderboardRows({ board }: { board: Leaderboard }) {
         <b>{dayLabel(board.day)}</b> · {board.metric_label} · target {minutesLabel(target)} per person
       </p>
       {board.ranked.length === 0 ? (
-        <p className="rounded-xl border-2 border-dashed border-pine/30 px-4 py-6 text-center text-sm">
-          {inApp ? "Nobody used Meerkat that day." : "Nobody has logged this day yet."}
+        <p className="rounded-xl border-2 border-dashed border-bark/30 px-4 py-6 text-center text-sm">
+          {inApp ? "Nobody used Meetkat that day." : "Nobody has logged this day yet."}
         </p>
       ) : (
         <ol className="space-y-3">
           {board.ranked.map((row) => (
-            <li key={row.person.id} className={`rounded-2xl p-3 ${row.is_me ? "bg-sage-strong" : "bg-cream"}`}>
+            <li key={row.person.id} className={`rounded-2xl p-3 ${row.is_me ? "bg-sky-strong" : "bg-cream"}`}>
               <div className="flex items-center gap-3">
                 <span className="w-7 shrink-0 text-center text-xl font-extrabold" aria-label={`Rank ${row.rank}`}>{row.rank}</span>
                 <Avatar person={row.person} size="sm" />
@@ -495,7 +495,7 @@ function LeaderboardRows({ board }: { board: Leaderboard }) {
                 </div>
                 <span className="shrink-0 text-right font-bold tabular-nums">{minutesLabel(row.minutes)}</span>
               </div>
-              <div className="mt-2 h-3 overflow-hidden rounded-full bg-pine/15" role="progressbar" aria-valuemin={0}
+              <div className="mt-2 h-3 overflow-hidden rounded-full bg-bark/15" role="progressbar" aria-valuemin={0}
                 aria-valuemax={target} aria-valuenow={Math.min(row.minutes, target)}
                 aria-label={`${row.is_me ? "Your" : `${row.person.name}'s`} screen time compared with the target`}>
                 <div className={`h-full rounded-full ${row.over_target ? "bg-warning" : "bg-forest"}`}
@@ -514,7 +514,7 @@ function LeaderboardRows({ board }: { board: Leaderboard }) {
       )}
       {board.no_entry.length > 0 && (
         <div className="rounded-xl bg-cream p-3 text-sm">
-          <p className="font-semibold">{inApp ? "No time in Meerkat recorded:" : "No entry for this day:"}</p>
+          <p className="font-semibold">{inApp ? "No time in Meetkat recorded:" : "No entry for this day:"}</p>
           <p>{board.no_entry.map((x) => (x.is_me ? "You" : x.person.name)).join(", ")}</p>
           <p className="mt-1 text-xs">Missing entries aren&apos;t counted as zero, so they&apos;re not ranked.</p>
           {!inApp && board.no_entry.some((x) => x.is_me) && (
@@ -526,7 +526,7 @@ function LeaderboardRows({ board }: { board: Leaderboard }) {
         {board.updated_at
           ? `${inApp ? "Worked out" : "Last updated"} ${formatDateTime(board.updated_at)}. Unit: minutes.`
           : "No entries yet. Unit: minutes."}{" "}
-        {inApp ? "Only time in Meerkat, not total phone use." : "Self-reported numbers aren't checked by Meerkat."}
+        {inApp ? "Only time in Meetkat, not total phone use." : "Self-reported numbers aren't checked by Meetkat."}
       </p>
     </div>
   );

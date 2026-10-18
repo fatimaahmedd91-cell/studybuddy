@@ -37,7 +37,7 @@ DEMO_MODE_ENABLED = os.getenv("DEMO_MODE_ENABLED", "true").lower() == "true"
 SERVE_WEBSITE = os.getenv("SERVE_WEBSITE", "false").lower() == "true"
 WEBSITE_DIR = Path(os.getenv("WEBSITE_DIR", BACKEND_DIR.parent / "frontend" / "out"))
 
-# ---------- Meerkat: age policy, terms, providers ----------
+# ---------- Meetkat: age policy, terms, providers ----------
 
 # Minimum age to join. 18 is the PROPOSED launch policy and still needs the team's confirmation
 # (see docs/PRE_LAUNCH_CHECKLIST.md). Minors and adults are never mixed in the meantime.
@@ -45,7 +45,7 @@ MIN_AGE = int(os.getenv("MIN_AGE", "18"))
 
 # The Terms of Service version people must accept. Change it when the terms change materially:
 # everyone who accepted an older version is asked to accept again on their next visit.
-TERMS_VERSION = os.getenv("TERMS_VERSION", "draft-2026-10-18")
+TERMS_VERSION = os.getenv("TERMS_VERSION", "draft-2026-10-18b")
 
 # Email codes (Settings → Verification). Any SMTP account works, for example a Gmail app password.
 # Leave SMTP_HOST empty and email verification shows "not set up" instead of pretending.

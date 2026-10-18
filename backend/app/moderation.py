@@ -3,7 +3,7 @@
 GET  /api/moderation/reports?status=open          the report queue (open, dismissed or actioned)
 POST /api/moderation/reports/{id}/dismiss         {"note": "..."} close a report without action
 POST /api/moderation/reports/{id}/remove-content  {"note": "..."} remove what was reported
-POST /api/moderation/users/{id}/suspend           {"reason": "...", "report_id": 3} block someone from Meerkat
+POST /api/moderation/users/{id}/suspend           {"reason": "...", "report_id": 3} block someone from Meetkat
 POST /api/moderation/users/{id}/unsuspend         {"note": "..."}
 GET  /api/moderation/actions                      the log of every moderator action (never edited)
 GET  /api/moderation/privacy-requests             privacy requests (admins only)

@@ -57,7 +57,7 @@ export default function MySchedule() {
   return (
     <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.3fr_1fr]">
       <div className="space-y-5">
-        <section aria-labelledby="schedule-title" className="rounded-frame bg-pine p-5 text-cream sm:p-6">
+        <section aria-labelledby="schedule-title" className="rounded-frame bg-bark p-5 text-cream sm:p-6">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 id="schedule-title" className="text-2xl font-bold">My private schedule</h2>
             <Button variant="light" onClick={() => setEditing("new")}>+ Add</Button>
@@ -69,13 +69,13 @@ export default function MySchedule() {
           {loading && <Loading />}
           {error && <ErrorBox message={error} onRetry={reload} />}
           {data && data.commitments.length === 0 && (
-            <div className="mt-4 rounded-2xl bg-cream text-pine">
+            <div className="mt-4 rounded-2xl bg-cream text-bark">
               <Empty title="No commitments yet">Add your classes and shifts, or import them, so plans avoid them.</Empty>
             </div>
           )}
           <ul className="mt-4 space-y-2">
             {data?.commitments.map((c) => (
-              <li key={c.id} className="flex flex-wrap items-start justify-between gap-2 rounded-inner bg-cream px-4 py-3 text-pine">
+              <li key={c.id} className="flex flex-wrap items-start justify-between gap-2 rounded-inner bg-cream px-4 py-3 text-bark">
                 <div className="min-w-0">
                   <p className="font-semibold">{c.title} <Chip>{KIND_LABELS[c.kind]}</Chip></p>
                   <p className="text-sm">{when(c)}</p>

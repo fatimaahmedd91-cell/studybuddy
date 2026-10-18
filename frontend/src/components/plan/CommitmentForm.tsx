@@ -65,7 +65,7 @@ export function CommitmentFields({
             <label key={r} className="flex min-h-11 items-center gap-2">
               <input type="radio" name={id("recurrence")} checked={value.recurrence === r}
                 onChange={() => set({ recurrence: r, weekday: r === "weekly" ? value.weekday ?? 0 : null })}
-                className="h-5 w-5 accent-pine" />
+                className="h-5 w-5 accent-bark" />
               {label}
             </label>
           ))}
