@@ -200,12 +200,16 @@ def describe_slot(start, end, tz_name):
 
 # ---------- Meeting area ----------
 
-def midpoint(points):
+def midpoint(points, coarse=False):
     """The approximate geographic middle of some (lat, lng) points, rounded to about 1 km.
 
+    coarse=True rounds to about 5 km instead. Use it for two people: you know your own area, so a
+    precise halfway point would show roughly where the other person's area is.
     This is a straight-line average, fine across a city. It says nothing about travel time,
     transit routes, cost or accessibility.
     """
     lat = sum(p[0] for p in points) / len(points)
     lng = sum(p[1] for p in points) / len(points)
+    if coarse:
+        return round(round(lat * 20) / 20, 2), round(round(lng * 20) / 20, 2)
     return round(lat, 2), round(lng, 2)

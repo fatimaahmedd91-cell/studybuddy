@@ -128,7 +128,8 @@ export function MyMeetingArea() {
               {pending.kind === "device"
                 ? "Your browser will ask to share your location. We round it to about 1 km before saving it."
                 : "Only the area you picked is saved."}{" "}
-              With just two people, the halfway point can hint at roughly which area the other person picked.
+              With just two people, the halfway point is rounded to about 5 km so it doesn&apos;t point to the other person&apos;s
+              area, but it can still hint at the rough direction.
             </p>
             <div className="flex flex-wrap gap-2">
               <Button onClick={agree}>Use this location</Button>

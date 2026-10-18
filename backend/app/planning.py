@@ -36,8 +36,9 @@ MEETING AREA
 People can save an approximate meeting area (a preset campus/neighbourhood or a rounded current
 location, never a home address) after turning on "location suggestions". The halfway point is the
 straight-line average of the saved areas, rounded to about 1 km. It is not based on travel time.
-Other people's areas are never returned. With exactly two people, the halfway point can still hint at
-roughly which area the other person picked; the website says so.
+Other people's areas are never returned. With exactly two people, you could work back from the halfway
+point to the other person's area, so it's rounded to about 5 km instead; it still hints at the rough
+direction, and the website says so.
 With GOOGLE_MAPS_API_KEY set, Google Places finds real places near the halfway point. Without it (or if the
 call fails), we return plain "search on Google Maps" links that Meerkat hasn't checked.
 """
@@ -674,10 +675,12 @@ def meeting_area(body: AreaRequest, me: CurrentUser):
                             "friends to add theirs on their Plan page.")
         return result
 
-    lat, lng = scheduling.midpoint(points)
+    two = len(points) == 2
+    lat, lng = scheduling.midpoint(points, coarse=two)
     result["midpoint"] = {
         "lat": lat, "lng": lng, "maps_url": f"https://www.google.com/maps/search/?api=1&query={lat},{lng}",
-        "label": "Approximate halfway point (straight-line), not based on travel time",
+        "label": "Approximate halfway point (straight-line, rounded to about "
+                 f"{'5' if two else '1'} km), not based on travel time",
     }
     if config.GOOGLE_MAPS_API_KEY:
         try:

@@ -1,15 +1,20 @@
-# FriendFinder
+# Meerkat
 
-A friendship app for students (not dating). Find people at your university who share your
-interests, goals and free time. Then add them as friends, message them, join groups and go to
-events together. Built for Hack the Valley.
+**Finding your mob shouldn't be up to chance.**
+
+A platonic friendship app for adults (18+, the proposed launch policy). Find people who share your interests,
+goals and free time. Then become friends, message, share memories, plan hangouts that really fit
+everyone's schedule, join groups and events, and keep screen time in check together.
+Built for Hack the Valley. (Some internal names still say "friendfinder", the project's first name.)
 
 - **Website:** Next.js + TypeScript + Tailwind (`frontend/`)
 - **API:** Python + FastAPI (`backend/`)
 - **Database:** PostgreSQL, or TigerData (Timescale) in the cloud
-- **AI:** Google Gemini writes a short "why you might get along" note, with a clearly labelled non-AI fallback
+- **AI (optional, per person):** Google Gemini writes match notes, hangout suggestions and timetable imports, always labelled, with non-AI fallbacks
+- **Safety:** blocking, reporting, a moderators' area, and contact details and schedules that stay private by default
 
 What works today, and what doesn't yet: [docs/STATUS.md](docs/STATUS.md).
+Before real users: [docs/PRE_LAUNCH_CHECKLIST.md](docs/PRE_LAUNCH_CHECKLIST.md) (decisions for the team, legal review, services to set up).
 
 ## Docs
 
@@ -19,6 +24,7 @@ What works today, and what doesn't yet: [docs/STATUS.md](docs/STATUS.md).
 | [docs/WHERE_TO_EDIT.md](docs/WHERE_TO_EDIT.md) | change a colour, a page, the matching, the AI prompt… |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | understand how the pieces fit together |
 | [docs/STATUS.md](docs/STATUS.md) | see what's done, what's missing, and the sponsor integrations |
+| [docs/PRE_LAUNCH_CHECKLIST.md](docs/PRE_LAUNCH_CHECKLIST.md) | see what the team must decide, review or set up before real users |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | work on the code with the team (branches, pull requests, tests) |
 | [DEPLOY.md](DEPLOY.md) | put the site live: one button on Render (free), or a Vultr server, plus your GoDaddy domain |
 | [backend/README.md](backend/README.md) | see every API endpoint |
@@ -152,5 +158,5 @@ Check that everything is connected at http://localhost:3000/api/health (you want
 | `python` / `npm` is not recognized | Install it (see "You need"), then open a new terminal. On Windows try `py` instead of `python`. |
 | The website says the server isn't reachable | Is terminal 1 (the API) still running? Open http://127.0.0.1:8000/api/health |
 | `/api/health` says the database isn't available | Check `DATABASE_URL` in `backend/.env`, and that Postgres is running. TigerData URLs need `?sslmode=require` on the end. |
-| Match notes say "Suggested by FriendFinder (not AI)" | That's the fallback: Gemini isn't set up, or it failed. The note says why. Check `GEMINI_API_KEY`. |
+| Match notes say "Suggested by Meerkat (not AI)" | That's the fallback, and the note says why. Either AI is off for one of you (Settings → Privacy), or Gemini isn't set up or failed (check `GEMINI_API_KEY`). |
 | `Too many sign-ups from this network` | The sign-up limit is 10 per hour per network. Restart the API to clear it locally. |

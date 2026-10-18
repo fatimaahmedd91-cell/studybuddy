@@ -280,7 +280,9 @@ def test_halfway_point_needs_two_areas_and_hides_each_persons_area(database, cli
     client.put("/api/me/meeting-origin", json={"preset": "utsc"}, headers=b[0])
     two = area(client, a[0], b[1]["id"])
     body = two.json()
-    assert body["midpoint"]["lat"] == 43.72 and body["midpoint"]["lng"] == -79.3  # (43.66+43.78)/2, (-79.40-79.19)/2
+    # The exact middle is (43.72, -79.295). With two people it's rounded to about 5 km, so A can't work back to B's area.
+    assert body["midpoint"]["lat"] == 43.7 and body["midpoint"]["lng"] == -79.3
+    assert "about 5 km" in body["midpoint"]["label"]
     assert "not based on travel time" in body["midpoint"]["label"]
     # Without a Maps key: plain, clearly labelled search links, and nobody's own area.
     assert body["source"] == "links" and body["venues"] == []
@@ -309,7 +311,7 @@ def test_places_results_are_passed_through_without_invented_details(database, cl
     assert body["source"] == "google_places" and len(body["venues"]) == 1
     venue = body["venues"][0]
     assert venue["name"] == "Snakes & Lattes" and venue["open_now"] is None and venue["price_level"] == "PRICE_LEVEL_MODERATE"
-    assert seen == [("board game cafe", 43.68, -79.39, "moderate")]
+    assert seen == [("board game cafe", 43.7, -79.4, "moderate")]  # the two-person halfway point, rounded to about 5 km
 
 
 def test_places_errors_fall_back_to_links(database, client, monkeypatch):

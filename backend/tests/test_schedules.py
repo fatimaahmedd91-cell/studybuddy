@@ -80,6 +80,7 @@ def test_shared_slots_keep_long_enough_future_times():
 
 def test_midpoint_is_rounded():
     assert scheduling.midpoint([(43.6612, -79.3957), (43.7834, -79.1874)]) == (43.72, -79.29)
+    assert scheduling.midpoint([(43.6612, -79.3957), (43.7834, -79.1874)], coarse=True) == (43.7, -79.3)
 
 
 # ---------- Calendar files ----------

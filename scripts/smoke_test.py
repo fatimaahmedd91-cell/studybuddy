@@ -201,6 +201,72 @@ try:
     ok = status == 200 and body.get("today_seconds", 0) >= 30 and len(body.get("week", [])) == 7
     check("Screen time shows today and the last 7 days", ok, "" if ok else detail_of(status, body))
 
+    # Verification: only checks what this server can do, never pretends
+    status, body = request("GET", "/api/verification", token=token_a)
+    if check("Verification status loads", status == 200 and isinstance(body, dict), detail_of(status, body) if status != 200 else ""):
+        info("Email codes", "set up" if body["email"]["available"] else "not set up on this server")
+        info("Phone codes", "set up" if body["phone"]["available"] else "not set up on this server")
+        info("Age check", "test mode" if body["age"]["test_mode"] else ("set up" if body["age"]["available"] else "not available"))
+        check("Nobody starts out verified", not body["email"]["verified"] and not body["phone"]["verified"])
+
+    # Memories: friends-only by default, hidden again when the author picks "only me"
+    status, memory = request("POST", "/api/memories", {"caption": "Smoke test memory"}, token_a)
+    ok = status == 201 and memory.get("audience") == "friends"
+    if check("Post a memory (friends only by default)", ok, "" if ok else detail_of(status, memory)):
+        status, body = request("GET", f"/api/memories/{memory['id']}", token=token_b)
+        check("A friend can see it", status == 200, f"status {status}")
+        request("PATCH", f"/api/memories/{memory['id']}", {"audience": "only_me"}, token_a)
+        status, _ = request("GET", f"/api/memories/{memory['id']}", token=token_b)
+        check("After switching to 'only me', the friend can't", status == 404, f"status {status}")
+
+    # Screen-time group: self-reported, invite a friend, leaderboard
+    status, group = request("POST", "/api/screen-time/groups",
+                            {"name": "Smoke test screen time", "metric": "self_reported", "daily_target_minutes": 120}, token_a)
+    st_id = group.get("id") if isinstance(group, dict) else None
+    check("Create a screen-time group", status == 201 and bool(st_id), "" if status == 201 else detail_of(status, group))
+    request("POST", f"/api/screen-time/groups/{st_id}/invite", {"user_ids": [id_b]}, token_a)
+    status, body = request("POST", f"/api/screen-time/groups/{st_id}/accept", {"share": True}, token_b)
+    check("A friend accepts the invitation (sharing on purpose)", status == 200, "" if status == 200 else detail_of(status, body))
+    yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).date().isoformat()
+    status, board = request("GET", f"/api/screen-time/groups/{st_id}/leaderboard?day={yesterday}", token=token_a)
+    ok = status == 200 and board.get("unit") == "minutes" and len(board.get("no_entry", [])) == 2 and board.get("ranked") == []
+    check("Leaderboard lists missing entries separately (never as zero)", ok, "" if ok else detail_of(status, board))
+
+    # Private schedule and hangout planning: free times only, never anyone's commitments
+    today = datetime.now(timezone.utc).date()
+    status, body = request("POST", "/api/commitments", {
+        "title": "Smoke private class", "kind": "class", "recurrence": "weekly", "weekday": today.weekday(),
+        "start_date": today.isoformat(), "start_time": "10:00", "end_time": "11:00"}, token_b)
+    check("Save a private commitment", status == 201, "" if status == 201 else detail_of(status, body))
+    plan = {"friend_ids": [id_b], "start_date": (today + timedelta(days=1)).isoformat(),
+            "end_date": (today + timedelta(days=7)).isoformat(), "duration_minutes": 60}
+    status, slots = request("POST", "/api/planning/slots", plan, token_a)
+    ok = status == 200 and isinstance(slots.get("slots"), list)
+    if check("Find shared free times with a friend", ok, "" if ok else detail_of(status, slots)):
+        check("Free times never include the friend's private commitments", "Smoke private class" not in json.dumps(slots))
+        info("Free times found", f"{len(slots['slots'])} (the friend's private schedule is only used with their permission)")
+        if slots["slots"]:
+            first = slots["slots"][0]
+            status, body = request("POST", "/api/planning/suggest",
+                                   {**plan, "slots": [{"start": first["start"], "end": first["end"]}]}, token_a)
+            ok = status == 200 and body.get("source") in ("gemini", "fallback") and bool(body.get("summary"))
+            if check("Hangout suggestion is written", ok, "" if ok else detail_of(status, body)):
+                info("Suggestion source", "Gemini" if body["source"] == "gemini" else f"labelled fallback ({body['fallback_reason']})")
+    status, body = request("POST", "/api/planning/area", {"friend_ids": [id_b]}, token_a)
+    ok = status == 200 and body.get("midpoint") is None and bool(body.get("notice"))
+    check("Meeting area waits until two people choose an area (no guessing)", ok, "" if ok else detail_of(status, body))
+
+    # Safety: reports and blocks
+    status, body = request("POST", "/api/reports", {"target_type": "profile", "target_id": id_b, "reason": "spam"}, token_a)
+    check("Report a profile", status == 201, "" if status == 201 else detail_of(status, body))
+    status, body = request("POST", "/api/blocks", {"user_id": id_b}, token_a)
+    check("Block someone", status == 201, "" if status == 201 else detail_of(status, body))
+    status, _ = request("GET", f"/api/people/{id_a}", token=token_b)
+    check("Blocked people can't see each other", status == 404, f"status {status}")
+    status, _ = request("POST", f"/api/messages/{id_a}", {"body": "hello?"}, token_b)
+    check("…or message each other", status == 403, f"status {status}")
+    request("DELETE", f"/api/blocks/{id_b}", token=token_a)
+
     # Logging in again
     status, body = request("GET", "/api/me", token=token_a)
     email_a = body.get("email") if isinstance(body, dict) else ""
