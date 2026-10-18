@@ -9,7 +9,7 @@ import Avatar from "@/components/Avatar";
 import { EventForm } from "@/components/CreateForms";
 import Dialog from "@/components/Dialog";
 import { AvailabilityGrid } from "@/components/ProfileInputs";
-import { Empty, ErrorBox, Loading } from "@/components/States";
+import { Empty, ErrorBox, Loading, Notice } from "@/components/States";
 import { Button, DarkPanel, DemoBadge, FrameCard, inputClass } from "@/components/ui";
 import { ReportButton } from "@/components/SafetyActions";
 import { api } from "@/lib/api";
@@ -144,7 +144,7 @@ function FriendTime() {
   );
 }
 
-function EventList() {
+function EventList({ cancelled }: { cancelled: string | null }) {
   const me = useMe();
   const router = useRouter();
   const { options } = useOptions();
@@ -156,6 +156,16 @@ function EventList() {
 
   return (
     <div>
+      {cancelled !== null && (
+        <div className="mb-4">
+          <Notice kind="success">
+            Event cancelled.{" "}
+            {Number(cancelled) > 0
+              ? `${cancelled} ${Number(cancelled) === 1 ? "person who was going was" : "people who were going were"} notified.`
+              : "Nobody else needed to be notified."}
+          </Notice>
+        </div>
+      )}
       <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
         <h1 className="text-3xl font-bold sm:text-4xl">Events</h1>
         <div role="group" aria-label="Which events" className="inline-flex rounded-xl border-2 border-pine p-1">
@@ -223,6 +233,67 @@ function EventList() {
   );
 }
 
+// The organiser's Edit and Cancel buttons. The server checks it's really the organiser.
+function OrganiserActions({ event, onSaved }: { event: FriendEvent; onSaved: (e: FriendEvent) => void }) {
+  const router = useRouter();
+  const [editing, setEditing] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+  const others = event.going_count - (event.is_going ? 1 : 0);
+
+  async function cancel() {
+    setBusy(true);
+    setError(null);
+    try {
+      const result = await api.cancelEvent(event.id);
+      router.push(`/events?cancelled=${result.notified}`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Couldn't cancel the event.");
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="space-y-2">
+      <div className="flex flex-wrap gap-2">
+        {!event.has_ended && (
+          <Button variant="outline" onClick={() => { setSaved(false); setEditing(true); }}>Edit event</Button>
+        )}
+        <Button variant="danger" onClick={() => setCancelling(true)}>{event.has_ended ? "Delete event" : "Cancel event"}</Button>
+      </div>
+      {saved && <Notice kind="success">Event saved.</Notice>}
+      {editing && (
+        <Dialog title="Edit event" onClose={() => setEditing(false)}>
+          <EventForm existing={event} onCreated={(e) => { setEditing(false); setSaved(true); onSaved(e); }} />
+        </Dialog>
+      )}
+      {cancelling && (
+        <Dialog title={event.has_ended ? `Delete “${event.title}”?` : `Cancel “${event.title}”?`} onClose={() => setCancelling(false)}>
+          <div className="space-y-3">
+            <p>
+              {event.has_ended
+                ? "It will be removed for everyone."
+                : others > 0
+                  ? `It will be removed, and the ${others} other ${others === 1 ? "person" : "people"} going will get a notification.`
+                  : "It will be removed. Nobody else has said they're going yet."}
+            </p>
+            <p className="text-sm">This can&apos;t be undone.</p>
+            {error && <Notice kind="error">{error}</Notice>}
+            <div className="flex flex-wrap gap-2">
+              <Button variant="danger" onClick={cancel} disabled={busy}>
+                {busy ? "Working…" : event.has_ended ? "Delete event" : "Cancel event"}
+              </Button>
+              <Button variant="outline" onClick={() => setCancelling(false)}>Keep it</Button>
+            </div>
+          </div>
+        </Dialog>
+      )}
+    </div>
+  );
+}
+
 function EventDetail({ id }: { id: number }) {
   const { data: event, error, loading, reload, setData } = useApi(() => api.event(id), [id]);
   if (loading) return <Loading label="Loading event…" />;
@@ -251,7 +322,9 @@ function EventDetail({ id }: { id: number }) {
           )}
           {event.description && <p className="max-w-2xl whitespace-pre-line">{event.description}</p>}
           <RsvpButton event={event} onChange={setData} />
-          {!event.is_organiser && <ReportButton targetType="event" targetId={event.id} label="Report event" />}
+          {event.is_organiser
+            ? <OrganiserActions event={event} onSaved={setData} />
+            : <ReportButton targetType="event" targetId={event.id} label="Report event" />}
         </div>
       </FrameCard>
       <section aria-labelledby="going-title" className="rounded-2xl bg-cream p-5">
@@ -276,8 +349,9 @@ function EventDetail({ id }: { id: number }) {
 }
 
 function EventsContent() {
-  const id = useSearchParams().get("id");
-  return id ? <EventDetail id={Number(id)} /> : <EventList />;
+  const params = useSearchParams();
+  const id = params.get("id");
+  return id ? <EventDetail id={Number(id)} /> : <EventList cancelled={params.get("cancelled")} />;
 }
 
 export default function EventsPage() {
