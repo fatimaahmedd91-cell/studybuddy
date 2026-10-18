@@ -160,6 +160,11 @@ export const api = {
   createGroup: (group: { name: string; description: string; tags: string[] }) => send<Group>("POST", "/api/groups", group),
   joinGroup: (id: number) => send<Group>("POST", `/api/groups/${id}/join`),
   leaveGroup: (id: number) => send<Group>("POST", `/api/groups/${id}/leave`),
+  // Owner only (the server checks).
+  updateGroup: (id: number, changes: { name?: string; description?: string; tags?: string[] }) =>
+    send<Group>("PATCH", `/api/groups/${id}`, changes),
+  deleteGroup: (id: number) => send<{ deleted: boolean; notified: number }>("DELETE", `/api/groups/${id}`),
+  removeGroupMember: (id: number, userId: number) => send<Group>("DELETE", `/api/groups/${id}/members/${userId}`),
   groupPosts: (id: number) => get<GroupPost[]>(`/api/groups/${id}/posts`),
   createGroupPost: (id: number, body: string) => send<GroupPost>("POST", `/api/groups/${id}/posts`, { body }),
 
@@ -175,6 +180,16 @@ export const api = {
     online_url: string;
     group_id: number | null;
   }) => send<FriendEvent>("POST", "/api/events", event),
+  // Organiser only (the server checks). Only the fields sent are changed; ends_at: null removes the end time.
+  updateEvent: (id: number, changes: Partial<{
+    title: string;
+    description: string;
+    starts_at: string;
+    ends_at: string | null;
+    location: string;
+    online_url: string;
+  }>) => send<FriendEvent>("PATCH", `/api/events/${id}`, changes),
+  cancelEvent: (id: number) => send<{ cancelled: boolean; notified: number }>("DELETE", `/api/events/${id}`),
   rsvp: (id: number) => send<FriendEvent>("POST", `/api/events/${id}/rsvp`),
   cancelRsvp: (id: number) => send<FriendEvent>("DELETE", `/api/events/${id}/rsvp`),
 

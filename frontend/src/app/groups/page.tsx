@@ -8,11 +8,12 @@ import Avatar from "@/components/Avatar";
 import { EventForm, GroupForm } from "@/components/CreateForms";
 import Dialog from "@/components/Dialog";
 import { ReportButton, ReportDialog } from "@/components/SafetyActions";
-import { Empty, ErrorBox, Loading } from "@/components/States";
+import { Empty, ErrorBox, Loading, Notice } from "@/components/States";
 import { Button, Chip, DemoBadge, FrameCard, PageHeading, inputClass } from "@/components/ui";
 import { api } from "@/lib/api";
+import { useMe } from "@/lib/auth";
 import { formatDateTime, timeAgo } from "@/lib/time";
-import type { Group } from "@/lib/types";
+import type { Group, MiniProfile } from "@/lib/types";
 import { useApi } from "@/lib/useApi";
 
 // JOIN! / JOINED ✓ button. Clicking JOINED asks to leave.
@@ -43,7 +44,7 @@ function JoinButton({ group, onChange, large = false }: { group: Group; onChange
   );
 }
 
-function GroupList() {
+function GroupList({ deleted }: { deleted: string | null }) {
   const router = useRouter();
   const [q, setQ] = useState("");
   const [query, setQuery] = useState("");
@@ -57,6 +58,16 @@ function GroupList() {
 
   return (
     <div>
+      {deleted !== null && (
+        <div className="mb-4">
+          <Notice kind="success">
+            Group deleted.{" "}
+            {Number(deleted) > 0
+              ? `${deleted} ${Number(deleted) === 1 ? "member was" : "members were"} notified.`
+              : "Nobody else needed to be notified."}
+          </Notice>
+        </div>
+      )}
       <PageHeading title="Groups">
         <Button onClick={() => setCreating(true)}>+ Create group</Button>
       </PageHeading>
@@ -167,8 +178,113 @@ function Discussion({ groupId }: { groupId: number }) {
   );
 }
 
+// The owner's Edit and Delete buttons. The server checks it's really the owner.
+function OwnerActions({ group, onSaved }: { group: Group; onSaved: (g: Group) => void }) {
+  const router = useRouter();
+  const [editing, setEditing] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [typed, setTyped] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+  const others = group.member_count - (group.is_member ? 1 : 0);
+
+  async function remove() {
+    setBusy(true);
+    setError(null);
+    try {
+      const result = await api.deleteGroup(group.id);
+      router.push(`/groups?deleted=${result.notified}`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Couldn't delete the group.");
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="mt-3 space-y-2">
+      <div className="flex flex-wrap gap-2">
+        <Button variant="outline" onClick={() => { setSaved(false); setEditing(true); }}>Edit group</Button>
+        <Button variant="danger" onClick={() => { setTyped(""); setDeleting(true); }}>Delete group</Button>
+      </div>
+      {saved && <Notice kind="success">Group saved.</Notice>}
+      {editing && (
+        <Dialog title="Edit group" onClose={() => setEditing(false)}>
+          <GroupForm existing={group} onCreated={(g) => { setEditing(false); setSaved(true); onSaved(g); }} />
+        </Dialog>
+      )}
+      {deleting && (
+        <Dialog title={`Delete “${group.name}”?`} onClose={() => setDeleting(false)}>
+          <div className="space-y-3">
+            <ul className="list-disc space-y-1 pl-5 text-sm">
+              <li>The group and its discussion are deleted for everyone. This can&apos;t be undone.</li>
+              <li>{others > 0 ? `The ${others} other ${others === 1 ? "member gets" : "members get"} a notification.` : "Nobody else is in it."}</li>
+              <li>Its events stay, but no longer belong to a group.</li>
+            </ul>
+            <label className="block text-sm font-semibold" htmlFor="confirm-group-name">
+              Type the group&apos;s name to confirm
+            </label>
+            <input id="confirm-group-name" value={typed} onChange={(e) => setTyped(e.target.value)} className={inputClass}
+              autoComplete="off" placeholder={group.name} />
+            {error && <Notice kind="error">{error}</Notice>}
+            <div className="flex flex-wrap gap-2">
+              <Button variant="danger" onClick={remove} disabled={busy || typed.trim() !== group.name}>
+                {busy ? "Deleting…" : "Delete forever"}
+              </Button>
+              <Button variant="outline" onClick={() => setDeleting(false)}>Cancel</Button>
+            </div>
+          </div>
+        </Dialog>
+      )}
+    </div>
+  );
+}
+
+// Lets the owner remove someone. They aren't notified; groups are open, so they could join again.
+function RemoveMemberButton({ group, member, onRemoved }: { group: Group; member: MiniProfile; onRemoved: (g: Group) => void }) {
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function remove() {
+    setBusy(true);
+    setError(null);
+    try {
+      onRemoved(await api.removeGroupMember(group.id, member.id));
+      setOpen(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Couldn't remove them.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <>
+      <button type="button" onClick={() => setOpen(true)} aria-label={`Remove ${member.name} from the group`}
+        className="min-h-9 rounded-full px-2 text-xs font-semibold text-danger underline">
+        Remove
+      </button>
+      {open && (
+        <Dialog title={`Remove ${member.name}?`} onClose={() => setOpen(false)}>
+          <div className="space-y-3">
+            <p>They&apos;ll leave {group.name} and lose access to its discussion. They won&apos;t get a notification.</p>
+            <p className="text-sm">Groups are open, so they could join again. If someone is making the group unsafe, block or report them too.</p>
+            {error && <Notice kind="error">{error}</Notice>}
+            <div className="flex flex-wrap gap-2">
+              <Button variant="danger" onClick={remove} disabled={busy}>{busy ? "Removing…" : "Remove"}</Button>
+              <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+            </div>
+          </div>
+        </Dialog>
+      )}
+    </>
+  );
+}
+
 function GroupDetail({ id }: { id: number }) {
   const router = useRouter();
+  const me = useMe();
   const { data: group, error, loading, reload, setData } = useApi(() => api.group(id), [id]);
   const [planning, setPlanning] = useState(false);
 
@@ -192,7 +308,9 @@ function GroupDetail({ id }: { id: number }) {
             <p className="mt-1 text-lg">{group.member_count} member{group.member_count === 1 ? "" : "s"}{group.is_owner && " · you created this group"}</p>
             <div className="mt-2 flex flex-wrap gap-1.5">{group.tags.map((t) => <Chip key={t}>{t}</Chip>)}</div>
             {group.description && <p className="mt-3 max-w-2xl whitespace-pre-line">{group.description}</p>}
-            {!group.is_owner && <ReportButton targetType="group" targetId={group.id} label="Report group" className="mt-3" />}
+            {group.is_owner
+              ? <OwnerActions group={group} onSaved={setData} />
+              : <ReportButton targetType="group" targetId={group.id} label="Report group" className="mt-3" />}
           </div>
           <JoinButton large group={group} onChange={(g) => setData(g)} />
         </div>
@@ -204,11 +322,12 @@ function GroupDetail({ id }: { id: number }) {
             <h2 id="members-title" className="text-xl font-bold">Members</h2>
             <ul className="mt-3 flex flex-wrap gap-3">
               {group.members?.map((m) => (
-                <li key={m.id}>
+                <li key={m.id} className="flex flex-col items-center">
                   <Link href={`/profile?id=${m.id}`} className="flex flex-col items-center gap-1 text-center text-xs">
                     <Avatar person={m} size="sm" />
                     <span className="max-w-20 truncate">{m.name.split(" ")[0]}</span>
                   </Link>
+                  {group.is_owner && m.id !== me.id && <RemoveMemberButton group={group} member={m} onRemoved={setData} />}
                 </li>
               ))}
             </ul>
@@ -251,8 +370,9 @@ function GroupDetail({ id }: { id: number }) {
 }
 
 function GroupsContent() {
-  const id = useSearchParams().get("id");
-  return id ? <GroupDetail id={Number(id)} /> : <GroupList />;
+  const params = useSearchParams();
+  const id = params.get("id");
+  return id ? <GroupDetail id={Number(id)} /> : <GroupList deleted={params.get("deleted")} />;
 }
 
 export default function GroupsPage() {

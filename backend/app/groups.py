@@ -1,12 +1,24 @@
-"""Groups: list, create, join, leave, and a simple discussion for members.
+"""Groups: list, create, edit, delete, join, leave, and a simple discussion for members.
 
-GET  /api/groups                  all groups (?q= search, ?tag= filter, ?mine=true only yours)
-POST /api/groups                  create one: {"name", "description", "tags"}; you join it automatically
-GET  /api/groups/{id}             details, members, and upcoming events
-POST /api/groups/{id}/join
-POST /api/groups/{id}/leave
-GET  /api/groups/{id}/posts       the discussion (members only)
-POST /api/groups/{id}/posts       write in the discussion (members only): {"body": "..."}
+GET    /api/groups                         all groups (?q= search, ?tag= filter, ?mine=true only yours)
+POST   /api/groups                         create one: {"name", "description", "tags"}; you join it automatically
+GET    /api/groups/{id}                    details, members, and upcoming events ("is_owner" says if it's yours)
+PATCH  /api/groups/{id}                    the owner changes the name, description or tags
+DELETE /api/groups/{id}                    the owner deletes the group
+DELETE /api/groups/{id}/members/{user_id}  the owner removes someone from the group
+POST   /api/groups/{id}/join
+POST   /api/groups/{id}/leave
+GET    /api/groups/{id}/posts              the discussion (members only)
+POST   /api/groups/{id}/posts              write in the discussion (members only): {"body": "..."}
+
+The owner is whoever created the group (groups.created_by). Owning is enough to edit or delete it,
+even after leaving it. If the owner deletes their account, nobody owns the group any more; moderators
+can still remove it after a report.
+Deleting a group tells its other members, deletes its discussion, and keeps its events: they simply stop
+belonging to a group (events.group_id becomes empty).
+Removing a member doesn't notify them, to keep it low-key. Groups are open, so they could join again:
+to keep someone away, block or report them. Their permission to use their private schedule for this
+group's plans stops counting straight away (it only counts during their current membership).
 """
 
 from typing import Annotated
@@ -34,6 +46,15 @@ class GroupCreate(BaseModel):
     name: Annotated[str, StringConstraints(strip_whitespace=True, min_length=3, max_length=60)]
     description: Annotated[str, StringConstraints(strip_whitespace=True, max_length=500)] = ""
     tags: list[Tag] = Field(default=[], max_length=6)
+
+
+class GroupUpdate(BaseModel):
+    """Only the fields you send are changed."""
+
+    model_config = ConfigDict(extra="forbid")
+    name: Annotated[str, StringConstraints(strip_whitespace=True, min_length=3, max_length=60)] | None = None
+    description: Annotated[str, StringConstraints(strip_whitespace=True, max_length=500)] | None = None
+    tags: list[Tag] | None = Field(default=None, max_length=6)
 
 
 class GroupPost(BaseModel):
@@ -129,6 +150,54 @@ def get_group(group_id: int, me: CurrentUser):
         )
         group["events"] = cur.fetchall()
     return group
+
+
+def _owned_group(cur, group_id, me):
+    """The group, if it exists and you own it (404 / 403 otherwise)."""
+    row = _load_group(cur, group_id, me["id"])
+    if row["created_by"] != me["id"]:
+        raise HTTPException(status_code=403, detail="Only the group's owner can do this.")
+    return row
+
+
+@router.patch("/groups/{group_id}")
+def update_group(group_id: int, body: GroupUpdate, me: CurrentUser):
+    changes = body.model_dump(exclude_unset=True)
+    if any(value is None for value in changes.values()):
+        raise HTTPException(status_code=422, detail="Leave out what you don't want to change instead of sending it empty.")
+    if "tags" in changes:
+        changes["tags"] = list(dict.fromkeys(changes["tags"]))  # remove repeats, keep order
+    with get_connection() as conn, conn.cursor() as cur:
+        _owned_group(cur, group_id, me)
+        for field, value in changes.items():  # field names come from GroupUpdate, never from the request text
+            cur.execute(f"UPDATE groups SET {field} = %s WHERE id = %s", (value, group_id))
+    return get_group(group_id, me)
+
+
+@router.delete("/groups/{group_id}")
+def delete_group(group_id: int, me: CurrentUser):
+    with get_connection() as conn, conn.cursor() as cur:
+        row = _owned_group(cur, group_id, me)
+        cur.execute("SELECT user_id FROM group_members WHERE group_id = %s", (group_id,))
+        told = sum(
+            notify(cur, member["user_id"], "group_deleted", f"{row['name']} was deleted by its owner", "/groups", me["id"])
+            for member in cur.fetchall()
+        )
+        # Members, posts and planning permissions go with it. Its events stay, without a group.
+        cur.execute("DELETE FROM groups WHERE id = %s", (group_id,))
+    return {"deleted": True, "notified": told}
+
+
+@router.delete("/groups/{group_id}/members/{user_id}")
+def remove_member(group_id: int, user_id: int, me: CurrentUser):
+    if user_id == me["id"]:
+        raise HTTPException(status_code=400, detail="To leave your own group, use Leave instead.")
+    with get_connection() as conn, conn.cursor() as cur:
+        _owned_group(cur, group_id, me)
+        cur.execute("DELETE FROM group_members WHERE group_id = %s AND user_id = %s RETURNING 1", (group_id, user_id))
+        if not cur.fetchone():
+            raise HTTPException(status_code=404, detail="That person isn't in this group.")
+    return get_group(group_id, me)
 
 
 @router.post("/groups/{group_id}/join")
