@@ -3,6 +3,9 @@
 // name on purpose: renaming them would log everyone out or break the server setup.)
 export const BRAND = {
   name: "Meetkat",
-  slogan: "Finding your mob shouldn't be up to chance.",
-  description: "Meetkat helps adults find platonic friends, groups and events through shared interests and free time.",
+  tagline: "Making friends shouldn’t be a sidequest.",
+  slogan: "Finding your mob shouldn’t be left to chance.",
+  // Shown under the link when someone shares the site (Discord, iMessage, search results...).
+  description: "Making friends shouldn’t be a sidequest. Finding your mob shouldn’t be left to chance. Meerkats are social animals!",
+  url: "https://meetkat.us",
 };

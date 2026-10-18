@@ -13,7 +13,6 @@ import { AvailabilityGrid, ChipPicker, ToggleChips, photoToJpeg } from "./Profil
 import { ErrorBox, Loading, Notice } from "./States";
 import { Button, Field, inputClass } from "./ui";
 
-const EMOJIS = ["🦊", "🐻", "🦉", "🐼", "🦋", "🐯", "🐰", "🦁", "🐨", "🐺", "🐧", "🦅", "🧭", "🌻", "🐢", "🐙"];
 const COLOURS = ["#e05a10", "#1f9fc4", "#a8860a", "#d25b8c", "#4f9a36", "#401800"];
 const PRONOUNS = ["she/her", "he/him", "they/them", "she/they", "he/they"];
 
@@ -83,20 +82,11 @@ function PhotoField({ form, setForm }: { form: Form; setForm: (f: Form) => void 
               <Button type="button" variant="outline" onClick={remove} disabled={busy}>Remove photo</Button>
             )}
           </div>
-          <p className="text-xs opacity-75">Optional. Saved as a small JPEG; location data is removed. Without a photo, your emoji is shown.</p>
+          <p className="text-xs opacity-75">Optional. Saved as a small JPEG; location data is removed. Without a photo, your initials are shown on your colour.</p>
           {message && <Notice kind={message.kind}>{message.text}</Notice>}
           <div>
-            <p className="text-sm font-semibold">Emoji avatar</p>
-            <div className="mt-1 flex flex-wrap gap-1.5" role="group" aria-label="Emoji avatar">
-              {EMOJIS.map((emoji) => (
-                <button key={emoji} type="button" aria-pressed={form.avatar_emoji === emoji}
-                  onClick={() => setForm({ ...form, avatar_emoji: emoji })}
-                  className={`h-11 w-11 rounded-lg text-2xl ${form.avatar_emoji === emoji ? "bg-bark/15 ring-2 ring-bark" : "hover:bg-cream"}`}>
-                  {emoji}
-                </button>
-              ))}
-            </div>
-            <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label="Avatar colour">
+            <p className="text-sm font-semibold">Your colour</p>
+            <div className="mt-1 flex flex-wrap gap-2" role="group" aria-label="Avatar colour">
               {COLOURS.map((colour) => (
                 <button key={colour} type="button" aria-pressed={form.avatar_color === colour}
                   aria-label={`Colour ${colour}`} onClick={() => setForm({ ...form, avatar_color: colour })}
@@ -230,12 +220,6 @@ export default function ProfileForm({
       </div>
 
       <PhotoField form={form} setForm={setForm} />
-
-      <label className="flex min-h-11 items-center gap-3 text-sm font-semibold">
-        <input type="checkbox" checked={form.stickers} onChange={(e) => set("stickers", e.target.checked)}
-          className="h-5 w-5 accent-bark" />
-        Show playful stickers around my photo on my expressive profile
-      </label>
 
       {saveError && <ErrorBox message={saveError} />}
       {Object.keys(errors).length > 0 && <Notice kind="error">Please fix the highlighted fields above.</Notice>}

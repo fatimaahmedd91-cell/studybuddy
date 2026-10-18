@@ -63,7 +63,7 @@ export default function MySchedule() {
             <Button variant="light" onClick={() => setEditing("new")}>+ Add</Button>
           </div>
           <p className="mt-1 text-sm opacity-90">
-            🔒 Only you can see this. It&apos;s used to work out when you&apos;re free, and only shared as free times
+            Only you can see this. It&apos;s used to work out when you&apos;re free, and only shared as free times
             with the people you allow below.
           </p>
           {loading && <Loading />}
@@ -79,7 +79,7 @@ export default function MySchedule() {
                 <div className="min-w-0">
                   <p className="font-semibold">{c.title} <Chip>{KIND_LABELS[c.kind]}</Chip></p>
                   <p className="text-sm">{when(c)}</p>
-                  {c.location && <p className="text-xs">📍 {c.location} (private)</p>}
+                  {c.location && <p className="text-xs">Place: {c.location} (private)</p>}
                   {c.source !== "manual" && <p className="text-xs opacity-75">Imported from {c.source === "ai" ? "a timetable (Gemini)" : "a calendar file"}</p>}
                 </div>
                 <div className="flex gap-2">

@@ -232,7 +232,7 @@ DEMO_EXPLORER = {
 DEMO_INCOMING_REQUESTS = ["Tariq Aziz", "Lena Petrova"]
 DEMO_FRIEND = "Daniel Osei"
 DEMO_FRIEND_MESSAGES = [
-    "Hey! Saw you're into coding too 👋",
+    "Hey! Saw you're into coding too",
     "Want to grab a table at the library Tuesday afternoon?",
 ]
 

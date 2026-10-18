@@ -27,7 +27,7 @@ function PersonCard({ person, onRelationship }: { person: Person; onRelationship
             {person.name} {person.is_demo && <DemoBadge />}
           </span>
           <span className="text-sm">{[person.pronouns, person.age].filter(Boolean).join(" · ")}</span>
-          <span className="text-sm font-medium">🎓 {person.university}</span>
+          <span className="text-sm font-medium">{person.university}</span>
         </Link>
         <div className="min-w-0 flex-1 space-y-3">
           <div className="flex flex-wrap items-center gap-3">

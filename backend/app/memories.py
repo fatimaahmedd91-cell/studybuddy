@@ -6,7 +6,7 @@ POST   /api/memories                      {"caption": "...", "audience": "friend
 GET    /api/memories/{id}                 one memory
 PATCH  /api/memories/{id}                 {"caption": "...", "audience": "everyone"}   (only the author)
 DELETE /api/memories/{id}                 delete it, with its photos and comments (only the author)
-POST   /api/memories/{id}/reaction        add your ❤️
+POST   /api/memories/{id}/reaction        add your heart
 DELETE /api/memories/{id}/reaction        take it back
 GET    /api/memories/{id}/comments        the comments
 POST   /api/memories/{id}/comments        {"body": "..."}
@@ -361,13 +361,13 @@ def add_reaction(memory_id: int, me: CurrentUser):
         added = cur.fetchone() is not None
         link = f"/memories?id={memory_id}"
         if added and row["author_id"] != me["id"]:
-            # Only the first ❤️ from each person notifies the author, so toggling doesn't spam them.
+            # Only the first heart from each person notifies the author, so toggling doesn't spam them.
             cur.execute(
                 "SELECT 1 FROM notifications WHERE user_id = %s AND actor_id = %s AND kind = 'memory_reaction' AND link = %s",
                 (row["author_id"], me["id"], link),
             )
             if not cur.fetchone():
-                notify(cur, row["author_id"], "memory_reaction", f"{me['name']} reacted ❤️ to your memory", link, me["id"])
+                notify(cur, row["author_id"], "memory_reaction", f"{me['name']} liked your memory", link, me["id"])
         return _reaction_state(cur, memory_id, me["id"])
 
 

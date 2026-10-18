@@ -65,7 +65,7 @@ All start with `/api`.
 | `PATCH /me` | 🔒 | Change any of: `name` (your display name), `pronouns, age, university, hook, bio, interests, looking_for, availability, avatar_emoji, avatar_color, stickers, daily_goal_minutes`, and the privacy settings `availability_audience` (`everyone`, `friends` or `nobody`), `discoverable`, `timezone` |
 | `DELETE /me` | 🔒 | `{confirm: "DELETE"}`. Deletes your account and everything that's yours, including groups and events nobody else is in. |
 | `PUT /me/photo` | 🔒 | `{image: "data:image/jpeg;base64,..."}`. JPEG up to 2 MB. Location and camera data are removed. |
-| `DELETE /me/photo` | 🔒 | Back to the emoji avatar |
+| `DELETE /me/photo` | 🔒 | Back to initials on your colour |
 | `GET /photos/{id}` | | A profile photo |
 | `GET /options` | | Suggested interests and universities, friendship goals, days, time slots, minimum age, current Terms version, notification categories |
 

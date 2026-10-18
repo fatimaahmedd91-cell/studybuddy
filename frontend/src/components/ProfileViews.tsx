@@ -1,28 +1,12 @@
 // Two ways to show the same profile:
 //   ProfileInfo        the information view (big photo top-left, name beside it, details below)
-//   ProfileExpressive  the expressive view (big centred photo with stickers, hook front and centre)
+//   ProfileExpressive  the expressive view (big centred photo, hook front and centre)
 // Both read the same profile data, so editing your profile changes both.
 import type { PublicProfile } from "@/lib/types";
 import Avatar from "./Avatar";
 import { Chip, DemoBadge, FrameCard } from "./ui";
 
 // Stickers are picked from the person's interests. Edit this list to add more.
-const STICKERS: Record<string, string> = {
-  coding: "💻", cafes: "☕", anime: "🍥", badminton: "🏸", gaming: "🎮", basketball: "🏀", books: "📚",
-  art: "🎨", yoga: "🧘", music: "🎧", travel: "✈️", photography: "📷", fitness: "💪", chess: "♟️",
-  hiking: "🥾", "board games": "🎲", cooking: "🍳", dance: "💃", movies: "🎬", podcasts: "🎙️",
-  running: "🏃", soccer: "⚽", volunteering: "🤝", "k-pop": "🎤", hackathons: "🛠️",
-};
-const EXTRA_STICKERS = ["✨", "⭐", "💬", "🌈"];
-
-function stickersFor(person: PublicProfile) {
-  const fromInterests = person.interests.map((i) => STICKERS[i.toLowerCase()]).filter(Boolean);
-  return [...new Set([...fromInterests, ...EXTRA_STICKERS])].slice(0, 6);
-}
-
-// Places stickers on a ring around the photo (angles in degrees, 0 = right, going clockwise).
-const ANGLES = [-150, -60, -10, 40, 130, 190];
-
 function subtitle(person: PublicProfile) {
   return [person.pronouns, person.age ? `${person.age}` : ""].filter(Boolean).join(" · ");
 }
@@ -51,7 +35,6 @@ export function ProfileInfo({
             {person.hook && <p className="text-lg italic">&ldquo;{person.hook}&rdquo;</p>}
             {person.university && (
               <p className="font-medium">
-                <span aria-hidden="true">🎓 </span>
                 {person.university}
               </p>
             )}
@@ -89,28 +72,11 @@ export function ProfileInfo({
 }
 
 export function ProfileExpressive({ person, actions }: { person: PublicProfile; actions?: React.ReactNode }) {
-  const stickers = person.stickers ? stickersFor(person) : [];
   return (
     <FrameCard inner="bg-cream">
       <div className="flex flex-col items-center px-5 pb-8 pt-10 text-center sm:px-10">
-        {/* Photo with stickers on a ring around it. The stickers are decoration only. */}
-        <div className="relative p-8 sm:p-12">
-          <Avatar person={person} size="xl" />
-          {stickers.map((sticker, i) => {
-            const angle = (ANGLES[i] * Math.PI) / 180;
-            return (
-              <span
-                key={sticker}
-                aria-hidden="true"
-                className="pointer-events-none absolute flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-bark bg-sky text-2xl shadow-md sm:h-14 sm:w-14 sm:text-3xl"
-                style={{ left: `${50 + 47 * Math.cos(angle)}%`, top: `${50 + 47 * Math.sin(angle)}%`, rotate: `${(i % 2 ? 1 : -1) * 10}deg` }}
-              >
-                {sticker}
-              </span>
-            );
-          })}
-        </div>
-        <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
+        <Avatar person={person} size="xl" />
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
           <h1 className="text-4xl font-bold sm:text-5xl">{person.name}</h1>
           {person.is_demo && <DemoBadge />}
         </div>
@@ -120,9 +86,11 @@ export function ProfileExpressive({ person, actions }: { person: PublicProfile; 
             &ldquo;{person.hook}&rdquo;
           </p>
         )}
-        {person.university && <p className="mt-4 font-medium">🎓 {person.university}</p>}
+        {person.university && <p className="mt-4 font-medium">{person.university}</p>}
         <div className="mt-4 flex flex-wrap justify-center gap-2">
-          {person.interests.map((i) => <Chip key={i}>{i}</Chip>)}
+          {person.interests.map((i) => (
+            <span key={i} className="inline-block rounded-full bg-sky px-3 py-1 text-sm font-semibold">{i}</span>
+          ))}
         </div>
         {actions && <div className="mt-6 flex flex-wrap justify-center gap-2">{actions}</div>}
       </div>

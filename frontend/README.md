@@ -2,7 +2,7 @@
 
 Colours from the logo: its dark brown (sidebar, text, card frames), its light blue (inside cards and highlighted panels) and its cream (page background), with green only for the main buttons and switches.
 Everything you see comes from the API. There's no fake data in the website.
-The name and slogan ("Finding your mob shouldn't be up to chance.") live in `src/lib/brand.ts`. Change them there only.
+The name, tagline ("Making friends shouldn’t be a sidequest."), slogan ("Finding your mob shouldn’t be left to chance.") and the description shown when the link is shared live in `src/lib/brand.ts`. Change them there only.
 
 ## Run it
 
@@ -58,12 +58,12 @@ If someone hasn't accepted the current Terms, every app page shows the Terms scr
 | `ui.tsx` | buttons (`primary`, `dark`, `outline`, `light`, `danger`), `FrameCard`, `DarkPanel`, form fields, chips, the Demo badge, page headings, `Toggle` switches, `SettingsSection` |
 | `States.tsx` | loading, error (with "Try again"), empty, and success/error/warning/info notices |
 | `Dialog.tsx` | pop-up windows (keyboard-friendly, closes with Esc) |
-| `Avatar.tsx` | profile photo, or emoji on a colour |
+| `Avatar.tsx` | profile photo, or the person's initials on their colour |
 | `AuthForm.tsx` | the log-in and sign-up form |
 | `TermsGate.tsx` | "Before you continue" / "Our Terms have changed": accept the current Terms |
 | `LegalPage.tsx`, `LegalLinks.tsx` | shows a legal document from `content/legal.ts`, and the Terms/Privacy/Guidelines links |
 | `ProfileForm.tsx`, `ProfileInputs.tsx` | the profile form, chip pickers, free-time grid, photo upload |
-| `ProfileViews.tsx` | the info view and the expressive (stickers) view |
+| `ProfileViews.tsx` | the info view and the expressive view |
 | `VerificationBadges.tsx` | specific labels like "Email verified". Never a general "Verified". |
 | `FriendButton.tsx` | Add friend → Request sent → Friends, or Accept / Decline |
 | `MatchInsight.tsx` | the Gemini note or the "Suggested by Meetkat (not AI)" fallback, with "What was sent to Gemini?" |

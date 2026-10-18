@@ -162,3 +162,9 @@ export const FlagIcon = (p: IconProps) => (
     <path d="M5 21V4M5 4h11l-2 4 2 4H5" />
   </Svg>
 );
+
+export const HeartIcon = ({ filled = false, ...p }: IconProps & { filled?: boolean }) => (
+  <Svg {...p}>
+    <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" fill={filled ? "currentColor" : "none"} />
+  </Svg>
+);

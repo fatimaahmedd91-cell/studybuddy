@@ -203,7 +203,7 @@ function ImportReview({
                   <div className="mt-1 flex flex-wrap gap-1.5">
                     {flagged.map(([flag]) => (
                       <span key={flag} className="rounded-full border border-warning bg-warning-soft px-2 py-0.5 text-xs font-semibold text-warning">
-                        ⚠ {FLAG_LABELS[flag]}
+                        Check: {FLAG_LABELS[flag]}
                       </span>
                     ))}
                   </div>

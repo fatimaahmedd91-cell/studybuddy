@@ -52,13 +52,13 @@ export function CreateMenu() {
       {open && (
         <div role="menu" className="absolute right-0 top-12 z-50 w-56 rounded-2xl border-2 border-bark bg-cream p-2 shadow-xl">
           <button role="menuitem" className={item} onClick={() => { setOpen(false); setDialog("group"); }}>
-            👥 Create a group
+            Create a group
           </button>
           <button role="menuitem" className={item} onClick={() => { setOpen(false); setDialog("event"); }}>
-            📅 Create an event
+            Create an event
           </button>
           <button role="menuitem" className={item} onClick={() => { setOpen(false); router.push("/profile?edit=1"); }}>
-            ✏️ Edit my profile
+            Edit my profile
           </button>
         </div>
       )}

@@ -11,9 +11,9 @@ import { useAuth } from "@/lib/auth";
 import { BRAND } from "@/lib/brand";
 
 const FEATURES = [
-  ["🤝", "Friends, not dates", "Match on shared interests, friendship goals, your campus, and when you're both free."],
-  ["🗓️", "Plans that fit", "Find times that really work for everyone, without anyone sharing their private schedule."],
-  ["📸", "Memories together", "Share moments with your mob, with you in control of who sees them."],
+  ["Friends, not dates", "Match on shared interests, friendship goals, your campus, and when you're both free."],
+  ["Plans that fit", "Find times that really work for everyone, without anyone sharing their private schedule."],
+  ["Memories together", "Share moments with your mob, with you in control of who sees them."],
 ];
 
 export default function Landing() {
@@ -42,11 +42,9 @@ export default function Landing() {
 
       <section className="mt-10 grid items-center gap-8 md:grid-cols-[1.2fr_1fr]">
         <div>
-          <h1 className="text-4xl font-extrabold leading-tight sm:text-6xl">{BRAND.slogan}</h1>
-          <p className="mt-4 max-w-xl text-lg">
-            {BRAND.name} helps you meet platonic friends who share your interests, goals and free time, then plan real
-            hangouts, join groups and keep your screen time in check together. For adults ({`18+`}).
-          </p>
+          <h1 className="text-4xl font-extrabold leading-tight sm:text-6xl">{BRAND.tagline}</h1>
+          <p className="mt-4 max-w-xl text-2xl font-semibold">{BRAND.slogan}</p>
+          <p className="mt-2 max-w-xl text-lg">Meerkats are social animals! For adults 18+.</p>
           <div className="mt-6 flex flex-wrap gap-3">
             <ButtonLink href="/signup" className="px-6 text-lg">Sign up</ButtonLink>
             <ButtonLink href="/login" variant="outline" className="px-6 text-lg">Log in</ButtonLink>
@@ -73,10 +71,9 @@ export default function Landing() {
       </section>
 
       <section className="mt-12 grid gap-4 sm:grid-cols-3" aria-label="What you can do">
-        {FEATURES.map(([icon, title, text]) => (
+        {FEATURES.map(([title, text]) => (
           <DarkPanel key={title}>
-            <p className="text-3xl" aria-hidden="true">{icon}</p>
-            <h2 className="mt-2 text-xl font-bold">{title}</h2>
+            <h2 className="text-xl font-bold">{title}</h2>
             <p className="mt-1 text-sm opacity-90">{text}</p>
           </DarkPanel>
         ))}

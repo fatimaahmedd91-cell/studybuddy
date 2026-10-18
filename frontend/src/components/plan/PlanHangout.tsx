@@ -289,7 +289,7 @@ function SuggestionCard({
         <h2 id="suggest-title" className="text-xl font-bold">Suggestions</h2>
         <p className="inline-block rounded-full bg-bark px-3 py-1 text-xs font-semibold text-cream">
           {suggestion.source === "gemini"
-            ? "✨ Written by Gemini"
+            ? "Written by Gemini"
             : `Suggested by Meetkat (not AI): ${FALLBACK_REASONS[suggestion.fallback_reason ?? "error"] ?? "Gemini unavailable"}`}
         </p>
       </div>

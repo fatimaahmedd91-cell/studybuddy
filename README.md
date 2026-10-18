@@ -1,6 +1,6 @@
 # Meetkat
 
-**Finding your mob shouldn't be up to chance.**
+**Making friends shouldn’t be a sidequest. Finding your mob shouldn’t be left to chance.**
 
 A platonic friendship app for adults (18+, the proposed launch policy). Find people who share your interests,
 goals and free time. Then become friends, message, share memories, plan hangouts that really fit

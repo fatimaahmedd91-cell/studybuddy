@@ -7,7 +7,7 @@ The API reloads if you started it with `--reload`.
 
 | I want to change… | Open | Notes |
 |---|---|---|
-| The app's name, slogan or description | `frontend/src/lib/brand.ts` | Used by the landing page, header, page titles and legal pages. |
+| The app's name, tagline, slogan, or the description shown when the link is shared | `frontend/src/lib/brand.ts` | Used by the landing page, header, page titles, link previews and legal pages. |
 | The logo | `frontend/public/logo.png` (shown by `MeetkatMark` in `frontend/src/components/Brand.tsx`) | The browser-tab and phone home-screen icons are `frontend/src/app/icon.png` and `apple-icon.png`. Replace all three with the same picture. |
 | The colours | `frontend/src/app/globals.css` (the `@theme` block) | From the logo: `bark` (its brown: text, sidebar, frames), `sky` and `sky-strong` (its blue), `sand` and `cream` (its cream backgrounds), plus `forest` (green, only for main buttons and switches), and `danger`, `warning`, `success` with `-soft` versions for messages. Use them as classes like `bg-sky`, `text-bark`. Change a colour here and it changes everywhere. Check contrast if you darken or lighten one. |
 | Corner roundness | `--radius-frame` and `--radius-inner` in `globals.css` | |
@@ -56,7 +56,7 @@ The API reloads if you started it with `--reload`.
 
 | I want to change… | Open |
 |---|---|
-| The two profile looks (info view, expressive view with stickers) | `frontend/src/components/ProfileViews.tsx` (stickers per interest: `STICKERS`) |
+| The two profile looks (info view, expressive view) | `frontend/src/components/ProfileViews.tsx` |
 | The profile / onboarding form | `frontend/src/components/ProfileForm.tsx`, with the pickers in `ProfileInputs.tsx` |
 | The suggested interests, universities and friendship goals | `backend/app/options.py` (the website loads them from `/api/options`) |
 | **Add a new profile field** | 1. a new migration in `backend/app/migrations/` (the next number, for example `007_add_instagram.sql`; never edit an old one) · 2. `USER_COLUMNS` and `public_profile` / `own_profile` in `backend/app/users.py` · 3. `ProfileUpdate` in `backend/app/profiles.py` · 4. the types in `frontend/src/lib/types.ts` · 5. the form in `ProfileForm.tsx` and the views in `ProfileViews.tsx` · 6. a test in `backend/tests/test_profiles.py` |

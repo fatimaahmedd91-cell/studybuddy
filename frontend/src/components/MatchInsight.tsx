@@ -77,7 +77,7 @@ export default function MatchInsight({ personId }: { personId: number }) {
         <div className="mt-2 space-y-3" aria-live="polite">
           <p className="inline-block rounded-full bg-bark px-3 py-1 text-xs font-semibold text-cream">
             {data.source === "gemini"
-              ? "✨ Written by Gemini"
+              ? "Written by Gemini"
               : `Suggested by Meetkat (not AI): ${FALLBACK_REASONS[data.fallback_reason ?? "error"] ?? "Gemini unavailable"}`}
           </p>
           <p className="text-lg">{data.explanation}</p>

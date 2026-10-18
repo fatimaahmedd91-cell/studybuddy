@@ -10,6 +10,7 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useRef, useState } from "react";
 import Avatar from "@/components/Avatar";
 import Dialog from "@/components/Dialog";
+import { ChatIcon, HeartIcon } from "@/components/Icons";
 import { photoToJpeg } from "@/components/ProfileInputs";
 import { ReportButton } from "@/components/SafetyActions";
 import { Empty, ErrorBox, Loading, Notice } from "@/components/States";
@@ -305,7 +306,7 @@ function DeleteDialog({ memory, onClose, onDeleted }: { memory: Memory; onClose:
 
   return (
     <Dialog title="Delete this memory?" onClose={onClose}>
-      <p>Its photos, ❤️s and comments are deleted too. This can&apos;t be undone.</p>
+      <p>Its photos, hearts and comments are deleted too. This can&apos;t be undone.</p>
       <p className="mt-1 text-sm opacity-80">Copies other people already saved or screenshotted are outside Meetkat&apos;s control.</p>
       {error && <div className="mt-2"><Notice kind="error">{error}</Notice></div>}
       <div className="mt-4 flex gap-2">
@@ -363,11 +364,11 @@ function MemoryCard({ memory, onChange, onDeleted }: {
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <Button variant={memory.reacted_by_me ? "dark" : "outline"} onClick={toggleReaction} aria-pressed={memory.reacted_by_me}
             aria-label={memory.reacted_by_me ? "Remove your heart" : "Add a heart"} className="min-h-10 px-3">
-            ❤️ {memory.reaction_count}
+            <HeartIcon filled={memory.reacted_by_me} className="h-5 w-5" /> {memory.reaction_count}
           </Button>
           <Button variant="outline" onClick={() => setShowComments(!showComments)} aria-expanded={showComments}
             className="min-h-10 px-3">
-            💬 {memory.comment_count} {memory.comment_count === 1 ? "comment" : "comments"}
+            <ChatIcon className="h-5 w-5" /> {memory.comment_count} {memory.comment_count === 1 ? "comment" : "comments"}
           </Button>
           <div className="ml-auto flex flex-wrap gap-2">
             {memory.mine ? (

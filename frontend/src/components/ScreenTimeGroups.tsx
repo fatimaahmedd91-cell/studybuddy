@@ -490,7 +490,7 @@ function LeaderboardRows({ board }: { board: Leaderboard }) {
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold">{row.is_me ? "You" : row.person.name}</p>
                   {row.rank === 1 && (
-                    <p className="text-xs">📱 Most screen time that day. Fancy a walk together instead?</p>
+                    <p className="text-xs">Most screen time that day. Fancy a walk together instead?</p>
                   )}
                 </div>
                 <span className="shrink-0 text-right font-bold tabular-nums">{minutesLabel(row.minutes)}</span>
