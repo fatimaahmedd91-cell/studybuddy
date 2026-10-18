@@ -24,7 +24,7 @@ from datetime import datetime, timezone
 from typing import Annotated, Literal
 
 import psycopg2
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Request
 from psycopg2.extras import Json
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, StringConstraints
 
@@ -162,14 +162,31 @@ class ResetConfirm(BaseModel):
     new_password: str = Field(min_length=8, max_length=128)  # same rules as sign-up
 
 
+def send_reset_email(email, code, record_id):
+    """Runs after the answer has been sent (see below). A failed send cancels the code."""
+    try:
+        verification.send_email(
+            email,
+            "Reset your Meerkat password",
+            f"Your Meerkat password reset code is {code}. It expires in {RESET_MINUTES} minutes.\n\n"
+            "If you didn't ask to reset your password, you can ignore this email. Your password stays the same.",
+        )
+    except verification.SendFailed:
+        log.warning("Password reset email could not be sent.")
+        with get_connection() as conn, conn.cursor() as cur:
+            cur.execute("UPDATE contact_verifications SET used_at = now() WHERE id = %s", (record_id,))
+
+
 @router.post("/auth/password-reset/request")
-def request_password_reset(body: ResetRequest, request: Request):
+def request_password_reset(body: ResetRequest, request: Request, background: BackgroundTasks):
     """Emails a 6-digit reset code (15 minutes, 5 tries), if this server has SMTP set up.
 
     The answer is the same whether or not the email has an account, so this can't be used to find
     out who uses Meerkat. For the same reason, a resend limit or a failed send is only logged, not
     reported: the person is told to check their email and can try again later. That's a deliberate
     privacy trade-off. Demo and suspended accounts never get a code.
+    The email is sent after the answer goes out, so the answer doesn't take longer for real accounts
+    (which would also give them away).
     """
     if not verification.email_available():
         raise HTTPException(status_code=503, detail=RESET_UNAVAILABLE)
@@ -191,17 +208,7 @@ def request_password_reset(body: ResetRequest, request: Request):
             except HTTPException:
                 log.info("Password reset code not sent: too many recent requests for this account.")
     if code:
-        try:
-            verification.send_email(
-                email,
-                "Reset your Meerkat password",
-                f"Your Meerkat password reset code is {code}. It expires in {RESET_MINUTES} minutes.\n\n"
-                "If you didn't ask to reset your password, you can ignore this email. Your password stays the same.",
-            )
-        except verification.SendFailed:
-            log.warning("Password reset email could not be sent.")
-            with get_connection() as conn, conn.cursor() as cur:
-                cur.execute("UPDATE contact_verifications SET used_at = now() WHERE id = %s", (record_id,))
+        background.add_task(send_reset_email, email, code, record_id)
     return {"message": RESET_REQUESTED}
 
 
