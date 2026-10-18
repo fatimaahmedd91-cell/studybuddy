@@ -38,10 +38,10 @@ Last checked: 18 October 2026, on branch `claude/friendfinder-mvp`.
 | API tests (`pytest`, 117 tests) on PostgreSQL 16 | ✅ all pass, including one that calls the real Gemini API |
 | API tests on TimescaleDB 2.30.2 (same engine as TigerData) | ✅ all pass. The hypertable and `time_bucket` path is used. |
 | Website type check and production build | ✅ |
-| Browser journey (`scripts/e2e/journey.mjs`, 29 steps, two new users + demo + phone size) on the dev server with Gemini | ✅ (it was 28 steps then; the delete-account step was added later) |
+| Browser journey (`scripts/e2e/journey.mjs`, 29 steps: two new users, demo mode, phone size, delete account) on the dev server with a real Gemini key | ✅ 29 / 29, the match note was written by Gemini |
 | The same browser journey on the production build served by Caddy, without a Gemini key (fallback labelled) | ✅ 29 / 29 |
 | API journey (`scripts/smoke_test.py`, 39 checks) through Caddy | ✅ 39 / 39 |
-| A fresh copy of the repo set up by following README.md | see the handoff notes |
+| A fresh copy of the repo, set up by following README.md (Mac/Linux steps) with a new empty database | ✅ tests 115 pass + 2 Gemini tests skipped (no key in that copy), typecheck and build pass, smoke test 39 / 39, browser journey 29 / 29. The Windows commands weren't run (no Windows machine). |
 
 ## Sponsor integrations
 
