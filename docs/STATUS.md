@@ -49,7 +49,7 @@ Last checked: 18 October 2026, on branch `claude/friendfinder-mvp`.
 | Upgrading: a database made by the pre-Meerkat version (what the Vultr server has), then opened by the new code | ✅ migrations 003–006 ran by themselves at start-up. The old account kept its data and logged in, was asked to accept the Terms (never assumed), then everything worked, with AI off until they turn it on. |
 | Live Gemini: match note for a demo account, and 3 hangout suggestions | ✅ written by Gemini; the slot codes were replaced by real times |
 | Live SMTP, live Twilio, live Google Places, an age-check provider | ❌ not tested: no accounts were used. Faked in tests only. |
-| The Docker image with the Meerkat changes | ❌ not rebuilt this round (the earlier, pre-Meerkat image was tested) |
+| The Docker image Render builds, with a new empty database and **no** Gemini key | ✅ it sets itself up; browser journey 35 / 35 and API journey 56 / 56, with every AI feature showing its labelled fallback |
 
 ## Sponsor integrations
 
