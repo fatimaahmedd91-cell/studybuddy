@@ -13,7 +13,7 @@ USER_COLUMNS = (
     "avatar_emoji, avatar_color, photo_id, stickers, daily_goal_minutes, onboarded, is_demo, created_at, "
     "terms_version, terms_accepted_at, adult_confirmed_at, role, suspended_at, "
     "email_verified_at, phone, phone_verified_at, age_check_status, age_check_provider, age_check_at, "
-    "timezone, discoverable, availability_audience, notification_prefs, consents"
+    "timezone, discoverable, availability_audience, notification_prefs, consents, password_changed_at"
 )
 
 # Only checks that really happened can appear here, each with its own specific label.

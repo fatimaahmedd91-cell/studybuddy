@@ -173,8 +173,8 @@ def check_send_limits(cur, user_id, channel):
         raise HTTPException(status_code=429, detail="You've asked for several codes today. Try again tomorrow.")
 
 
-def start_code(cur, user_id, channel, target, code_hash=""):
-    """Cancels older codes and records a new one (sent just now, valid for 10 minutes)."""
+def start_code(cur, user_id, channel, target, code_hash="", minutes=CODE_MINUTES):
+    """Cancels older codes and records a new one (sent just now, valid for `minutes`)."""
     cur.execute(
         "UPDATE contact_verifications SET used_at = now() WHERE user_id = %s AND channel = %s AND used_at IS NULL",
         (user_id, channel),
@@ -184,7 +184,7 @@ def start_code(cur, user_id, channel, target, code_hash=""):
         INSERT INTO contact_verifications (user_id, channel, target, code_hash, expires_at)
         VALUES (%s, %s, %s, %s, now() + make_interval(mins => %s)) RETURNING id
         """,
-        (user_id, channel, target, code_hash, CODE_MINUTES),
+        (user_id, channel, target, code_hash, minutes),
     )
     return cur.fetchone()["id"]
 

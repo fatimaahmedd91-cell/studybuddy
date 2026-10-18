@@ -6,7 +6,7 @@ import { useState } from "react";
 import Avatar from "@/components/Avatar";
 import { Notice } from "@/components/States";
 import { Button, ButtonLink, DemoBadge, Field, SettingsSection, inputClass } from "@/components/ui";
-import { api } from "@/lib/api";
+import { api, setToken } from "@/lib/api";
 import { useAuth, useMe } from "@/lib/auth";
 import { formatDateTime } from "@/lib/time";
 import { useSave } from "./useSave";
@@ -97,6 +97,61 @@ function EmailChange() {
   );
 }
 
+function PasswordChange() {
+  const me = useMe();
+  const [open, setOpen] = useState(false);
+  const [current, setCurrent] = useState("");
+  const [next, setNext] = useState("");
+  const [again, setAgain] = useState("");
+  const save = useSave();
+  if (me.is_demo) {
+    return <p className="text-sm">Demo accounts don&apos;t have a password. Sign up for a real account to choose one.</p>;
+  }
+  return (
+    <div className="space-y-2">
+      <p><span className="font-semibold">Password</span></p>
+      {!open ? (
+        <Button variant="outline" onClick={() => { setOpen(true); save.setMessage(null); }}>Change password</Button>
+      ) : (
+        <form className="space-y-2 rounded-xl bg-cream p-3" onSubmit={async (e) => {
+          e.preventDefault();
+          if (next !== again) {
+            save.setMessage({ kind: "error", text: "The new passwords don't match." });
+            return;
+          }
+          const ok = await save.run(async () => setToken((await api.changePassword(current, next)).access_token),
+            "Password changed. You've been logged out everywhere else.");
+          if (ok) {
+            setOpen(false);
+            setCurrent("");
+            setNext("");
+            setAgain("");
+          }
+        }}>
+          <Field label="Current password" htmlFor="pw-current">
+            <input id="pw-current" type="password" required autoComplete="current-password" value={current}
+              onChange={(e) => setCurrent(e.target.value)} className={inputClass} />
+          </Field>
+          <Field label="New password" htmlFor="pw-new" hint="At least 8 characters.">
+            <input id="pw-new" type="password" required minLength={8} maxLength={128} autoComplete="new-password" value={next}
+              onChange={(e) => setNext(e.target.value)} className={inputClass} />
+          </Field>
+          <Field label="New password again" htmlFor="pw-again">
+            <input id="pw-again" type="password" required minLength={8} maxLength={128} autoComplete="new-password" value={again}
+              onChange={(e) => setAgain(e.target.value)} className={inputClass} />
+          </Field>
+          <p className="text-sm">Changing it logs you out on every other phone and computer.</p>
+          <div className="flex gap-2">
+            <Button type="submit" disabled={save.busy}>{save.busy ? "Saving…" : "Save new password"}</Button>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+          </div>
+        </form>
+      )}
+      {save.message && <Notice kind={save.message.kind}>{save.message.text}</Notice>}
+    </div>
+  );
+}
+
 function PhoneNumber() {
   const me = useMe();
   const { setMe } = useAuth();
@@ -135,6 +190,8 @@ export function AccountSection() {
       <DisplayName />
       <hr className="border-sage-strong" />
       <EmailChange />
+      <hr className="border-sage-strong" />
+      <PasswordChange />
       <hr className="border-sage-strong" />
       <PhoneNumber />
       <hr className="border-sage-strong" />

@@ -119,6 +119,13 @@ export const api = {
   // Settings (see backend/app/account.py)
   changeEmail: (new_email: string, current_password: string) =>
     send<OwnProfile>("PATCH", "/api/me/email", { new_email, current_password }),
+  // Returns a fresh token: this browser stays logged in, every other device is logged out.
+  changePassword: (current_password: string, new_password: string) =>
+    send<{ access_token: string }>("PATCH", "/api/me/password", { current_password, new_password }),
+  // Forgot password (no login). The server gives the same answer whether or not the email has an account.
+  requestPasswordReset: (email: string) => send<{ message: string }>("POST", "/api/auth/password-reset/request", { email }),
+  confirmPasswordReset: (email: string, code: string, new_password: string) =>
+    send<{ message: string }>("POST", "/api/auth/password-reset/confirm", { email, code, new_password }),
   changePhone: (phone: string | null) => send<OwnProfile>("PATCH", "/api/me/phone", { phone }),
   setNotificationPrefs: (prefs: Record<string, boolean>) => send<OwnProfile>("PATCH", "/api/me/notification-prefs", prefs),
   setConsent: (key: string, granted: boolean) => send<OwnProfile>("PUT", `/api/me/consents/${key}`, { granted }),

@@ -50,15 +50,28 @@ def _secret():
 
 def create_token(user_id):
     now = datetime.now(timezone.utc)
-    payload = {"sub": str(user_id), "iat": now, "exp": now + TOKEN_LIFETIME}
+    # "iat" (issued at) keeps fractions of a second, so a token made just after a password
+    # change is never mistaken for one made just before it (see issued_before).
+    payload = {"sub": str(user_id), "iat": now.timestamp(), "exp": now + TOKEN_LIFETIME}
     return jwt.encode(payload, _secret(), algorithm=ALGORITHM)
+
+
+def read_token_claims(token):
+    """Returns (user id, issued-at time in seconds) from a valid token, or None if it's fake, broken, or expired."""
+    secret = _secret()
+    try:
+        payload = jwt.decode(token, secret, algorithms=[ALGORITHM], options={"require": ["exp", "sub"]})
+        return int(payload["sub"]), float(payload.get("iat", 0))
+    except (jwt.InvalidTokenError, ValueError, TypeError):
+        return None
 
 
 def read_token(token):
     """Returns the user id inside a valid token, or None if the token is fake, broken, or expired."""
-    secret = _secret()
-    try:
-        payload = jwt.decode(token, secret, algorithms=[ALGORITHM], options={"require": ["exp", "sub"]})
-        return int(payload["sub"])
-    except (jwt.InvalidTokenError, ValueError):
-        return None
+    claims = read_token_claims(token)
+    return claims[0] if claims else None
+
+
+def issued_before(issued_at, moment):
+    """True if a token issued at `issued_at` (seconds) was made before `moment` (a datetime, or None)."""
+    return moment is not None and issued_at < moment.timestamp()
