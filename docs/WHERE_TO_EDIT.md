@@ -49,6 +49,7 @@ The API reloads if you started it with `--reload`.
 | Report reasons | `REPORT_REASONS` in `backend/app/safety.py` | |
 | Notification categories | `CATEGORIES` and `KIND_CATEGORY` in `backend/app/notifications.py` | |
 | Verification code rules (expiry, tries, resends) | `CODE_MINUTES`, `MAX_ATTEMPTS`, `RESEND_SECONDS`, `MAX_SENDS_PER_DAY` in `backend/app/verification.py` | |
+| Password reset codes and messages | `RESET_MINUTES`, `RESET_UNAVAILABLE`, `RESET_REQUESTED` in `backend/app/account.py` | Keep the "requested" message the same for every email, so it never reveals who has an account. |
 | Badge wording ("Email verified"…) | `BADGE_LABELS` in `backend/app/users.py` | Only use labels for things that were really checked. |
 
 ## Profiles
@@ -95,6 +96,7 @@ The API reloads if you started it with `--reload`.
 |---|---|
 | The fictional people, groups, events, friendships | `backend/app/seed_data.py`, then `python -m app.seed --reset --yes` (in `backend`) to reload it |
 | What a "Try the demo" account starts with | `DEMO_EXPLORER`, `DEMO_INCOMING_REQUESTS`, `DEMO_FRIEND`, `DEMO_FRIEND_MESSAGES` in `backend/app/seed_data.py` |
+| Demo people's private schedules, planning permissions and meeting areas | `DEMO_SCHEDULES`, `DEMO_PLANNING_FRIENDS`, `DEMO_PLANNING_GROUPS`, `DEMO_MEETING_AREAS`, `DEMO_EXPLORER_SCHEDULE` in `backend/app/seed_data.py` (`python -m app.seed` adds any that are missing) |
 
 Keep demo people **fictional** and 18+: made-up names, no real photos, `.invalid` emails.
 

@@ -44,6 +44,7 @@ Nothing above is ever faked: if a service isn't set up, the endpoint and the web
 - **Logged in:** 🔒 means you must send `Authorization: Bearer <access_token>`. Without it: 401.
 - **Terms gate:** if you haven't accepted the current `TERMS_VERSION`, 🔒 endpoints answer 403 with `{"detail": "terms_required"}`. The exceptions (`TERMS_EXEMPT` in `app/auth.py`) are `GET /me`, `POST /me/accept-terms`, `DELETE /me`, `GET /me/export` and `POST /privacy-requests`, so people can always see, leave or download their account.
 - **Suspended accounts** get 403 on login and on every 🔒 endpoint.
+- **Password changes log you out elsewhere:** a login token made before your last password change gets 401 (`users.password_changed_at`).
 - **Blocks** are enforced here, in both directions (`app/safety.py`): blocked people don't see each other's profiles, memories or posts in shared groups, can't send friend requests, messages or invitations, and don't get notifications from each other. Hidden things answer 404, as if they didn't exist.
 - **Roles:** `member` (everyone), `moderator`, `admin`. Moderation endpoints check the role on the server.
 - Errors always look like `{"detail": "A message you can show the user"}`.
@@ -74,6 +75,9 @@ All start with `/api`.
 |---|---|---|
 | `POST /me/accept-terms` | 🔒 | `{accept: true, version}`. Accepts the current Terms (stores the version and time). |
 | `PATCH /me/email` | 🔒 | `{new_email, current_password}`. Changes your login email and removes its "verified" label. |
+| `PATCH /me/password` | 🔒 | `{current_password, new_password}` → `{access_token}`. 403 if the current password is wrong, or for demo accounts. Every other device is logged out; this one gets the new token. |
+| `POST /auth/password-reset/request` | | `{email}`. 503 if SMTP isn't set up. Otherwise always the same 200 message, whether or not the email has an account. Real, non-demo, non-suspended accounts are emailed a 6-digit code (15 minutes, 5 tries, 60 s between sends, 5 a day), sent after answering so the timing gives nothing away. |
+| `POST /auth/password-reset/confirm` | | `{email, code, new_password}`. Every failure is the same 400 "That code is wrong or has expired." Success logs out every device. |
 | `PATCH /me/phone` | 🔒 | `{phone: "+14165550123"}` (international format) or `{phone: null}`. Always private. Removes its "verified" label. |
 | `PATCH /me/notification-prefs` | 🔒 | `{"messages": false, ...}`. Switches kinds of notifications on or off (the keys are in `GET /options`). |
 | `GET /me/consents` | 🔒 | Your optional-feature choices, with what each one means |
@@ -126,6 +130,9 @@ All start with `/api`.
 | `GET /groups/{id}` | 🔒 | Details, members and upcoming events |
 | `POST /groups/{id}/join` | 🔒 | 409 if you're already in it |
 | `POST /groups/{id}/leave` | 🔒 | 404 if you're not in it |
+| `PATCH /groups/{id}` | 🔒 owner | `{name, description, tags}` (send only what changes). 403 for anyone but the creator. |
+| `DELETE /groups/{id}` | 🔒 owner | Deletes the group and its discussion; the other members are notified. Its events stay, without a group. |
+| `DELETE /groups/{id}/members/{user_id}` | 🔒 owner | Removes a member (not yourself: 400). They aren't notified. |
 | `GET /groups/{id}/posts` | 🔒 | The discussion. Members only (403). Posts by people you blocked (or who blocked you) are hidden. |
 | `POST /groups/{id}/posts` | 🔒 | `{body}`. Members only. |
 | `GET /events` | 🔒 | `?when=upcoming` (default) or `past`, `&group_id=` |
@@ -133,6 +140,8 @@ All start with `/api`.
 | `GET /events/{id}` | 🔒 | Details and who's going |
 | `POST /events/{id}/rsvp` | 🔒 | "I'm going" (409 if you already are, 400 if it's over) |
 | `DELETE /events/{id}/rsvp` | 🔒 | Not going any more |
+| `PATCH /events/{id}` | 🔒 organiser | Change title, description, times, place or link, with the same rules as creating (409 once it has ended; the group can't change). People going are notified if the time or place changes. |
+| `DELETE /events/{id}` | 🔒 organiser | Cancels it; people going are notified (unless it has already ended). → `{cancelled, notified}` |
 
 ### Private schedule (`commitments.py`)
 
@@ -266,6 +275,7 @@ They run by themselves, in order, when the API starts. Never edit one after it's
 | `004_memories.sql` | memories, their photos, reactions and comments |
 | `005_schedules_planning.sql` | private commitments, buffer time, planning permissions, meeting areas, saved plan suggestions |
 | `006_screen_time_groups.sql` | self-reported screen time, screen-time groups, members and invitations |
+| `007_password_reset.sql` | password reset codes, and `password_changed_at` (logging out other devices) |
 
 ## Demo data
 
@@ -279,8 +289,9 @@ Real accounts are never touched. "Try the demo" accounts are deleted after 24 ho
 
 ## Tests
 
-`pytest` runs the tests (227 passed in the latest full run). They cover every endpoint, the website serving, the permission checks (the wrong person trying each action), blocks, the Terms gate, consent, input checks, demo mode, the seed command, and Gemini.
+`pytest` runs the tests (273 passed in the latest full run). They cover every endpoint, the website serving, the permission checks (the wrong person trying each action), blocks, the Terms gate, consent, input checks, demo mode, the seed command, and Gemini.
 
 - Most tests need a database. They work in a temporary private schema that's deleted afterwards, so your real data is never touched.
   With no database set, those tests are skipped.
-- Gemini, Twilio, SMTP and Google Places are replaced by fakes in the tests. Two tests call the real Gemini API, and they're skipped if `GEMINI_API_KEY` isn't set. Real email, text messages and Places searches are **not** tested.
+- Most tests replace Gemini, Twilio, SMTP and Google Places with fakes. `tests/test_providers.py` runs the real email, Twilio and Places code over the network against local stand-ins (an encrypted SMTP login with a checked certificate, and requests in each provider's documented format).
+  Two tests call the real Gemini API, and they're skipped if `GEMINI_API_KEY` isn't set. Real providers' email, text messages and Places searches are **not** tested: check each once its account is set up.

@@ -17,7 +17,7 @@ While developing, `/api/...` requests are forwarded to the API on 127.0.0.1:8000
 
 | Command | What it does |
 |---|---|
-| `npm run dev` | the site for development, reloads when you save |
+| `npm run dev` | the site for development, reloads when you save. It runs Next.js with a larger header limit (64 KB), because GitHub Codespaces sends big login cookies that the default 16 KB limit refused. |
 | `npm run typecheck` | checks the TypeScript for mistakes |
 | `npm run build` | builds the live site into `out/` (plain HTML/CSS/JS that Caddy, or the API with `SERVE_WEBSITE=true`, serves; see `../DEPLOY.md`) |
 
@@ -27,6 +27,7 @@ While developing, `/api/...` requests are forwarded to the API on 127.0.0.1:8000
 |---|---|---|
 | `/` | `page.tsx` | Landing page, with **Try the demo** |
 | `/login`, `/signup` | `login/page.tsx`, `signup/page.tsx` | Log in, sign up (both use `components/AuthForm.tsx`; sign-up has the unticked 18+ and Terms box) |
+| `/forgot-password` | `forgot-password/page.tsx` | Get a reset code by email, then choose a new password (says so honestly if email isn't set up on the server) |
 | `/onboarding` | `onboarding/page.tsx` | Finish your profile (new accounts are sent here) |
 | `/feed` | `feed/page.tsx` | Discover people, with filters and match reasons |
 | `/memories`, `?id=4`, `?author_id=3` | `memories/page.tsx` | Share memories (caption, up to 4 photos, who can see it), hearts and comments, report |
@@ -35,8 +36,8 @@ While developing, `/api/...` requests are forwarded to the API on 127.0.0.1:8000
 | `/profile`, `?id=3`, `?edit=1` | `profile/page.tsx` | Your profile (edit it), or someone else's (match, free times, match note, badges, report, block) |
 | `/friends` | `friends/page.tsx` | Friends, requests you got, requests you sent |
 | `/messages?with=3` | `messages/page.tsx` | Chats with friends (report a message, block) |
-| `/groups`, `?id=2` | `groups/page.tsx` | Group list, one group (members, events, discussion, report) |
-| `/events`, `?id=5` | `events/page.tsx` | Calendar, upcoming and past events, one event, free times with a friend |
+| `/groups`, `?id=2` | `groups/page.tsx` | Group list, one group (members, events, discussion, report). The owner can edit it, delete it (typing its name to confirm) and remove members. |
+| `/events`, `?id=5` | `events/page.tsx` | Calendar, upcoming and past events, one event, free times with a friend. The organiser can edit or cancel an event (using the create form in `components/CreateForms.tsx`). |
 | `/screen-time`, `?tab=groups`, `?group=7` | `screen-time/page.tsx` | **My time**: time in Meerkat, daily goal, self-reported phone screen time. **Groups**: screen-time groups and leaderboards |
 | `/settings` | `settings/page.tsx` | Profile, account and contact, verification, privacy and availability, notifications, blocked people, Terms and privacy (download your data, privacy requests, delete account), system status |
 | `/moderation` | `moderation/page.tsx` | Report queue, suspensions, action log, privacy requests (admins). Members see "only for moderators", and the server refuses them too. |
@@ -70,7 +71,7 @@ If someone hasn't accepted the current Terms, every app page shows the Terms scr
 | `CreateForms.tsx` | create a group, create an event |
 | `ScreenTimeGroups.tsx` | screen-time group list, invitations, one group and its leaderboard |
 | `Icons.tsx` | the sidebar and header icons |
-| `settings/` | one file per group of Settings sections: `AccountSection.tsx` (Profile, Account and contact), `VerificationSection.tsx`, `PrivacySection.tsx`, `OtherSections.tsx` (Notifications, Blocked people, Terms and privacy, System status), and `useSave.ts` (shows "Saved." only after the server saved it) |
+| `settings/` | one file per group of Settings sections: `AccountSection.tsx` (Profile, Account and contact, change password), `VerificationSection.tsx`, `PrivacySection.tsx`, `OtherSections.tsx` (Notifications, Blocked people, Terms and privacy, System status), and `useSave.ts` (shows "Saved." only after the server saved it) |
 | `plan/` | `PlanHangout.tsx` (who's coming, free times, suggestions, make an event), `MeetingArea.tsx` (your meeting area and the halfway area), `MySchedule.tsx`, `CommitmentForm.tsx`, `ScheduleImport.tsx` (`.ics` and Gemini timetable import, reviewed before saving), `PlanningConsents.tsx` |
 
 ## Helpers and content

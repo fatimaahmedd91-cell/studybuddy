@@ -126,7 +126,7 @@ Check that everything is connected at http://localhost:3000/api/health (you want
 
 | What | Command (run from…) |
 |---|---|
-| API tests (227 tests, need a database; the 2 that call Gemini are skipped without a key) | `pytest` (from `backend`, with `.venv` active) |
+| API tests (273 tests, need a database; the 2 that call Gemini are skipped without a key) | `pytest` (from `backend`, with `.venv` active) |
 | Website type check | `npm run typecheck` (from `frontend`) |
 | Website production build | `npm run build` (from `frontend`) |
 | Whole journey against a running site, PASS/FAIL per step | `python scripts/smoke_test.py` (from the repo root; add `https://your-domain.com` for the live site) |

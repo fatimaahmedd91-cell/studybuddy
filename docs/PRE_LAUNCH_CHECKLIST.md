@@ -39,8 +39,8 @@ Legend: **Decision** = the team has to choose · **Legal** = needs qualified leg
 
 | # | Service | Settings (backend/.env) | Notes |
 |---|---|---|---|
-| 21 | Email codes | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` | Any SMTP account (for example a Gmail app password). Untested against a live server here: test once configured. |
-| 22 | Phone codes | `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_VERIFY_SERVICE_SID` | Twilio Verify (paid). Untested against live Twilio here. |
+| 21 | Email codes | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` | Any SMTP account (for example a Gmail app password). The code is tested against a local mail server (encrypted, certificate checked); send one real email once configured. |
+| 22 | Phone codes | `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_VERIFY_SERVICE_SID` | Twilio Verify (paid). The request format is tested against a local stand-in; text yourself one real code once configured. |
 | 23 | Gemini | `GEMINI_API_KEY`, `GEMINI_MODEL` | Server-side only. A key was pasted into chats during development: **make a new key** and delete the old one. |
 | 24 | Venue search | `GOOGLE_MAPS_API_KEY` (Places API (New)) | Needs a Google Cloud billing account (paid after the free allowance). Restrict the key to the Places API and your server's IP. Without it, plain map-search links are shown. |
 | 25 | Age check | `AGE_CHECK_PROVIDER` | Leave empty until items 2 and 3 are decided, and Privacy Policy §6 (age assurance) is written and reviewed (item 19). |
@@ -50,7 +50,7 @@ Legend: **Decision** = the team has to choose · **Legal** = needs qualified leg
 
 | # | Item | Type |
 |---|---|---|
-| 27 | Password reset by email (needs SMTP). | Build |
+| 27 | Password reset by email is built, but only works once SMTP (item 21) is set up. Send yourself a real reset email before launch. | Setup |
 | 28 | Rate limits are kept in memory per server process. With several servers, move them to the database or Redis. | Build |
 | 29 | Device-wide screen time: not possible from a website. It would need a separately identified native integration. | Build |
 | 30 | Photo moderation (memories and profile photos are not scanned). | Decision + Build |

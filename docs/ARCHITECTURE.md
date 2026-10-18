@@ -13,7 +13,7 @@
    └── everything else ───────►  frontend/out/ : the website, built once into plain HTML, CSS and JavaScript
 ```
 
-While developing, `npm run dev` (port 3000) does Caddy's job: it serves the pages and forwards `/api/*` to the API on port 8000 (`frontend/next.config.ts`).
+While developing, `npm run dev` (port 3000) does Caddy's job (in Codespaces, open port 8000 instead, where the API serves the built site): it serves the pages and forwards `/api/*` to the API on port 8000 (`frontend/next.config.ts`).
 On Render (and in the `Dockerfile`), the API serves the built website itself (`SERVE_WEBSITE=true`, `backend/app/website.py`).
 Either way, the website and the API share one address, so the browser never needs cross-site (CORS) rules.
 Every key stays on the server. The website never sees one.
@@ -45,7 +45,7 @@ Every key stays on the server. The website never sees one.
   | `verification.py` | email codes (SMTP), phone codes (Twilio Verify), the age-check boundary |
   | `people.py`, `matching.py` | Discover, and the match score with its reasons |
   | `friends.py`, `messages.py` | friend requests, friends, direct messages |
-  | `groups.py`, `events.py` | groups, group discussion, events, RSVPs |
+  | `groups.py`, `events.py` | groups, group discussion, events, RSVPs; owners and organisers can edit, delete or cancel |
   | `memories.py` | the memories feed, photos, hearts, comments |
   | `commitments.py`, `ics.py`, `scheduling.py` | your private schedule, imports, and the free-time maths |
   | `planning.py` | shared free times, suggestions, planning permissions, meeting areas, making an event |
@@ -58,6 +58,8 @@ Every key stays on the server. The website never sees one.
 
 - **Login:** Argon2 password hashes. Logging in returns a signed token (JWT, valid 7 days). `CurrentUser` in `auth.py` checks it on every protected endpoint,
   refuses suspended accounts, and refuses anyone who hasn't accepted the current `TERMS_VERSION` (except to read, export or delete their own account).
+  Tokens made before your last password change are refused too, so changing or resetting your password logs out every other device.
+  Forgot password emails a 6-digit code (`account.py`); the answer is the same for every email, so it can't reveal who has an account.
 - **Permission checks happen on the server**, every time: messaging only friends, members-only discussions, owner-only schedules, memory audiences, moderators-only actions…
   The tests in `backend/tests/` try the wrong person for each of these.
 - **Blocking** works both ways and is checked in every place two people could meet: Discover, profiles, friend requests, messages, memories, notifications, group posts, planning.
@@ -67,7 +69,7 @@ Every key stays on the server. The website never sees one.
 
 ## The database
 
-- **Tables** are created by numbered SQL files in `backend/app/migrations/` (`001`–`006`). The API runs any new ones when it starts, and records which have run in `schema_migrations`.
+- **Tables** are created by numbered SQL files in `backend/app/migrations/` (`001`–`007`). The API runs any new ones when it starts, and records which have run in `schema_migrations`.
   An advisory lock stops two copies of the API from running them at once. Never edit a migration that's been merged: add the next number.
 - Main tables: `users`, `photos`, `friendships`, `messages`, `groups`, `group_members`, `group_posts`, `events`, `event_rsvps`, `notifications`, `app_time`, `match_insights`,
   plus `blocks`, `reports`, `moderation_actions`, `privacy_requests`, `contact_verifications`, `memories` (+ photos, reactions, comments), `commitments`, `planning_consents`,
