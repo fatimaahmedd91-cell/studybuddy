@@ -41,7 +41,7 @@ While developing, `/api/...` requests are forwarded to the API on 127.0.0.1:8000
 | `/screen-time`, `?tab=groups`, `?group=7` | `screen-time/page.tsx` | **My time**: time in Meetkat, daily goal, self-reported phone screen time. **Groups**: screen-time groups and leaderboards |
 | `/settings` | `settings/page.tsx` | Profile, account and contact, verification, privacy and availability, notifications, blocked people, Terms and privacy (download your data, privacy requests, delete account), system status |
 | `/moderation` | `moderation/page.tsx` | Report queue, suspensions, action log, privacy requests (admins). Members see "only for moderators", and the server refuses them too. |
-| `/terms`, `/privacy`, `/guidelines` | `terms/`, `privacy/`, `guidelines/` | The **draft** Terms of Service, Privacy Policy and Community Guidelines. Open to everyone, logged in or not. |
+| `/terms`, `/privacy`, `/guidelines` | `terms/`, `privacy/`, `guidelines/` | The Terms of Service, Privacy Policy and Community Guidelines. Open to everyone, logged in or not. |
 
 Pages that show one item use `?id=` instead of `/groups/2`, because the live site is a static export.
 
@@ -71,7 +71,7 @@ If someone hasn't accepted the current Terms, every app page shows the Terms scr
 | `CreateForms.tsx` | create a group, create an event |
 | `ScreenTimeGroups.tsx` | screen-time group list, invitations, one group and its leaderboard |
 | `Icons.tsx` | the sidebar and header icons |
-| `settings/` | one file per group of Settings sections: `AccountSection.tsx` (Profile, Account and contact, change password), `VerificationSection.tsx`, `PrivacySection.tsx`, `OtherSections.tsx` (Notifications, Blocked people, Terms and privacy, System status), and `useSave.ts` (shows "Saved." only after the server saved it) |
+| `settings/` | one file per group of Settings sections: `AccountSection.tsx` (Profile, Account and contact, change password), `VerificationSection.tsx`, `PrivacySection.tsx`, `OtherSections.tsx` (Notifications, Blocked people, Terms and privacy), and `useSave.ts` (shows "Saved." only after the server saved it) |
 | `plan/` | `PlanHangout.tsx` (who's coming, free times, suggestions, make an event), `MeetingArea.tsx` (your meeting area and the halfway area), `MySchedule.tsx`, `CommitmentForm.tsx`, `ScheduleImport.tsx` (`.ics` and Gemini timetable import, reviewed before saving), `PlanningConsents.tsx` |
 
 ## Helpers and content
@@ -86,7 +86,7 @@ If someone hasn't accepted the current Terms, every app page shows the Terms scr
 | `lib/time.ts` | dates and times in your time zone |
 | `lib/options.ts` | the suggested interests, universities, goals and notification categories (from the API) |
 | `lib/brand.ts` | the app's name, slogan and description |
-| `content/legal.ts` | the Terms, Privacy Policy and Guidelines text. `LEGAL_CONFIG` holds the placeholders (company name, contact email…) the team must fill in; pages show them highlighted until then. |
+| `content/legal.ts` | the Terms, Privacy Policy and Guidelines text. `LEGAL_CONFIG` holds the operator name, how to contact the team and the dates. If an `[INSERT …]` blank is ever added, the page highlights it and shows "Not ready to publish". |
 
 **Colours** live in `src/app/globals.css` under `@theme` (with Tailwind v4 that replaces `tailwind.config.js`).
 Change a colour there and it changes everywhere. Use them as classes, for example `bg-bark`, `text-cream`, `bg-forest`, `border-sky-strong`:

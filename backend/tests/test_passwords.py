@@ -51,7 +51,7 @@ def other_code(code):
 def test_without_smtp_reset_says_it_is_not_set_up(database, client):
     signup(client, email="amira@example.com")
     response = ask_reset(client, "amira@example.com")
-    assert response.status_code == 503 and "isn't set up" in response.json()["detail"]
+    assert response.status_code == 503 and "isn't available" in response.json()["detail"]
 
 
 def test_unknown_email_gets_the_same_answer_and_no_email(database, client, outbox):

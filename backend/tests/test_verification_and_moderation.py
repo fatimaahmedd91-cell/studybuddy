@@ -39,7 +39,7 @@ def test_without_smtp_email_verification_says_it_is_unavailable(database, client
     status = client.get("/api/verification", headers=headers).json()
     assert status["email"]["available"] is False and status["email"]["verified"] is False
     response = client.post("/api/verification/email/send", headers=headers)
-    assert response.status_code == 503 and "isn't set up" in response.json()["detail"]
+    assert response.status_code == 503 and "isn't available" in response.json()["detail"]
 
 
 def test_email_code_verifies_only_with_the_right_code(database, client, outbox):

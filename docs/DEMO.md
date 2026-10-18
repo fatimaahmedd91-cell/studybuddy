@@ -18,13 +18,13 @@
 | 8 | **Memories** → post a caption (audience: **Friends**). | "Memories default to friends only. Photos lose their location data and are only served to people allowed to see them." |
 | 9 | **Screen Time** → **Groups** tab. | "Screen-time groups use numbers people type in themselves, labelled *self-reported*. A website can't read your phone's screen time, so we never pretend to. No entry is never shown as zero." |
 | 10 | Someone's profile → **Report profile** (show the reasons) → Cancel. Then **Settings** → **Privacy and availability** and **Verification**. | "Blocking and reporting are enforced on the server. Email and phone codes need a real provider, and when one isn't set up, the page says so instead of faking it. There's no selfie age check: no provider is connected, so no badge can appear." |
-| 11 | Footer → **Terms**. | "These are draft documents, clearly marked as drafts, with a pre-launch checklist for legal review." |
+| 11 | Footer → **Privacy Policy**. Point at **In plain language**. | "Our Privacy Policy says exactly what the app does: which details go to Gemini, what other people can see, and how long things are kept." |
 | 12 | Make the browser phone-sized. | "Works on phones, with a bottom tab bar." |
 
 **Tech, if they ask:** Next.js + TypeScript + Tailwind website, FastAPI + PostgreSQL API, Gemini structured output (JSON checked against a schema), with caching and labelled fallbacks.
 273 API tests, a 39-step browser test and a 56-check API journey. Moderators get a report queue with an action log.
 
-**Be honest about:** the legal pages are drafts, email/phone codes and password reset need SMTP/Twilio, no age-check provider, Solana not built (see `docs/STATUS.md`).
+**Be honest about:** the legal pages haven't been reviewed by a lawyer yet, email/phone codes and password reset need SMTP/Twilio, no age-check provider, Solana not built (see `docs/STATUS.md`).
 
 **If something breaks during the demo:** say so, then go on to the next step. `/api/health` tells you what's down.
 If Gemini fails, the labelled fallback appears by itself.

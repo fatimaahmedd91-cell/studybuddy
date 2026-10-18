@@ -53,7 +53,6 @@ export default function TermsGate() {
                 : `Please read and accept ${BRAND.name}'s Terms of Service to continue.`}{" "}
               {me.is_demo && "This is a demo account, so everything in it is fictional."}
             </p>
-            <p className="text-sm">Current version: <b>{me.terms.current_version}</b> (draft, not yet reviewed by a lawyer)</p>
             <label className="flex min-h-11 items-start gap-3">
               <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)}
                 className="mt-1 h-5 w-5 shrink-0 accent-bark" />

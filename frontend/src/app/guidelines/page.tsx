@@ -1,4 +1,4 @@
-// Community Guidelines (draft). The text is in src/content/legal.ts.
+// Community Guidelines. The text is in src/content/legal.ts.
 import LegalPage from "@/components/LegalPage";
 import { GUIDELINES } from "@/content/legal";
 

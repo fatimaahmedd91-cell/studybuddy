@@ -41,7 +41,7 @@ The API reloads if you started it with `--reload`.
 
 | I want to change… | Open | Notes |
 |---|---|---|
-| The Terms, Privacy Policy or Guidelines text | `frontend/src/content/legal.ts` | Fill in `LEGAL_CONFIG` (names, emails, dates) and the `[INSERT …]` placeholders. Remove each "Draft check" note once the text matches the code. |
+| The Terms, Privacy Policy or Guidelines text | `frontend/src/content/legal.ts` | `LEGAL_CONFIG` at the top has the operator name, contact route and dates. Keep the text matching what the code does, and raise `TERMS_VERSION` after a material Terms change. |
 | Ask everyone to accept the Terms again | `TERMS_VERSION` in `backend/.env` (or `backend/app/config.py` for the default) | Use a new value, for example a date. |
 | The sign-up checkbox wording | `frontend/src/components/AuthForm.tsx` | And `TermsGate.tsx` for people re-accepting. |
 | The minimum age (18, proposed) | `MIN_AGE` in `backend/.env` / `backend/app/config.py`, plus the checkbox text | A team decision with safety consequences: see `docs/PRE_LAUNCH_CHECKLIST.md`. |

@@ -48,8 +48,7 @@ function CodeCheck({ channel, available, verified, codeSent, target, onChanged }
       <div className="space-y-1">
         <Badge ok={false}>{channel === "email" ? "Email not verified" : "Phone not verified"}</Badge>
         <Notice kind="info">
-          {channel === "email" ? "Email" : "Phone"} verification isn&apos;t set up on this server yet, so it can&apos;t be
-          verified right now.
+          {channel === "email" ? "Email" : "Phone"} verification isn&apos;t available yet.
         </Notice>
       </div>
     );

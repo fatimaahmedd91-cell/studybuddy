@@ -263,7 +263,7 @@ def send_email_code(me: CurrentUser):
     if me["is_demo"]:
         raise HTTPException(status_code=403, detail="Demo accounts use made-up emails, so they can't be verified.")
     if not email_available():
-        raise HTTPException(status_code=503, detail="Email verification isn't set up on this server yet.")
+        raise HTTPException(status_code=503, detail="Email verification isn't available yet.")
     if me["email_verified_at"]:
         raise HTTPException(status_code=409, detail="Your email is already verified.")
     code = f"{secrets.randbelow(10**6):06d}"
@@ -311,7 +311,7 @@ def send_phone_code(me: CurrentUser):
     if me["is_demo"]:
         raise HTTPException(status_code=403, detail="Demo accounts can't verify a phone number.")
     if not phone_available():
-        raise HTTPException(status_code=503, detail="Phone verification isn't set up on this server yet.")
+        raise HTTPException(status_code=503, detail="Phone verification isn't available yet.")
     if not me["phone"]:
         raise HTTPException(status_code=400, detail="Add your phone number first.")
     if me["phone_verified_at"]:
@@ -331,7 +331,7 @@ def send_phone_code(me: CurrentUser):
 @router.post("/verification/phone/confirm")
 def confirm_phone_code(body: CodeBody, me: CurrentUser):
     if not phone_available():
-        raise HTTPException(status_code=503, detail="Phone verification isn't set up on this server yet.")
+        raise HTTPException(status_code=503, detail="Phone verification isn't available yet.")
     with get_connection() as conn, conn.cursor() as cur:
         row = usable_code(cur, me["id"], "phone", me["phone"] or "")
     try:

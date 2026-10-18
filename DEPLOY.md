@@ -158,7 +158,6 @@ Restart after every change: `systemctl restart friendfinder-api`.
 
 - Open `https://your-domain.com`. The padlock means HTTPS is working.
 - Open `https://your-domain.com/api/health`. You want `"status":"ok"`.
-- Or open **Settings** (☰ at the bottom of the sidebar) and look at **System status**.
 - Or run the full checker from your own computer: `python scripts/smoke_test.py https://your-domain.com` (every line should say PASS).
   It makes two test accounts and deletes them again at the end.
 

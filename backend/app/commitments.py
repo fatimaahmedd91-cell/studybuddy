@@ -392,7 +392,7 @@ def proposals_from_extraction(result, user_timezone):
 
 
 AI_ERRORS = {
-    "not_configured": (503, "Reading timetables needs Gemini, which isn't set up on this server. Enter your schedule manually instead."),
+    "not_configured": (503, "Reading timetables with AI isn't available right now. Enter your schedule manually instead."),
     "quota": (503, "Gemini is busy right now. Try again later, or enter your schedule manually."),
     "timeout": (504, "Gemini took too long. Try a smaller or clearer file, or enter your schedule manually."),
     "invalid_response": (502, "Gemini's answer couldn't be used. Try a clearer file, or enter your schedule manually."),

@@ -388,7 +388,7 @@ await check("Forgot password: the page says honestly whether email reset is set 
   await visitor.getByRole("heading", { name: "Forgot your password?" }).waitFor();
   await visitor.getByLabel("Email").fill(A.email);
   await visitor.getByRole("button", { name: "Get a reset code" }).click();
-  await visitor.getByText(/isn't set up on this server|we'll send a reset code there/).waitFor();
+  await visitor.getByText(/isn't available yet|we'll send a reset code there/).waitFor();
   await visitor.context().close();
 });
 
@@ -431,12 +431,13 @@ await check("Moderation area is closed to members (page and server)", async () =
   const status = await pa.evaluate(async () => (await fetch("/api/moderation/reports", { headers: { Authorization: `Bearer ${localStorage.getItem("ff_token")}` } })).status);
   expect(status === 403, `the server allowed it (status ${status})`);
 });
-await check("Terms, Privacy and Guidelines open without an account, marked as drafts", async () => {
+await check("Terms, Privacy and Guidelines open without an account, with no blanks left", async () => {
   const visitor = await newPage();
   for (const [path, heading] of [["/terms", /Terms/], ["/privacy", /Privacy/], ["/guidelines", /Guidelines/]]) {
     await visitor.goto(`${BASE}${path}`);
     await visitor.getByRole("heading", { level: 1, name: heading }).waitFor();
-    await visitor.getByText(/draft/i).first().waitFor();
+    const text = await visitor.locator("main").innerText();
+    expect(!/\[INSERT|Draft check|not ready to publish/i.test(text), `${path} still has draft text`);
   }
   await visitor.context().close();
 });

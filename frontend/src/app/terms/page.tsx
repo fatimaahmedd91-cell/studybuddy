@@ -1,4 +1,4 @@
-// Terms of Service (draft). The text is in src/content/legal.ts.
+// Terms of Service. The text is in src/content/legal.ts.
 import LegalPage from "@/components/LegalPage";
 import { TERMS } from "@/content/legal";
 

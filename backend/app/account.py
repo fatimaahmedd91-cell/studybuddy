@@ -141,7 +141,7 @@ def change_password(body: PasswordChange, me: CurrentUser):
 
 
 RESET_MINUTES = 15
-RESET_UNAVAILABLE = "Password reset by email isn't set up on this server yet. Ask the Meetkat team for help."
+RESET_UNAVAILABLE = "Password reset by email isn't available yet. Ask the Meetkat team for help through the app."
 RESET_REQUESTED = (
     "If that email belongs to a Meetkat account, we'll send a reset code there. "
     "It can take a few minutes, so check your spam folder too."

@@ -45,7 +45,7 @@ MIN_AGE = int(os.getenv("MIN_AGE", "18"))
 
 # The Terms of Service version people must accept. Change it when the terms change materially:
 # everyone who accepted an older version is asked to accept again on their next visit.
-TERMS_VERSION = os.getenv("TERMS_VERSION", "draft-2026-10-18b")
+TERMS_VERSION = os.getenv("TERMS_VERSION", "2026-10-18")
 
 # Email codes (Settings → Verification). Any SMTP account works, for example a Gmail app password.
 # Leave SMTP_HOST empty and email verification shows "not set up" instead of pretending.

@@ -11,7 +11,7 @@ Last checked: 18 October 2026, on branch `claude/friendfinder-mvp`.
 | Meetkat name, slogan and green design | ✅ | Colours are tokens in `frontend/src/app/globals.css`, the name and slogan in `frontend/src/lib/brand.ts`. Some internal names still say "friendfinder". |
 | Sign up, log in, log out, stay logged in for 7 days | ✅ | Argon2 passwords. Sign-up needs the unticked "I am at least 18 and agree to the Terms…" box. The accepted Terms version and time are saved. |
 | Terms gate and re-acceptance | ✅ | Raising `TERMS_VERSION` asks everyone to accept again. Until they do, the server refuses everything except reading, exporting or deleting their account. |
-| Terms, Privacy Policy and Community Guidelines pages | 🟡 | Your text, with `[INSERT …]` placeholders and "Draft check" notes. Each page says "Draft — not ready to publish" until the placeholders are filled. **Not legally reviewed.** See `docs/PRE_LAUNCH_CHECKLIST.md`. |
+| Terms, Privacy Policy and Community Guidelines pages | ✅ / 🟡 | Your text, completed with what the app really does (AI data, providers, retention, security). Contact is the in-app request form. **Not legally reviewed yet**: see `docs/PRE_LAUNCH_CHECKLIST.md`. |
 | Onboarding and profile (display name, pronouns, age 18+, university, interests, goals, hook, bio, free times, photo or emoji) | ✅ | Display name is separate from email. Age is optional, and must be 18+ if given. |
 | "Try the demo" without signing up | ✅ | A labelled, fictional demo account (AI turned on, because nothing in it is real). Hidden from Discover, deleted after 24 h. |
 | Discover with filters and explained match % | ✅ | Hides people who are blocked, suspended or hidden from Discover. |

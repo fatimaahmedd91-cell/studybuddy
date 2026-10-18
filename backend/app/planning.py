@@ -701,7 +701,7 @@ def meeting_area(body: AreaRequest, me: CurrentUser):
             log.warning("Google Places search failed: %s", type(error).__name__)
             result["notice"] = "Google Maps place search didn't work just now, so here are plain map links instead."
     else:
-        result["notice"] = "Live place search isn't set up on this server, so here are plain map links instead."
+        result["notice"] = "Live place search isn't available, so here are plain map links instead."
     queries = [query] + [q for q in ("cafe", "park") if q != query]
     result["source"] = "links"
     result["links"] = [

@@ -301,9 +301,6 @@ function MyTime() {
                   it uses, for its members.
                 </li>
               </ul>
-              <p className="mt-3 text-xs opacity-80">
-                In-app time is stored in {data.storage === "timescaledb" ? "a TimescaleDB hypertable (TigerData)" : "PostgreSQL"}.
-              </p>
             </DarkPanel>
           </div>
         </div>

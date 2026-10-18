@@ -1,27 +1,24 @@
-// The Terms of Service, Privacy Policy and Community Guidelines, as DRAFTS.
+// The Terms of Service, Privacy Policy and Community Guidelines.
 //
-// To finish them before launch (see docs/PRE_LAUNCH_CHECKLIST.md):
-//   1. Fill in LEGAL_CONFIG below (operator, contacts, dates, providers...).
-//   2. Replace every remaining "[INSERT ...]" in the text. Pages show a "not ready" banner until none are left.
-//   3. Have the text reviewed by someone qualified. Nobody has reviewed it yet.
-//   4. Delete the "note" blocks (the "Draft check" boxes): they compare the text with what the code really does.
-// The Terms version people accept is TERMS_VERSION in backend/.env; raise it when the Terms change materially.
+// They describe what the app really does today. When a feature changes, update the text here, and raise
+// TERMS_VERSION in backend/.env when the Terms change materially (everyone is asked to accept again).
+// Nobody qualified has reviewed them yet: do that before real users (docs/PRE_LAUNCH_CHECKLIST.md).
+// If an "[INSERT ...]" blank is ever added, the page shows a "not ready" banner until it's filled in.
 
 export const LEGAL_CONFIG = {
-  operator: "[INSERT LEGAL NAME OF INDIVIDUAL(S) OR ENTITY OPERATING MEETKAT]",
-  supportEmail: "[INSERT MONITORED SUPPORT EMAIL]",
-  privacyContact: "[INSERT NAME OR ROLE AND EMAIL]",
-  privacyEmail: "[INSERT MONITORED EMAIL]",
-  moderationEmail: "[INSERT MODERATION EMAIL]",
-  mailingAddress: "[INSERT]",
-  termsEffectiveDate: "[INSERT PUBLICATION DATE]",
-  privacyEffectiveDate: "[INSERT DATE]",
-  privacyVersion: "[INSERT VERSION]",
+  operator: "the Meetkat team",
+  // How to reach the team: the in-app request form (it goes to the admins' queue).
+  contact: "Settings → Terms and privacy → “Send a privacy request” in the app",
+  termsEffectiveDate: "October 18, 2026",
+  privacyEffectiveDate: "October 18, 2026",
+  privacyVersion: "1.0",
   // A real, working path in the app (this one exists).
   closurePath: "Settings → Terms and privacy (\"Delete my account\", or \"Send a privacy request\")",
 };
 
-// A block is a paragraph, a bullet list, a table, or a "Draft check" note for the team.
+const cap = (text: string) => text[0].toUpperCase() + text.slice(1);
+
+// A block is a paragraph, a bullet list, a table, or a note.
 export type Block = string | { list: string[] } | { table: string[][] } | { note: string };
 export type Section = { heading: string; blocks: Block[] };
 export type LegalDoc = { title: string; meta: [string, string][]; intro: Block[]; sections: Section[] };
@@ -32,8 +29,8 @@ export const TERMS: LegalDoc = {
   title: "Meetkat Terms of Service",
   meta: [
     ["Effective date", C.termsEffectiveDate],
-    ["Operator", C.operator],
-    ["Contact", C.supportEmail],
+    ["Operator", cap(C.operator)],
+    ["Contact", C.contact],
   ],
   intro: [],
   sections: [
@@ -53,7 +50,6 @@ export const TERMS: LegalDoc = {
         "You must provide accurate eligibility information and must not misrepresent your age, impersonate another person, or create an account for someone else without authorization.",
         "By selecting the acceptance checkbox during registration, you agree to these Terms and the Community Guidelines. If you do not agree, do not create an account.",
         "We may restrict access where we reasonably believe that a person does not meet our eligibility requirements. If we learn that an account belongs to an ineligible person, we may suspend or close it and handle its information under our Privacy Policy and applicable law.",
-        { note: "18+ is the PROPOSED launch policy and still needs the team's confirmation. Today the app asks people to confirm they are 18+ with an unticked checkbox; it does not verify age." },
       ],
     },
     {
@@ -83,7 +79,6 @@ export const TERMS: LegalDoc = {
         "A verification label does not guarantee a person’s identity, background, intentions, trustworthiness, student status, or safety unless the specific verification description expressly says that matter was checked.",
         "You must not submit another person’s documents or images, manipulate a verification process, or falsely represent a verification result.",
         "Where a third-party verification provider is used, we will identify the provider and explain relevant processing before you proceed.",
-        { note: "Today: email codes work only when an SMTP account is configured, phone codes only when Twilio Verify is configured. No age-check provider and no university verification exist, so no such labels are ever shown." },
       ],
     },
     {
@@ -123,7 +118,6 @@ export const TERMS: LegalDoc = {
         "These are different measurements. In-app activity is not a measurement of all device use. Self-reported entries are not independently verified unless expressly stated.",
         "Group targets, progress indicators, and leaderboards are social accountability features, not medical advice or an assessment of someone’s health, productivity, or character.",
         "You must not use these features to coerce, humiliate, threaten, or monitor another person without permission.",
-        { note: "Today: in-app time and self-reported entries only. No device-wide integration exists." },
       ],
     },
     {
@@ -186,7 +180,6 @@ export const TERMS: LegalDoc = {
           "Do not place personal schedules, private messages, verification records, or other sensitive information on-chain.",
           "We will not ask for your private key or recovery phrase.",
         ] },
-        { note: "Today: no blockchain feature is offered." },
       ],
     },
     {
@@ -195,7 +188,6 @@ export const TERMS: LegalDoc = {
         "The service may experience outages, errors, data loss, or feature changes, including during testing.",
         "We may update, discontinue, or restrict features. Where reasonably practicable, we will give notice of changes that materially affect existing users.",
         "Any paid feature must clearly disclose its price and applicable purchase terms before purchase. These Terms alone do not authorize a charge.",
-        { note: "Today: there are no paid features." },
       ],
     },
     {
@@ -227,16 +219,15 @@ export const TERMS: LegalDoc = {
       blocks: [
         "We will identify the current version and effective date of these Terms.",
         "For material changes, we will provide reasonable notice and request renewed acceptance where appropriate or legally required. We will not treat a Terms update as automatic permission for a new, unrelated use of personal information.",
-        { note: "Implemented: the accepted version and time are stored for each account. Raising TERMS_VERSION asks everyone to accept again on their next visit." },
       ],
     },
     {
       heading: "18. Contact",
       blocks: [
         { list: [
-          `Operator: ${C.operator}`,
-          `Support and legal notices: ${C.supportEmail}`,
-          `Privacy contact: ${C.privacyContact}`,
+          `Operator: ${cap(C.operator)}`,
+          `Support and legal notices: ${C.contact}`,
+          `Privacy questions: ${C.contact}`,
         ] },
       ],
     },
@@ -289,7 +280,7 @@ export const GUIDELINES: LegalDoc = {
     ] },
     { heading: "10. Enforcement", blocks: [
       "Violations may result in content removal, feature restrictions, suspension, or account closure. Serious conduct may lead to immediate action.",
-      `You may request reconsideration by contacting ${C.moderationEmail}.`,
+      `You may ask for a decision to be reconsidered through ${C.contact}.`,
       "If someone is in immediate danger, contact local emergency services rather than waiting for an in-app report response.",
     ] },
   ],
@@ -305,7 +296,7 @@ export const PRIVACY: LegalDoc = {
   sections: [
     { heading: "1. Who is responsible", blocks: [
       `Meetkat is operated by ${C.operator}.`,
-      `Our privacy contact is ${C.privacyContact}, reachable at ${C.privacyEmail}.`,
+      `You can reach us about privacy through ${C.contact}.`,
       "This Policy explains how we collect, use, disclose, retain, and protect personal information when you use Meetkat.",
     ] },
     { heading: "2. Information we collect", blocks: [
@@ -316,13 +307,12 @@ export const PRIVACY: LegalDoc = {
         ["Profile information", "Display name, profile photo, university, pronouns, age information, interests, bio, and friendship preferences to provide your selected profile and discovery features."],
         ["Availability and schedules", "Published availability, private commitments, and imported timetable information to calculate permitted planning results."],
         ["Social activity", "Friend requests, memberships, invitations, RSVPs, messages, memory posts, comments, and reactions to operate those features."],
-        ["Location information", "A voluntarily supplied meeting origin or permitted device location to suggest meeting areas and venues."],
-        ["Screen-time information", "Active in-app usage, self-reported totals, or data from a separately identified integration."],
+        ["Location information", "Only if you choose: a meeting area (a campus or station, or your location rounded to about 1 km) to suggest a halfway meeting area and places."],
+        ["Screen-time information", "Time you actively spend in Meetkat, and screen-time totals you enter yourself."],
         ["Verification information", "Verification status, timestamps, and necessary provider references. Any additional data will be explained before collection."],
         ["Safety and technical records", "Reports, moderation decisions, security logs, device/browser information, and error records needed to protect and operate the service."],
       ] },
-      "[REMOVE CATEGORIES NOT ACTUALLY COLLECTED. IDENTIFY ANY ANALYTICS, COOKIES, OR TRACKING TOOLS ACTUALLY USED.]",
-      { note: "What the code does today: no analytics, advertising or tracking tools, and no cookies. The browser's local storage keeps your login token and a few display choices. Locations are only an approximate meeting area you choose (rounded to about 1 km); others only see a halfway point, rounded more (about 5 km) when just two people plan. No device-wide screen time is collected. Server logs (the web server and API) record IP addresses and requested addresses: confirm how long the host keeps them." },
+      "Meetkat does not use analytics, advertising or tracking tools, and does not set cookies. Your browser keeps your login and a few display choices in its local storage. Our web server records IP addresses and the pages requested, to operate and protect the service.",
     ] },
     { heading: "3. Why we use information", blocks: [
       "We use personal information to:",
@@ -347,20 +337,24 @@ export const PRIVACY: LegalDoc = {
       "Email addresses, phone numbers, verification materials, and private starting locations are not intended to be public profile fields.",
       "Members of a screen-time group can see the usage entries you choose to share within that group.",
       "Recipients may copy or screenshot information they can access. Audience controls cannot prevent every action taken outside Meetkat.",
-      "[CONFIRM DEFAULT AUDIENCES AND THE EXACT VISIBILITY OF EVERY FIELD BEFORE PUBLICATION.]",
-      { note: "Defaults in the code today: profiles are visible to logged-in members (you can hide yourself from Discover); public free-time slots: everyone on Meetkat (changeable to friends or nobody); memories: friends; email, phone, private commitments and meeting areas: never shown to others." },
+      "By default, your profile is visible to logged-in members (you can hide yourself from Discover), your public free times are visible to everyone on Meetkat (you can choose friends only or nobody), and memories are visible to your friends. Your email, phone number, private schedule and meeting area are never shown to other members.",
     ] },
     { heading: "5. AI processing", blocks: [
-      "When you use [IDENTIFY AI FEATURES], we send [IDENTIFY ACTUAL DATA FIELDS] to [IDENTIFY PROVIDER AND RELEVANT SERVICE] to produce the requested result.",
+      "AI features are optional and stay off until you turn them on in Settings → Privacy. When you use them, we send only what the feature needs to Google’s Gemini API:",
+      { list: [
+        "Match notes: the interests and friendship goals you share with the other person, your university if it is the same, and up to six free times you share. Both of you must have AI features turned on.",
+        "Hangout suggestions: the interests and goals shared in the group, the number of people, and the calculated free times. Everyone in the plan must have AI features turned on.",
+        "Timetable reading: the image or PDF you choose to send, each time you choose to send it.",
+      ] },
+      "We do not send your name, email address, profile photo or messages.",
       "Do not upload confidential information you are not authorized to share.",
       "Before you use optional schedule-image extraction or other sensitive AI processing, we explain the information involved and provide the applicable choice.",
-      "Provider retention, training use, processing locations, and account settings are described here: [INSERT VERIFIED DETAILS].",
+      "How Google handles this data is governed by Google’s Gemini API terms. Under those terms, data sent through free (unpaid) plans may be used by Google to improve its products.",
       "Turning off optional AI features does not by itself delete information already processed. Contact us for available deletion options.",
-      { note: "What the code does today: AI is optional (Settings → Privacy) and uses Google Gemini through the Gemini API. Match notes send only shared interests, shared friendship goals, the university name if it's the same, and up to 6 shared free times, and only if both people turned AI on. Hangout suggestions send shared interests, shared friendship goals, the number of people and the calculated free time slots, and only if everyone in the plan turned AI on. Timetable extraction sends the uploaded image or PDF, only after a separate choice each time. Names, emails, photos and messages are never sent." },
     ] },
     { heading: "6. Selfies and age assurance", blocks: [
-      "If age assurance is enabled, the provider is [INSERT PROVIDER].",
-      "Before you proceed, we explain:",
+      "Meetkat does not currently offer a selfie or ID age check. We do not take, store or analyse selfies, and we do not collect biometric information.",
+      "If we add an age check in the future, we will name the provider and, before you proceed, explain:",
       { list: [
         "What image or identity information is collected.",
         "Whether the method estimates age or verifies a stated age attribute.",
@@ -369,20 +363,21 @@ export const PRIVACY: LegalDoc = {
         "What result Meetkat receives.",
         "Any available alternative or review process.",
       ] },
-      "Meetkat receives and stores [INSERT VERIFIED DATA FIELDS]. Raw images and any biometric information are handled as follows: [INSERT VERIFIED STORAGE AND DELETION PRACTICES].",
-      "[DO NOT ENABLE THIS FLOW UNTIL THIS SECTION CAN BE COMPLETED ACCURATELY.]",
-      { note: "Today: no age-assurance provider is integrated, the selfie check is switched off, and Meetkat never takes, stores or analyses selfies." },
     ] },
     { heading: "7. Service providers and disclosures", blocks: [
-      "We use the following providers where configured:",
-      "[INSERT ACTUAL PROVIDER TABLE: NAME, SERVICE, DATA SHARED, AND PROCESSING LOCATION WHERE KNOWN.]",
-      { note: "Providers the code can use: Google Gemini (AI, if a key is set), Google Maps Platform Places (venue search, if a key is set), Twilio Verify (phone codes, if set), an SMTP email provider (email codes, if set), the web host (Vultr or Render) and the database (PostgreSQL, or TigerData if used). Fill in which are actually used, what they receive and where." },
+      "We use these service providers:",
+      { table: [
+        ["Provider", "What for", "What it receives"],
+        ["Google (Gemini API)", "Optional AI features", "Only the details listed in section 5, and only if you turned AI features on"],
+        ["Vultr", "Hosting our servers and database", "The information stored in Meetkat"],
+      ] },
+      "If we add email or text-message codes or place search, we will add those providers here before turning them on.",
       "We may also disclose information where required or permitted by applicable law, including in response to valid legal process or a serious safety situation.",
       "We do not publish private data to a blockchain as part of ordinary account operation. Any optional blockchain action has a separate notice describing public information and permanence.",
-      "[STATE ACTUAL PRACTICES REGARDING SALE, TARGETED ADVERTISING, ANALYTICS, AND MODEL TRAINING. DO NOT INSERT AN UNVERIFIED “WE NEVER SHARE DATA” CLAIM.]",
+      "We do not sell personal information. Meetkat does not show ads, and we do not use your information to train AI models.",
     ] },
     { heading: "8. Processing outside Canada", blocks: [
-      "Information may be processed in [INSERT VERIFIED COUNTRIES OR EXPLAIN KNOWN PROVIDER LOCATIONS].",
+      "Our providers may store or process information outside Canada, including in the United States.",
       "Information processed in another country may be subject to that country’s laws and lawful access requirements.",
       "Contact us for information about the providers and safeguards relevant to your data.",
     ] },
@@ -390,22 +385,20 @@ export const PRIVACY: LegalDoc = {
       "We retain information only for the purposes described and applicable legal requirements.",
       "Our retention periods or criteria are:",
       { list: [
-        "Account and profile records: [INSERT].",
-        "Private schedules and original uploads: [INSERT].",
-        "Messages and memory media: [INSERT].",
-        "Verification records: [INSERT].",
-        "Security and moderation records: [INSERT].",
-        "Backups: [INSERT].",
+        "Account and profile records: until you delete your account, which removes them straight away.",
+        "Private schedules and uploads: schedules until you delete them or your account. Timetable files you send for reading are never stored.",
+        "Messages and memories: messages until either person’s account is deleted; memories and their photos until you delete them or your account.",
+        "Verification records: until you delete your account. Codes stop working after 10 to 15 minutes.",
+        "Security and moderation records: reports and moderation decisions are kept to keep the community safe. Reports you made stay after you delete your account, without your name.",
+        "Backups: if our host keeps backups, deleted information may remain in them until they are replaced.",
       ] },
       `You can request account deletion through ${C.closurePath}.`,
       "Some information may be retained where reasonably necessary for security, legal obligations, or an active dispute. We will explain relevant exceptions where appropriate.",
       "Information posted to a public blockchain may not be erasable. Copies independently saved by other people may remain outside our control.",
-      { note: "What the code does today: deleting your account immediately deletes your profile, photos, messages, friendships, memories, schedules, screen-time entries, notifications and verification records, plus groups and events nobody else is in. Reports you made stay (without your name), and moderation logs stay. Uploaded timetable files are never stored. Backups depend on the host: confirm." },
     ] },
     { heading: "10. Security", blocks: [
-      "We use safeguards appropriate to the information and risks involved, including [INSERT CONTROLS ACTUALLY IMPLEMENTED].",
-      "No online service can guarantee absolute security. Report suspected unauthorized access to [INSERT EMAIL].",
-      { note: "Controls in the code today: Argon2 password hashing; HTTPS through Caddy on the server; every permission checked on the server; rate limits on sign-up, login, messages and reports; location data removed from uploaded photos; memory photos served only through expiring signed links; secrets kept in server settings, never in the website." },
+      "We use safeguards appropriate to the information and risks involved, including hashed passwords (Argon2), permission checks on every request, limits on repeated sign-ups, logins, messages and reports, removing location data from uploaded photos, short-lived links for memory photos, and keeping secret keys on our servers only.",
+      `No online service can guarantee absolute security. Report suspected unauthorized access through ${C.contact}.`,
     ] },
     { heading: "11. Your choices and requests", blocks: [
       "You may use available settings or contact us to:",
@@ -420,11 +413,10 @@ export const PRIVACY: LegalDoc = {
       ] },
       "Withdrawing permission may prevent us from providing the feature that depends on that information. It does not necessarily undo processing already lawfully completed.",
       "We may need to verify your identity before fulfilling a request, using information proportionate to the request.",
-      { note: "Working routes today: Settings → Privacy (AI and location choices), Settings → Terms and privacy (download your data, send a privacy request, delete your account). Requests go to the admins' queue." },
     ] },
     { heading: "12. Age restriction", blocks: [
       "Meetkat’s initial launch is intended for adults aged 18 and over.",
-      `If you believe an ineligible person has created an account, contact ${C.supportEmail} so we can investigate and take appropriate action.`,
+      `If you believe an ineligible person has created an account, report their profile or tell us through ${C.contact}, so we can investigate and take appropriate action.`,
     ] },
     { heading: "13. Policy changes", blocks: [
       "We will update the effective date when this Policy changes and provide additional notice for material changes where appropriate.",
@@ -432,9 +424,7 @@ export const PRIVACY: LegalDoc = {
     ] },
     { heading: "14. Contact and complaints", blocks: [
       { list: [
-        `Privacy contact: ${C.privacyContact}`,
-        `Email: ${C.privacyEmail}`,
-        `Mailing/contact address where appropriate: ${C.mailingAddress}`,
+        `Privacy questions and requests: ${C.contact}`,
       ] },
       "You may also raise a concern with the applicable privacy regulator.",
     ] },

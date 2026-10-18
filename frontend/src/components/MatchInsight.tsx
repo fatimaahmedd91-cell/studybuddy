@@ -11,7 +11,7 @@ import { Button } from "./ui";
 
 const FALLBACK_REASONS: Record<string, string> = {
   ai_off: "AI features are off for one of you (Settings → Privacy)",
-  not_configured: "Gemini isn't set up on this server",
+  not_configured: "AI isn't available right now",
   quota: "Gemini's usage limit was reached",
   timeout: "Gemini took too long to answer",
   invalid_response: "Gemini's answer couldn't be used",

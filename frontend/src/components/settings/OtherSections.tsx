@@ -1,7 +1,6 @@
 "use client";
 
-// Settings → Notifications, Blocked people, Terms and privacy, and System status.
-import Link from "next/link";
+// Settings → Notifications, Blocked people, and Terms and privacy.
 import { useState } from "react";
 import Avatar from "@/components/Avatar";
 import Dialog from "@/components/Dialog";
@@ -174,8 +173,7 @@ export function TermsSection() {
     <SettingsSection id="terms" title="Terms and privacy">
       <p className="text-sm">
         You accepted Terms version <b>{me.terms.accepted_version}</b>
-        {me.terms.accepted_at && <> on {formatDateTime(me.terms.accepted_at)}</>}. These are drafts and haven&apos;t
-        been reviewed by a lawyer yet.
+        {me.terms.accepted_at && <> on {formatDateTime(me.terms.accepted_at)}</>}.
       </p>
       <LegalLinks />
       <div className="flex flex-wrap gap-2">
@@ -184,39 +182,6 @@ export function TermsSection() {
       </div>
       {save.message && <Notice kind={save.message.kind}>{save.message.text}</Notice>}
       <PrivacyRequests />
-      <p className="text-sm">
-        Not built yet: password reset by email. Until then, keep your password safe, or ask the team through a privacy
-        request. <Link href="/guidelines" className="underline">Community Guidelines</Link>
-      </p>
-    </SettingsSection>
-  );
-}
-
-function StatusRow({ label, ok, detail }: { label: string; ok: boolean; detail: string }) {
-  return (
-    <li className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-cream px-3 py-2">
-      <span className="font-semibold">{label}</span>
-      <span className="text-sm"><span aria-hidden="true">{ok ? "✅" : "⚠️"}</span> {ok ? "Working" : "Not working"}: {detail}</span>
-    </li>
-  );
-}
-
-export function StatusSection() {
-  const health = useApi(() => api.health(), []);
-  return (
-    <SettingsSection id="status" title="System status">
-      {health.loading && <Loading />}
-      {health.error && <ErrorBox message="The server can't be reached." onRetry={health.reload} />}
-      {health.data && (
-        <ul className="space-y-2">
-          <StatusRow label="Server" ok detail="running" />
-          <StatusRow label="Database" ok={health.data.database.ok}
-            detail={`${health.data.database.detail}${health.data.database.timescaledb ? " (TimescaleDB)" : ""}`} />
-          <StatusRow label="Gemini AI" ok={health.data.gemini.ok}
-            detail={health.data.gemini.ok ? health.data.gemini.detail : `${health.data.gemini.detail}. Non-AI suggestions are used instead.`} />
-        </ul>
-      )}
-      <Button variant="outline" onClick={health.reload}>Check again</Button>
     </SettingsSection>
   );
 }

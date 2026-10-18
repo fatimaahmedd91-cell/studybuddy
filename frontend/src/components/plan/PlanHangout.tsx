@@ -38,7 +38,7 @@ const STATUS_LABELS: Record<ParticipantStatus, string> = {
 
 const FALLBACK_REASONS: Record<string, string> = {
   ai_off: "AI features are off for someone in this plan",
-  not_configured: "Gemini isn't set up on this server",
+  not_configured: "AI isn't available right now",
   quota: "Gemini's free limit was reached",
   timeout: "Gemini took too long to answer",
   invalid_response: "Gemini's answer couldn't be used",

@@ -2,7 +2,7 @@
 
 // Settings. Each section lives in its own file in src/components/settings/, so it's easy to find and edit.
 import { AccountSection, ProfileSection } from "@/components/settings/AccountSection";
-import { BlockedSection, NotificationsSection, StatusSection, TermsSection } from "@/components/settings/OtherSections";
+import { BlockedSection, NotificationsSection, TermsSection } from "@/components/settings/OtherSections";
 import { PrivacySection } from "@/components/settings/PrivacySection";
 import { VerificationSection } from "@/components/settings/VerificationSection";
 import { PageHeading } from "@/components/ui";
@@ -15,7 +15,6 @@ const SECTIONS = [
   ["notifications", "Notifications"],
   ["blocked", "Blocked"],
   ["terms", "Terms & privacy"],
-  ["status", "Status"],
 ];
 
 export default function SettingsPage() {
@@ -40,7 +39,6 @@ export default function SettingsPage() {
           <PrivacySection />
           <BlockedSection />
           <TermsSection />
-          <StatusSection />
         </div>
       </div>
     </div>

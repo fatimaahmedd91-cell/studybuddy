@@ -1,7 +1,7 @@
 "use client";
 
 // Shows one legal document from src/content/legal.ts. Placeholders like [INSERT DATE] are highlighted,
-// and a banner says the page is a draft until every placeholder is filled in.
+// and a "not ready" banner appears if any are left.
 import Link from "next/link";
 import { type Block, type LegalDoc, placeholders } from "@/content/legal";
 import { useAuth } from "@/lib/auth";
@@ -58,7 +58,7 @@ function BlockView({ block }: { block: Block }) {
   }
   return (
     <aside className="mt-3 rounded-xl border-2 border-dashed border-warning bg-warning-soft p-3 text-sm text-warning">
-      <b>Draft check (remove before launch):</b> {block.note}
+      {block.note}
     </aside>
   );
 }
@@ -80,14 +80,16 @@ export default function LegalPage({ doc, summary }: { doc: LegalDoc; summary?: s
         </Link>
       </div>
 
-      <div role="note" className="mt-6 rounded-frame border-2 border-warning bg-warning-soft p-4 text-warning">
-        <p className="font-bold">Draft — not ready to publish</p>
-        <p className="mt-1 text-sm">
-          This text has not been reviewed by a lawyer and doesn&apos;t mean {BRAND.name} is legally compliant.
-          {missing.length > 0 && ` ${missing.length} item${missing.length === 1 ? " is" : "s are"} still to be filled in (highlighted).`}{" "}
-          The team&apos;s checklist is in docs/PRE_LAUNCH_CHECKLIST.md.
-        </p>
-      </div>
+      {/* Only shows if someone adds an "[INSERT ...]" blank to src/content/legal.ts and forgets to fill it in. */}
+      {missing.length > 0 && (
+        <div role="note" className="mt-6 rounded-frame border-2 border-warning bg-warning-soft p-4 text-warning">
+          <p className="font-bold">Not ready to publish</p>
+          <p className="mt-1 text-sm">
+            {missing.length} item{missing.length === 1 ? " is" : "s are"} still to be filled in (highlighted) in
+            src/content/legal.ts.
+          </p>
+        </div>
+      )}
 
       <article className="mt-6 rounded-frame bg-cream p-5 sm:p-8">
         <h1 className="text-3xl font-extrabold">{doc.title}</h1>

@@ -29,7 +29,7 @@ demo_limit = RateLimiter(20, 3600, "Too many demo accounts from this network. Tr
 @router.post("/auth/demo", status_code=201)
 def start_demo(request: Request):
     if not config.DEMO_MODE_ENABLED:
-        raise HTTPException(status_code=403, detail="Demo mode is turned off on this server.")
+        raise HTTPException(status_code=403, detail="The demo is turned off right now.")
     demo_limit.check(client_ip(request))
 
     with get_connection() as conn, conn.cursor() as cur:

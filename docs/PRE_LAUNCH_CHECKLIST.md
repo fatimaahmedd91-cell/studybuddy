@@ -25,13 +25,13 @@ Legend: **Decision** = the team has to choose · **Legal** = needs qualified leg
 
 | # | Item | Type |
 |---|---|---|
-| 12 | Fill in `LEGAL_CONFIG`: operator's legal name, support, privacy and moderation emails, mailing address, effective dates, Privacy Policy version. | Setup |
-| 13 | Replace every remaining `[INSERT …]` placeholder. The pages count them and show "Draft — not ready to publish" until none are left. | Setup |
+| 12 | `LEGAL_CONFIG` now says "the Meetkat team" and points people to the in-app request form (Settings → Terms and privacy), with no email or mailing address. Before real users, add the operator's legal name and a monitored contact email, and consider a mailing address. | Setup |
+| 13 | Every `[INSERT …]` blank was filled with what the code does today (providers, retention, security, AI data). Re-check them whenever a feature changes. A page shows "Not ready to publish" if a blank is ever added back. | Setup |
 | 14 | Privacy Policy §2: remove categories you don't collect; list analytics, cookies and tracking (today: none; the browser's local storage holds the login token). | Legal |
 | 15 | Privacy Policy §5: confirm Gemini's retention, training-use and processing-location details for your API account and region. | Legal |
 | 16 | Privacy Policy §7–8: the real provider table (Gemini, Places, Twilio, SMTP, host, database) and the countries data goes to. | Legal |
-| 17 | Privacy Policy §10: confirm the security controls listed in the "Draft check" note, then move them into the text. | Legal |
-| 18 | Remove every "Draft check" note once the text matches the code. | Setup |
+| 17 | Privacy Policy §10 lists the security controls in the code. HTTPS is not claimed: add it to the text once the site only runs on `https://` (your domain). | Legal |
+| 18 | Privacy Policy §7 lists Google (Gemini) and Vultr. Add any provider you turn on (email, Twilio, Google Places, TigerData) before turning it on. | Setup |
 | 19 | Have the Terms, Privacy Policy and Guidelines reviewed by someone qualified (Ontario/Canada; PIPEDA and meaningful-consent guidance). | Legal |
 | 20 | When the Terms change materially, raise `TERMS_VERSION`. Everyone is asked to accept again. Nobody is assumed to have accepted a version they never saw. | Setup |
 
