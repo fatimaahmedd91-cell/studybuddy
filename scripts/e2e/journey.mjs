@@ -48,9 +48,23 @@ async function newPage(viewport = { width: 1280, height: 900 }) {
   return page;
 }
 
+// The Terms gate: demo visitors (and anyone after a Terms change) tick the 18+/Terms box first.
+async function acceptTerms(page) {
+  await page.getByRole("heading", { name: /Before you continue|Our Terms have changed/ }).waitFor();
+  await page.getByRole("checkbox").check();
+  await page.getByRole("button", { name: "Accept and continue" }).click();
+}
+
+async function startDemo(page) {
+  await page.goto(BASE);
+  await page.getByRole("button", { name: "Try the demo" }).click();
+  await acceptTerms(page);
+  await page.waitForURL(`${BASE}/feed`);
+}
+
 async function signUp(page, person) {
   await page.goto(`${BASE}/signup`);
-  await page.getByLabel("Name").fill(person.name);
+  await page.getByLabel("Display name").fill(person.name);
   await page.getByLabel("Email").fill(person.email);
   await page.getByLabel("Password").fill(person.password);
   await page.getByRole("checkbox").check();
@@ -170,7 +184,7 @@ await check("5b. Friends can message each other", async () => {
 await check(`9. Match note appears${EXPECT_GEMINI ? " and is written by Gemini" : ""}`, async () => {
   const bId = await pb.evaluate(async () => (await (await fetch("/api/me", { headers: { Authorization: `Bearer ${localStorage.getItem("ff_token")}` } })).json()).id);
   await pa.goto(`${BASE}/profile?id=${bId}`);
-  const label = pa.getByText(/Written by Gemini|Suggested by FriendFinder/);
+  const label = pa.getByText(/Written by Gemini|Suggested by Meerkat/);
   await label.waitFor({ timeout: 30_000 });
   if (EXPECT_GEMINI) expect((await label.innerText()).includes("Gemini"), `got: ${await label.innerText()}`);
   await pa.getByText("Conversation starter").waitFor();
@@ -279,9 +293,7 @@ await check("Remove friend asks first, then removes", async () => {
 // ---------- Demo mode ----------
 const pd = await newPage();
 await check("Demo mode: Try the demo, accept a waiting request", async () => {
-  await pd.goto(BASE);
-  await pd.getByRole("button", { name: "Try the demo" }).click();
-  await pd.waitForURL(`${BASE}/feed`);
+  await startDemo(pd);
   await pd.getByText("Demo account").first().waitFor();
   await pd.goto(`${BASE}/friends`);
   await pd.getByRole("button", { name: "Accept" }).first().click();
@@ -291,19 +303,21 @@ await check("Demo mode: Try the demo, accept a waiting request", async () => {
 // ---------- 13. Phone width ----------
 const pm = await newPage({ width: 390, height: 844 });
 await check("13. Phone width: every page fits, bottom navigation works", async () => {
-  await pm.goto(BASE);
-  await pm.getByRole("button", { name: "Try the demo" }).click();
-  await pm.waitForURL(`${BASE}/feed`);
-  for (const path of ["/feed", "/profile", "/groups", "/events", "/friends", "/messages", "/screen-time", "/settings"]) {
+  await startDemo(pm);
+  for (const path of ["/feed", "/memories", "/plan", "/profile", "/groups", "/events", "/friends", "/messages", "/screen-time",
+    "/settings", "/terms", "/privacy", "/guidelines"]) {
     await pm.goto(`${BASE}${path}`);
     await pm.waitForLoadState("networkidle");
     const overflow = await pm.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
     expect(!overflow, `${path} scrolls sideways`);
   }
+  await pm.goto(`${BASE}/feed`); // the legal pages above have no tab bar
   const nav = pm.getByRole("navigation", { name: "Main" });
-  const box = await nav.getByRole("link", { name: "Groups" }).boundingBox();
+  const box = await nav.getByRole("link", { name: "Memories" }).boundingBox();
   expect(box && box.height >= 44, "tab bar targets are smaller than 44px");
-  await nav.getByRole("link", { name: "Groups" }).click();
+  // Groups is under "More" on phones.
+  await nav.getByRole("button", { name: "More" }).click();
+  await nav.getByRole("menuitem", { name: "Groups" }).click();
   await pm.waitForURL(`${BASE}/groups`);
 });
 

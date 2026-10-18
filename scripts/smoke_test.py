@@ -1,4 +1,4 @@
-"""Checks that a running FriendFinder site works from end to end, and prints PASS or FAIL per step.
+"""Checks that a running Meerkat site works from end to end, and prints PASS or FAIL per step.
 
     python scripts/smoke_test.py                            # the site on your computer (Next.js dev server)
     python scripts/smoke_test.py http://localhost:8000      # just the backend
@@ -62,7 +62,7 @@ def make_account(name, profile):
     """Signs up and fills in a profile. Returns (token, user id) or (None, None)."""
     email = f"smoke-{uuid.uuid4().hex[:10]}@example.com"
     status, body = request(
-        "POST", "/api/auth/signup", {"email": email, "password": PASSWORD, "name": name, "confirm_age": True}
+        "POST", "/api/auth/signup", {"email": email, "password": PASSWORD, "name": name, "accept_terms": True}
     )
     if not check(f"Sign up ({name})", status == 201, "" if status == 201 else detail_of(status, body)):
         return None, None
@@ -90,7 +90,7 @@ status, body = request("GET", "/")
 if BASE.endswith(":8000"):
     info("Website", "skipped, this address is just the backend")
 else:
-    check("Website loads", status == 200 and "FriendFinder" in str(body), f"status {status}")
+    check("Website loads", status == 200 and "Meerkat" in str(body), f"status {status}")
 
 status, health = request("GET", "/api/health")
 if not check("Backend is running", isinstance(health, dict) and "database" in health,

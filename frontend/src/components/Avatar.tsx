@@ -20,7 +20,7 @@ export default function Avatar({
   return (
     <div
       className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-full border-pine ${SIZES[size]}`}
-      style={{ background: person.photo_url ? "var(--color-paper)" : `${person.avatar_color}33` }}
+      style={{ background: person.photo_url ? "var(--color-cream)" : `${person.avatar_color}33` }}
     >
       {person.photo_url ? (
         // A plain <img>: photos come from our own API and are already small.
