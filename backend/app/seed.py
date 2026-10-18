@@ -23,6 +23,9 @@ from app.db import get_connection, run_migrations
 from app.security import hash_password
 
 DEMO_DOMAIN = "demo.friendfinder.invalid"
+# "Try the demo" visitors get explorer-<random>@demo.friendfinder.invalid (see app/demo.py).
+EXPLORER_EMAILS = f"explorer-%@{DEMO_DOMAIN}"
+EXPLORER_LIFETIME_HOURS = 24
 DEMO_TIME_ZONE = ZoneInfo("America/Toronto")
 
 
@@ -49,8 +52,26 @@ def insert_demo_person(cur, person, email):
 
 
 def demo_people_ids(cur):
-    cur.execute("SELECT id, name FROM users WHERE is_demo AND email LIKE %s", (f"%@{DEMO_DOMAIN}",))
+    """The fictional people by name (not the "Try the demo" visitor accounts)."""
+    cur.execute(
+        "SELECT id, name FROM users WHERE is_demo AND email LIKE %s AND email NOT LIKE %s",
+        (f"%@{DEMO_DOMAIN}", EXPLORER_EMAILS),
+    )
     return {row["name"]: row["id"] for row in cur.fetchall()}
+
+
+def remove_old_explorers(cur):
+    """Deletes "Try the demo" accounts older than a day, with the groups and events they made."""
+    cur.execute(
+        "SELECT id FROM users WHERE is_demo AND email LIKE %s AND created_at < now() - make_interval(hours => %s)",
+        (EXPLORER_EMAILS, EXPLORER_LIFETIME_HOURS),
+    )
+    old = [row["id"] for row in cur.fetchall()]
+    if old:
+        cur.execute("DELETE FROM events WHERE organiser_id = ANY(%s)", (old,))
+        cur.execute("DELETE FROM groups WHERE created_by = ANY(%s)", (old,))
+        cur.execute("DELETE FROM users WHERE id = ANY(%s)", (old,))
+    return len(old)
 
 
 def event_times(spec):

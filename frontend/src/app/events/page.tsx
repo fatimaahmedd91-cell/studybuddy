@@ -1,80 +1,101 @@
 "use client";
 
-// Events: a month calendar, your timetable, friends' timetables, planning, and what's coming up.
-import { useEffect, useMemo, useRef, useState } from "react";
-import Timetable from "@/components/Timetable";
-import { DarkButton, PageTitle } from "@/components/ui";
-import { EVENT_YEAR, SLOTS, type Slot, events, formatDate, parseEventDate } from "@/lib/data";
-import { type PlannedEvent, useMatches, useStore } from "@/lib/store";
+// Events: calendar, list, RSVP, planning (/events) and one event's page (/events?id=4).
+// Times are shown in your own time zone.
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useMemo, useState } from "react";
+import Avatar from "@/components/Avatar";
+import { EventForm } from "@/components/CreateForms";
+import Dialog from "@/components/Dialog";
+import { AvailabilityGrid } from "@/components/ProfileInputs";
+import { Empty, ErrorBox, Loading } from "@/components/States";
+import { Button, DarkPanel, DemoBadge, OrangeCard, inputClass } from "@/components/ui";
+import { api } from "@/lib/api";
+import { useMe } from "@/lib/auth";
+import { useOptions } from "@/lib/options";
+import { formatDateTime, formatTime, myTimeZone } from "@/lib/time";
+import type { FriendEvent } from "@/lib/types";
+import { useApi } from "@/lib/useApi";
+
+function RsvpButton({ event, onChange }: { event: FriendEvent; onChange: (e: FriendEvent) => void }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  if (event.has_ended) return <span className="text-sm font-semibold">This event has ended</span>;
+  async function toggle() {
+    setBusy(true);
+    setError(null);
+    try {
+      onChange(event.is_going ? await api.cancelRsvp(event.id) : await api.rsvp(event.id));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong.");
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <div className="flex flex-col gap-1">
+      <Button onClick={toggle} disabled={busy} variant={event.is_going ? "light" : "dark"} aria-pressed={event.is_going}>
+        {busy ? "…" : event.is_going ? "Going ✓ · Cancel RSVP" : "I'm going"}
+      </Button>
+      {error && <p role="alert" className="text-sm font-medium text-[#a32a00]">{error}</p>}
+    </div>
+  );
+}
+
+function Where({ event }: { event: FriendEvent }) {
+  return event.online_url ? (
+    <a href={event.online_url} target="_blank" rel="noopener noreferrer" className="underline">Online link ↗</a>
+  ) : (
+    <span>{event.location}</span>
+  );
+}
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const MONTH_NAMES = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
-];
 
-type CalendarItem = { key: string; title: string; date: Date; detail: string };
-
-// "2026-10-24" -> Date at local midnight (new Date("2026-10-24") would use UTC).
-function fromInput(value: string) {
-  const [y, m, d] = value.split("-").map(Number);
-  return new Date(y, m - 1, d);
-}
-
-function sameDay(a: Date, b: Date) {
-  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
-}
-
-function Calendar({ items }: { items: CalendarItem[] }) {
-  const [month, setMonth] = useState(9); // October, where the demo events are
-  const year = EVENT_YEAR;
-  const first = new Date(year, month, 1);
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const cells = [
-    ...Array.from({ length: first.getDay() }, () => null),
-    ...Array.from({ length: daysInMonth }, (_, i) => new Date(year, month, i + 1)),
-  ];
+function Calendar({ events }: { events: FriendEvent[] }) {
+  const [shown, setShown] = useState(() => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), 1);
+  });
+  const year = shown.getFullYear();
+  const month = shown.getMonth();
+  const days = new Date(year, month + 1, 0).getDate();
+  const cells = [...Array(shown.getDay()).fill(null), ...Array.from({ length: days }, (_, i) => new Date(year, month, i + 1))];
+  const today = new Date().toDateString();
+  const onDay = (d: Date) => events.filter((e) => new Date(e.starts_at).toDateString() === d.toDateString());
 
   return (
-    <section className="rounded-[22px] bg-paper p-4 sm:p-6" aria-labelledby="calendar-title">
-      <div className="flex items-center justify-between border-b-2 border-bark pb-3">
-        <h2 id="calendar-title" className="text-3xl tracking-[0.2em] sm:text-4xl">
-          CALENDAR
-        </h2>
-        <div className="flex items-center gap-2">
-          <button onClick={() => setMonth(Math.max(0, month - 1))} aria-label="Previous month" className="rounded-full px-3 py-1 text-xl hover:bg-card">
-            ‹
-          </button>
-          <span className="w-28 text-center font-semibold">
-            {MONTH_NAMES[month]} {year}
-          </span>
-          <button onClick={() => setMonth(Math.min(11, month + 1))} aria-label="Next month" className="rounded-full px-3 py-1 text-xl hover:bg-card">
-            ›
-          </button>
+    <section aria-labelledby="calendar-title" className="rounded-[22px] bg-paper p-4 sm:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-bark pb-3">
+        <h2 id="calendar-title" className="text-3xl tracking-[0.2em]">CALENDAR</h2>
+        <div className="flex items-center gap-1">
+          <button aria-label="Previous month" onClick={() => setShown(new Date(year, month - 1, 1))} className="h-11 w-11 rounded-full text-2xl hover:bg-card">‹</button>
+          <span className="w-36 text-center font-semibold">{shown.toLocaleDateString(undefined, { month: "long", year: "numeric" })}</span>
+          <button aria-label="Next month" onClick={() => setShown(new Date(year, month + 1, 1))} className="h-11 w-11 rounded-full text-2xl hover:bg-card">›</button>
         </div>
       </div>
-      <div className="mt-2 grid grid-cols-7 text-center text-xs font-semibold">
-        {WEEKDAYS.map((d) => (
-          <div key={d} className="py-1">
-            {d}
-          </div>
-        ))}
+      <div className="mt-2 grid grid-cols-7 text-center text-xs font-semibold" aria-hidden="true">
+        {WEEKDAYS.map((d) => <div key={d} className="py-1">{d}</div>)}
       </div>
       <div className="grid grid-cols-7 border-l-2 border-t-2 border-bark">
         {cells.map((date, i) => {
-          const todays = date ? items.filter((it) => sameDay(it.date, date)) : [];
+          const list = date ? onDay(date) : [];
           return (
-            <div key={i} className="min-h-[72px] border-b-2 border-r-2 border-bark p-1 sm:min-h-[84px]">
+            <div key={i} className={`min-h-[64px] border-b-2 border-r-2 border-bark p-1 sm:min-h-[80px] ${date?.toDateString() === today ? "bg-card" : ""}`}>
               {date && (
                 <>
                   <p className="text-xs font-semibold">{date.getDate()}</p>
                   <ul className="mt-0.5 space-y-0.5">
-                    {todays.slice(0, 2).map((it) => (
-                      <li key={it.key} title={`${it.title} · ${it.detail}`} className="truncate rounded bg-bark px-1 text-[10px] leading-4 text-paper">
-                        {it.title}
+                    {list.slice(0, 2).map((e) => (
+                      <li key={e.id}>
+                        <Link href={`/events?id=${e.id}`} title={`${e.title}, ${formatTime(e.starts_at)}`}
+                          className="block truncate rounded bg-bark px-1 text-[10px] leading-4 text-paper">
+                          {e.title}
+                        </Link>
                       </li>
                     ))}
-                    {todays.length > 2 && <li className="text-[10px]">+{todays.length - 2} more</li>}
+                    {list.length > 2 && <li className="text-[10px]">+{list.length - 2} more</li>}
                   </ul>
                 </>
               )}
@@ -86,154 +107,181 @@ function Calendar({ items }: { items: CalendarItem[] }) {
   );
 }
 
-function PlanEventDialog({ onClose }: { onClose: () => void }) {
-  const { addEvent } = useStore();
-  const dialog = useRef<HTMLDialogElement>(null);
-  const [form, setForm] = useState<Omit<PlannedEvent, "id">>({
-    title: "",
-    date: "2026-10-24",
-    slot: "afternoon",
-    location: "",
-  });
+function FriendTime() {
+  const { options } = useOptions();
+  const friends = useApi(() => api.friends(), []);
+  const [friendId, setFriendId] = useState<number | null>(null);
+  const person = useApi(() => (friendId ? api.person(friendId) : Promise.resolve(null)), [friendId]);
 
-  useEffect(() => {
-    dialog.current?.showModal();
-  }, []);
-
-  function submit(e: React.FormEvent) {
-    e.preventDefault();
-    addEvent({ ...form, title: form.title.trim(), location: form.location.trim() });
-    onClose();
-  }
-
-  const input = "mt-1 w-full rounded-lg border-2 border-bark/30 bg-paper px-3 py-2 font-normal";
   return (
-    <dialog ref={dialog} onClose={onClose} className="m-auto w-[min(92vw,420px)] rounded-[22px] bg-ember p-3 backdrop:bg-bark/50">
-      <form onSubmit={submit} className="space-y-3 rounded-[16px] bg-card p-5 text-bark">
-        <h2 className="text-xl font-bold">Plan an event</h2>
-        <label className="block text-sm font-medium">
-          What
-          <input required maxLength={60} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Study session + bubble tea" className={input} />
-        </label>
-        <label className="block text-sm font-medium">
-          Date
-          <input required type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} className={input} />
-        </label>
-        <label className="block text-sm font-medium">
-          Time of day
-          <select value={form.slot} onChange={(e) => setForm({ ...form, slot: e.target.value as Slot })} className={`${input} capitalize`}>
-            {SLOTS.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="block text-sm font-medium">
-          Where
-          <input required maxLength={80} value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="Library, Group Room 2" className={input} />
-        </label>
-        <div className="flex justify-end gap-2 pt-1">
-          <button type="button" onClick={onClose} className="rounded-xl px-4 py-2 font-medium hover:bg-paper">
-            Cancel
-          </button>
-          <DarkButton type="submit">Add to calendar</DarkButton>
-        </div>
-      </form>
-    </dialog>
+    <section aria-labelledby="friend-time-title" className="rounded-[22px] bg-ember p-5 text-paper">
+      <h2 id="friend-time-title" className="text-2xl font-bold">View a friend&apos;s free time</h2>
+      {friends.data && friends.data.friends.length === 0 ? (
+        <p className="mt-2 text-xl font-bold">Add friends to compare when you&apos;re both free.</p>
+      ) : (
+        <>
+          <label className="mt-2 block text-xl font-bold">
+            Compare with
+            <select value={friendId ?? ""} onChange={(e) => setFriendId(e.target.value ? Number(e.target.value) : null)}
+              className={`${inputClass} mt-1 text-base`}>
+              <option value="">Pick a friend…</option>
+              {friends.data?.friends.map(({ person: p }) => <option key={p.id} value={p.id}>{p.name}</option>)}
+            </select>
+          </label>
+          {person.data && options && (
+            <div className="mt-3 rounded-xl bg-paper p-2 text-bark">
+              {person.data.match.overlap.length ? (
+                <AvailabilityGrid days={options.days} slots={options.slots} value={{}} highlight={person.data.match.overlap} />
+              ) : (
+                <p className="p-2 text-sm">You don&apos;t have any free times in common yet.</p>
+              )}
+            </div>
+          )}
+        </>
+      )}
+    </section>
   );
 }
 
-export default function EventsPage() {
-  const { me, plannedEvents } = useStore();
-  const matches = useMatches();
-  const [showFriends, setShowFriends] = useState(false);
-  const [friendId, setFriendId] = useState<number | null>(null);
+function EventList() {
+  const me = useMe();
+  const router = useRouter();
+  const { options } = useOptions();
+  const [when, setWhen] = useState<"upcoming" | "past">("upcoming");
   const [planning, setPlanning] = useState(false);
-
-  const items = useMemo<CalendarItem[]>(
-    () =>
-      [
-        ...events.map((e) => ({ key: `e${e.id}`, title: e.title, date: parseEventDate(e.date), detail: `${e.slot} · ${e.location}` })),
-        ...plannedEvents.map((p) => ({ key: p.id, title: p.title, date: fromInput(p.date), detail: `${p.slot} · ${p.location}` })),
-      ].sort((a, b) => +a.date - +b.date),
-    [plannedEvents],
-  );
-
-  const friend = matches.find((m) => m.student.id === (friendId ?? matches[0]?.student.id))?.student;
+  const { data, error, loading, reload, setData } = useApi(() => api.events({ when }), [when]);
+  const replace = (e: FriendEvent) => setData((data ?? []).map((x) => (x.id === e.id ? e : x)));
+  const events = useMemo(() => data ?? [], [data]);
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[1.6fr_1fr]">
-      <PageTitle>Events</PageTitle>
+    <div>
+      <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+        <h1 className="text-3xl font-bold sm:text-4xl">Events</h1>
+        <div role="group" aria-label="Which events" className="inline-flex rounded-xl border-2 border-bark p-1">
+          {(["upcoming", "past"] as const).map((w) => (
+            <button key={w} aria-pressed={when === w} onClick={() => setWhen(w)}
+              className={`min-h-10 rounded-lg px-4 text-sm font-semibold capitalize ${when === w ? "bg-bark text-paper" : "hover:bg-paper"}`}>
+              {w}
+            </button>
+          ))}
+        </div>
+      </div>
 
-      <div className="space-y-5">
-        <Calendar items={items} />
-        <section className="rounded-[22px] bg-bark p-6 text-paper" aria-labelledby="upcoming-title">
-          <h2 id="upcoming-title" className="text-3xl tracking-wide">
-            Upcoming Events!
-          </h2>
-          <ul className="mt-3 max-h-64 space-y-2 overflow-y-auto pr-2 text-lg">
-            {items.map((it) => (
-              <li key={it.key}>
-                <b>{formatDate(it.date)}:</b> {it.title}
-                <span className="block text-sm opacity-70 first-letter:uppercase">{it.detail}</span>
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.6fr_1fr]">
+        <div className="space-y-5">
+          <Calendar events={events} />
+          <DarkPanel>
+            <h2 className="text-3xl tracking-wide">{when === "upcoming" ? "Upcoming Events!" : "Past events"}</h2>
+            <p className="mt-1 text-sm opacity-80">Times in {myTimeZone()}.</p>
+            {loading && <Loading />}
+            {error && <ErrorBox message={error} onRetry={reload} />}
+            {data && events.length === 0 && <p className="mt-3">No {when} events. Plan one!</p>}
+            <ul className="mt-3 space-y-3">
+              {events.map((e) => (
+                <li key={e.id} className="rounded-2xl bg-paper p-4 text-bark">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="min-w-0">
+                      <Link href={`/events?id=${e.id}`} className="text-lg font-bold underline-offset-4 hover:underline">{e.title}</Link>
+                      {e.is_demo && <span className="ml-2 align-middle"><DemoBadge /></span>}
+                      <p className="text-sm font-semibold">{formatDateTime(e.starts_at)}</p>
+                      <p className="text-sm"><Where event={e} />{e.group && <> · <Link href={`/groups?id=${e.group.id}`} className="underline">{e.group.name}</Link></>}</p>
+                      <p className="text-sm">{e.going_count} going{e.organiser && ` · organised by ${e.organiser.id === me.id ? "you" : e.organiser.name}`}</p>
+                    </div>
+                    <RsvpButton event={e} onChange={replace} />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </DarkPanel>
+        </div>
+
+        <div className="space-y-5">
+          <section aria-labelledby="timetable-title" className="rounded-[22px] bg-ember p-5 text-paper">
+            <h2 id="timetable-title" className="border-b border-paper/70 pb-2 text-3xl">Your timetable</h2>
+            {options && (
+              <div className="mt-3 rounded-xl bg-paper p-2 text-bark">
+                <AvailabilityGrid days={options.days} slots={options.slots} value={me.availability} />
+              </div>
+            )}
+            <Link href="/profile?edit=1" className="mt-2 inline-block text-xl font-bold underline">Edit your free times</Link>
+          </section>
+          <FriendTime />
+          <button onClick={() => setPlanning(true)}
+            className="w-full rounded-[18px] bg-ember px-6 py-4 text-left text-2xl font-bold tracking-wider text-paper hover:brightness-110">
+            PLAN AN EVENT!
+          </button>
+        </div>
+      </div>
+
+      {planning && (
+        <Dialog title="Plan an event" onClose={() => setPlanning(false)}>
+          <EventForm onCreated={(e) => { setPlanning(false); router.push(`/events?id=${e.id}`); }} />
+        </Dialog>
+      )}
+    </div>
+  );
+}
+
+function EventDetail({ id }: { id: number }) {
+  const { data: event, error, loading, reload, setData } = useApi(() => api.event(id), [id]);
+  if (loading) return <Loading label="Loading event…" />;
+  if (error || !event) {
+    return (
+      <div className="space-y-3">
+        <ErrorBox message={error ?? "This event could not be found."} onRetry={reload} />
+        <Link href="/events" className="font-semibold underline">Back to events</Link>
+      </div>
+    );
+  }
+  return (
+    <div className="space-y-5">
+      <Link href="/events" className="font-semibold underline">← All events</Link>
+      <OrangeCard>
+        <div className="space-y-3 p-5 sm:p-7">
+          <h1 className="text-3xl font-bold sm:text-4xl">{event.title} {event.is_demo && <DemoBadge />}</h1>
+          <p className="text-lg font-semibold">
+            {formatDateTime(event.starts_at)}
+            {event.ends_at && ` – ${formatTime(event.ends_at)}`}
+          </p>
+          <p className="text-lg"><Where event={event} /></p>
+          {event.group && <p>Group: <Link href={`/groups?id=${event.group.id}`} className="font-semibold underline">{event.group.name}</Link></p>}
+          {event.organiser && (
+            <p>Organised by <Link href={`/profile?id=${event.organiser.id}`} className="font-semibold underline">{event.is_organiser ? "you" : event.organiser.name}</Link></p>
+          )}
+          {event.description && <p className="max-w-2xl whitespace-pre-line">{event.description}</p>}
+          <RsvpButton event={event} onChange={setData} />
+        </div>
+      </OrangeCard>
+      <section aria-labelledby="going-title" className="rounded-2xl bg-paper p-5">
+        <h2 id="going-title" className="text-xl font-bold">{event.going_count} going</h2>
+        {event.attendees?.length ? (
+          <ul className="mt-3 flex flex-wrap gap-3">
+            {event.attendees.map((a) => (
+              <li key={a.id}>
+                <Link href={`/profile?id=${a.id}`} className="flex flex-col items-center gap-1 text-xs">
+                  <Avatar person={a} size="sm" />
+                  <span className="max-w-20 truncate">{a.name.split(" ")[0]}</span>
+                </Link>
               </li>
             ))}
           </ul>
-        </section>
-      </div>
-
-      <div className="space-y-4">
-        <section className="rounded-[22px] bg-ember p-5 text-paper" aria-labelledby="timetable-title">
-          <h2 id="timetable-title" className="border-b border-paper/70 pb-2 text-3xl tracking-wide">
-            Your timetable
-          </h2>
-          <p className="mt-2 text-xl font-semibold">Courses: {me.courses.join(", ")}</p>
-          <div className="mt-3">
-            <Timetable mine={me} dark />
-          </div>
-        </section>
-
-        <button
-          onClick={() => setShowFriends(!showFriends)}
-          aria-expanded={showFriends}
-          className="w-full rounded-[22px] bg-ember px-6 py-6 text-3xl font-semibold tracking-wide text-paper hover:brightness-110"
-        >
-          View friends&apos; timetables
-        </button>
-
-        {showFriends && friend && (
-          <section className="rounded-[22px] bg-paper p-5" aria-label="Friend's timetable">
-            <label className="text-sm font-medium">
-              Compare with
-              <select
-                value={friend.id}
-                onChange={(e) => setFriendId(Number(e.target.value))}
-                className="ml-2 rounded-lg border-2 border-bark/30 bg-white/60 px-2 py-1"
-              >
-                {matches.map((m) => (
-                  <option key={m.student.id} value={m.student.id}>
-                    {m.student.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <p className="mt-2 text-xs">Green = you are both free.</p>
-            <div className="mt-2 rounded-xl bg-bark/90 p-2">
-              <Timetable mine={me} other={friend} dark />
-            </div>
-          </section>
+        ) : (
+          <Empty title="Nobody yet">Be the first to RSVP.</Empty>
         )}
-
-        <button
-          onClick={() => setPlanning(true)}
-          className="w-full rounded-[18px] bg-ember px-6 py-3 text-left text-2xl font-semibold tracking-wider text-paper hover:brightness-110"
-        >
-          PLAN AN EVENT!
-        </button>
-      </div>
-
-      {planning && <PlanEventDialog onClose={() => setPlanning(false)} />}
+      </section>
     </div>
+  );
+}
+
+function EventsContent() {
+  const id = useSearchParams().get("id");
+  return id ? <EventDetail id={Number(id)} /> : <EventList />;
+}
+
+export default function EventsPage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <EventsContent />
+    </Suspense>
   );
 }

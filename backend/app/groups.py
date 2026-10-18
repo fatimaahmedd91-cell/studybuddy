@@ -102,8 +102,8 @@ def create_group(body: GroupCreate, me: CurrentUser):
     tags = list(dict.fromkeys(body.tags))  # remove repeats, keep order
     with get_connection() as conn, conn.cursor() as cur:
         cur.execute(
-            "INSERT INTO groups (name, description, tags, created_by) VALUES (%s, %s, %s, %s) RETURNING id",
-            (body.name, body.description, tags, me["id"]),
+            "INSERT INTO groups (name, description, tags, created_by, is_demo) VALUES (%s, %s, %s, %s, %s) RETURNING id",
+            (body.name, body.description, tags, me["id"], me["is_demo"]),  # a demo account's groups are demo too
         )
         group_id = cur.fetchone()["id"]
         cur.execute("INSERT INTO group_members (group_id, user_id) VALUES (%s, %s)", (group_id, me["id"]))

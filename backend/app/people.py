@@ -1,6 +1,7 @@
 """Discover people and view someone's profile.
 
-GET /api/people        everyone else with a finished profile, best match first.
+GET /api/people        everyone else with a finished profile, best match first ("Try the demo"
+                       visitor accounts are left out).
                        Optional filters: ?university=  ?interest=  ?goal=  ?free_together=true  ?q=name
 GET /api/people/{id}   one person's profile, why you match, and your friendship status
 """
@@ -10,6 +11,7 @@ from fastapi import APIRouter, HTTPException
 from app.auth import CurrentUser
 from app.db import get_connection
 from app.matching import compute_match
+from app.seed import EXPLORER_EMAILS
 from app.users import USER_COLUMNS, load_user, public_profile
 
 router = APIRouter(prefix="/api")
@@ -56,8 +58,8 @@ def discover(
     free_together: bool = False,
     q: str = "",
 ):
-    conditions = ["onboarded = TRUE", "id <> %s"]
-    params = [me["id"]]
+    conditions = ["onboarded = TRUE", "id <> %s", "email NOT LIKE %s"]
+    params = [me["id"], EXPLORER_EMAILS]
     if university.strip():
         conditions.append("lower(trim(university)) = lower(trim(%s))")
         params.append(university)

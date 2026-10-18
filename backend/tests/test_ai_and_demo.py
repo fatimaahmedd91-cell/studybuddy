@@ -149,9 +149,28 @@ def test_try_the_demo_creates_a_ready_account(database, client):
     assert len(client.get("/api/groups", headers=headers).json()) == 6
     assert len(client.get("/api/events", headers=headers).json()) == 6
 
-    # Two demo visitors get separate accounts.
+    # Two demo visitors get separate accounts, and don't see each other in Discover.
     other = client.post("/api/auth/demo").json()
     assert other["user"]["id"] != body["user"]["id"]
+    people = client.get("/api/people", headers=headers).json()["people"]
+    assert len(people) == 12 and other["user"]["id"] not in [p["id"] for p in people]
+
+
+def test_demo_groups_and_events_are_marked_demo_and_old_demo_accounts_expire(database, client):
+    from app import db
+    body = client.post("/api/auth/demo").json()
+    headers = {"Authorization": f"Bearer {body['access_token']}"}
+    group = client.post("/api/groups", json={"name": "Explorer club", "tags": []}, headers=headers).json()
+    assert group["is_demo"]
+
+    # A day later, the next "Try the demo" click cleans the old account up.
+    with db.get_connection() as conn, conn.cursor() as cur:
+        cur.execute("UPDATE users SET created_at = now() - interval '25 hours' WHERE id = %s", (body["user"]["id"],))
+    client.post("/api/auth/demo")
+    assert client.get("/api/me", headers=headers).status_code == 401
+    with db.get_connection() as conn, conn.cursor() as cur:
+        cur.execute("SELECT count(*) AS n FROM groups WHERE id = %s", (group["id"],))
+        assert cur.fetchone()["n"] == 0
 
 
 def test_demo_accounts_cannot_log_in_with_a_password(database, client):

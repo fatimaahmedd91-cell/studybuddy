@@ -1,164 +1,182 @@
 "use client";
 
-// Screen time: today's total for you and your closest friends, plus last week's winner
-// (the person with the LEAST screen time) and past winners.
-import { useMemo, useState } from "react";
-import { CrownIcon } from "@/components/Icons";
-import { Avatar, PageTitle } from "@/components/ui";
-import { PAST_WINNERS, getStudent, handle, screenHoursLastWeek, screenMinutesToday } from "@/lib/data";
-import { useMatches, useStore } from "@/lib/store";
+// Screen Time: how long you've spent in FriendFinder (only this app), with an optional daily goal.
+// How time is counted is explained on the page and in backend/app/screen_time.py.
+import { useState } from "react";
+import { ErrorBox, Loading, Notice } from "@/components/States";
+import { Button, DarkPanel, inputClass } from "@/components/ui";
+import { api } from "@/lib/api";
+import { useAuth, useMe } from "@/lib/auth";
+import { formatMinutes, myTimeZone } from "@/lib/time";
+import type { ScreenTime } from "@/lib/types";
+import { useApi } from "@/lib/useApi";
 
-// One colour per person, checked for colour-blind safety against the dark brown panel.
-// A person keeps their colour no matter where they rank.
-const SERIES = ["#e05a10", "#1f9fc4", "#a8860a", "#d25b8c"];
-const PANEL = "#401800";
+const BAR = "#e05a10"; // checked for contrast against the dark panel
+const W = 340;
+const H = 190;
+const PAD = { top: 22, bottom: 26, left: 8, right: 8 };
 
-function formatMinutes(total: number) {
-  const h = Math.floor(total / 60);
-  const m = total % 60;
-  return h ? `${h}h ${m}min` : `${m}min`;
-}
-
-type Slice = { id: number; label: string; minutes: number; color: string };
-
-// Draws the pie as SVG wedges. A 2px gap (in the panel colour) separates the wedges.
-function Pie({ slices }: { slices: Slice[] }) {
+function WeekChart({ data }: { data: ScreenTime }) {
   const [active, setActive] = useState<number | null>(null);
-  const total = slices.reduce((sum, s) => sum + s.minutes, 0);
-  const R = 90;
-  const C = 100;
+  const minutes = data.week.map((d) => Math.round(d.seconds / 60));
+  const goal = data.goal_minutes ?? 0;
+  const max = Math.max(5, goal, ...minutes);
+  const slot = (W - PAD.left - PAD.right) / 7;
+  const barW = Math.min(24, slot * 0.55);
+  const y = (m: number) => PAD.top + (H - PAD.top - PAD.bottom) * (1 - m / max);
+  const dayName = (iso: string) => new Date(`${iso}T12:00:00`).toLocaleDateString(undefined, { weekday: "short" });
 
-  let angle = -Math.PI / 2; // start at 12 o'clock
-  const wedges = slices.map((slice) => {
-    const sweep = (slice.minutes / total) * Math.PI * 2;
-    const start = angle;
-    const end = angle + sweep;
-    angle = end;
-    const mid = (start + end) / 2;
-    const point = (a: number) => `${C + R * Math.cos(a)} ${C + R * Math.sin(a)}`;
-    const large = sweep > Math.PI ? 1 : 0;
-    return {
-      ...slice,
-      path: `M ${C} ${C} L ${point(start)} A ${R} ${R} 0 ${large} 1 ${point(end)} Z`,
-      share: Math.round((slice.minutes / total) * 100),
-      tip: { x: C + R * 0.6 * Math.cos(mid), y: C + R * 0.6 * Math.sin(mid) },
-    };
-  });
-  const shown = wedges.find((w) => w.id === active);
+  if (minutes.every((m) => m === 0)) {
+    return (
+      <p className="rounded-xl border-2 border-dashed border-paper/40 px-4 py-8 text-center text-sm">
+        No time recorded this week yet. Time is added every 30 seconds while you use FriendFinder.
+      </p>
+    );
+  }
 
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-[300px]">
-      <svg viewBox="0 0 200 200" className="h-full w-full" role="img" aria-label="Share of today's screen time by person">
-        {wedges.map((w) => (
-          <path
-            key={w.id}
-            d={w.path}
-            fill={w.color}
-            stroke={PANEL}
-            strokeWidth={2}
-            strokeLinejoin="round"
-            tabIndex={0}
-            aria-label={`${w.label}: ${formatMinutes(w.minutes)}, ${w.share}%`}
-            onMouseEnter={() => setActive(w.id)}
-            onMouseLeave={() => setActive(null)}
-            onFocus={() => setActive(w.id)}
-            onBlur={() => setActive(null)}
-            className="cursor-pointer outline-none transition-opacity"
-            style={{ opacity: active === null || active === w.id ? 1 : 0.55 }}
-          />
-        ))}
+    <figure>
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="Minutes in FriendFinder for each of the last 7 days">
+        <line x1={PAD.left} x2={W - PAD.right} y1={y(0)} y2={y(0)} stroke="#fff6e2" strokeOpacity={0.4} />
+        {goal > 0 && (
+          <g>
+            <line x1={PAD.left} x2={W - PAD.right} y1={y(goal)} y2={y(goal)} stroke="#fff6e2" strokeDasharray="4 4" />
+            <text x={W - PAD.right} y={y(goal) - 4} textAnchor="end" fontSize="10" fill="#fff6e2">goal {goal} min</text>
+          </g>
+        )}
+        {data.week.map((day, i) => {
+          const x = PAD.left + slot * i + (slot - barW) / 2;
+          const top = y(minutes[i]);
+          const height = Math.max(0, y(0) - top);
+          const isToday = i === 6;
+          return (
+            <g key={day.date} tabIndex={0} onMouseEnter={() => setActive(i)} onMouseLeave={() => setActive(null)}
+              onFocus={() => setActive(i)} onBlur={() => setActive(null)} aria-label={`${dayName(day.date)}: ${minutes[i]} minutes`}
+              className="outline-none">
+              <rect x={PAD.left + slot * i} y={PAD.top} width={slot} height={H - PAD.top - PAD.bottom} fill="transparent" />
+              {height > 0 && (
+                <path
+                  d={`M${x},${y(0)} V${top + Math.min(4, height)} q0,-4 4,-4 h${barW - 8} q4,0 4,4 V${y(0)} Z`}
+                  fill={BAR}
+                  opacity={active === null || active === i ? 1 : 0.6}
+                />
+              )}
+              <text x={x + barW / 2} y={H - 8} textAnchor="middle" fontSize="11" fill="#fff6e2" fontWeight={isToday ? 700 : 400}>
+                {isToday ? "Today" : dayName(day.date)}
+              </text>
+              {(active === i || (active === null && isToday)) && (
+                <text x={x + barW / 2} y={top - 6} textAnchor="middle" fontSize="11" fontWeight={700} fill="#fff6e2">
+                  {minutes[i]} min
+                </text>
+              )}
+            </g>
+          );
+        })}
       </svg>
-      {shown && (
-        <div
-          className="pointer-events-none absolute -translate-x-1/2 -translate-y-full rounded-lg bg-paper px-3 py-1.5 text-xs text-bark shadow-lg"
-          style={{ left: `${shown.tip.x / 2}%`, top: `${shown.tip.y / 2}%` }}
-        >
-          <b>{shown.label}</b>
-          <br />
-          {formatMinutes(shown.minutes)} · {shown.share}%
-        </div>
+      <table className="sr-only">
+        <caption>Minutes per day</caption>
+        <tbody>
+          {data.week.map((d, i) => (
+            <tr key={d.date}><th>{d.date}</th><td>{minutes[i]} minutes</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </figure>
+  );
+}
+
+function GoalCard({ data, onSaved }: { data: ScreenTime; onSaved: () => void }) {
+  const me = useMe();
+  const { setMe } = useAuth();
+  const [value, setValue] = useState(me.daily_goal_minutes ? String(me.daily_goal_minutes) : "");
+  const [message, setMessage] = useState<{ kind: "success" | "error"; text: string } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const goal = data.goal_minutes;
+  const today = Math.round(data.today_seconds / 60);
+
+  async function save(minutes: number | null) {
+    if (minutes !== null && (!Number.isInteger(minutes) || minutes < 5 || minutes > 600)) {
+      setMessage({ kind: "error", text: "Pick a goal from 5 to 600 minutes." });
+      return;
+    }
+    setBusy(true);
+    setMessage(null);
+    try {
+      setMe(await api.updateMe({ daily_goal_minutes: minutes }));
+      setMessage({ kind: "success", text: minutes ? "Goal saved." : "Goal cleared." });
+      if (minutes === null) setValue("");
+      onSaved();
+    } catch (err) {
+      setMessage({ kind: "error", text: err instanceof Error ? err.message : "Couldn't save the goal." });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <section aria-labelledby="goal-title" className="rounded-[22px] bg-ember p-5 text-paper sm:p-6">
+      <h2 id="goal-title" className="text-3xl font-bold uppercase tracking-wider">Daily goal</h2>
+      {goal ? (
+        <>
+          <p className="mt-2 text-xl font-bold">{today} of {goal} min today</p>
+          <div className="mt-2 h-4 overflow-hidden rounded-full bg-paper" role="progressbar" aria-valuemin={0}
+            aria-valuemax={goal} aria-valuenow={Math.min(today, goal)} aria-label="Progress toward your daily goal">
+            <div className="h-full rounded-full bg-bark" style={{ width: `${Math.min(100, (today / goal) * 100)}%` }} />
+          </div>
+          <p className="mt-2 text-xl font-bold">{today > goal ? "Over your goal. Maybe time for a real-life hangout?" : "Within your goal."}</p>
+        </>
+      ) : (
+        <p className="mt-2 text-xl font-bold">Set a limit for how long you want to spend here each day.</p>
       )}
-    </div>
+      <form className="mt-3 flex flex-wrap items-end gap-2" onSubmit={(e) => { e.preventDefault(); save(Number(value)); }}>
+        <label className="text-xl font-bold">
+          Minutes per day
+          <input inputMode="numeric" value={value} onChange={(e) => setValue(e.target.value)} className={`${inputClass} mt-1 w-32 text-base`} />
+        </label>
+        <Button type="submit" disabled={busy}>Save goal</Button>
+        {goal && <Button type="button" variant="light" disabled={busy} onClick={() => save(null)}>Clear</Button>}
+      </form>
+      {message && <div className="mt-3"><Notice kind={message.kind}>{message.text}</Notice></div>}
+    </section>
   );
 }
 
 export default function ScreenTimePage() {
-  const { me } = useStore();
-  const matches = useMatches();
-
-  // You plus your three best matches, each with a fixed colour.
-  const circle = useMemo(() => [me, ...matches.slice(0, 3).map((m) => m.student)], [me, matches]);
-  const slices: Slice[] = circle.map((s, i) => ({
-    id: s.id,
-    label: s.id === me.id ? `${handle(s.name)} (you)` : handle(s.name),
-    minutes: screenMinutesToday(s.id),
-    color: SERIES[i],
-  }));
-  const ranked = [...slices].sort((a, b) => b.minutes - a.minutes);
-
-  const winner = [...circle].sort((a, b) => screenHoursLastWeek(a.id) - screenHoursLastWeek(b.id))[0];
+  const tz = myTimeZone();
+  const { data, error, loading, reload } = useApi(() => api.screenTime(tz), [tz], 60_000);
 
   return (
-    <div className="grid gap-5 lg:grid-cols-2">
-      <PageTitle>Screen time</PageTitle>
-
-      <section className="rounded-[22px] bg-bark p-6 text-paper sm:p-8" aria-labelledby="total-title">
-        <h2 id="total-title" className="text-3xl tracking-wide sm:text-4xl">
-          Total Screen Time
-        </h2>
-        <p className="mt-1 text-sm opacity-75">Today, you and your closest friends</p>
-        <div className="mt-6">
-          <Pie slices={slices} />
+    <div>
+      <h1 className="mb-5 text-3xl font-bold sm:text-4xl">Screen Time</h1>
+      {loading && <Loading />}
+      {error && <ErrorBox message={error} onRetry={reload} />}
+      {data && (
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+          <DarkPanel>
+            <h2 className="text-3xl tracking-wide">Time in FriendFinder</h2>
+            <p className="mt-1 text-sm opacity-80">Today, in {tz}</p>
+            <p className="mt-3 text-6xl font-bold tabular-nums">{formatMinutes(data.today_seconds)}</p>
+            <div className="mt-5">
+              <WeekChart data={data} />
+            </div>
+          </DarkPanel>
+          <div className="space-y-5">
+            <GoalCard data={data} onSaved={reload} />
+            <DarkPanel>
+              <h2 className="text-2xl font-bold">What counts</h2>
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
+                <li>Only time in FriendFinder. It can&apos;t see your phone&apos;s screen time or other apps.</li>
+                <li>Time counts in 30-second steps while a FriendFinder tab is open, visible, and used in the last minute.</li>
+                <li>Hidden or idle tabs don&apos;t count, and two open tabs aren&apos;t counted twice.</li>
+                <li>Only you can see your time.</li>
+              </ul>
+              <p className="mt-3 text-xs opacity-80">
+                Stored in {data.storage === "timescaledb" ? "a TimescaleDB hypertable (TigerData)" : "PostgreSQL"}.
+              </p>
+            </DarkPanel>
+          </div>
         </div>
-        <ol className="mt-6 space-y-2">
-          {ranked.map((s, i) => (
-            <li key={s.id} className="flex items-center justify-between gap-3 text-base sm:text-lg">
-              <span className="flex min-w-0 items-center gap-3">
-                <span className="w-5 text-right opacity-75">{i + 1}.</span>
-                <span className="h-3.5 w-3.5 shrink-0 rounded-[4px]" style={{ background: s.color }} aria-hidden="true" />
-                {s.label}
-              </span>
-              <span className="whitespace-nowrap tabular-nums">{formatMinutes(s.minutes)}</span>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <div className="space-y-5">
-        <section className="flex flex-col items-center gap-6 rounded-[22px] bg-ember p-6 text-paper sm:flex-row sm:p-8">
-          <div className="flex flex-col items-center">
-            <CrownIcon className="-mb-3 h-14 w-14 text-bark" />
-            <Avatar student={winner} size="lg" />
-            <p className="mt-2 text-xl font-semibold">@{handle(winner.name)}</p>
-          </div>
-          <div className="text-center sm:text-left">
-            <h2 className="border-b border-paper/70 pb-2 text-3xl font-semibold uppercase tracking-wider">
-              Last week&apos;s winner
-            </h2>
-            <p className="mt-3">
-              <span className="text-7xl font-bold tabular-nums">{screenHoursLastWeek(winner.id)}</span>
-              <span className="ml-2 text-3xl font-semibold">hours</span>
-            </p>
-            <p className="mt-2 text-xl font-semibold">Least screen time in your circle</p>
-          </div>
-        </section>
-
-        <section className="rounded-[22px] bg-bark p-6 text-paper sm:p-8" aria-labelledby="past-title">
-          <h2 id="past-title" className="border-b border-paper/50 pb-2 text-3xl tracking-wide">
-            Past Winners
-          </h2>
-          <ul className="mt-3 max-h-56 space-y-2 overflow-y-auto pr-2">
-            {PAST_WINNERS.map((w) => (
-              <li key={w.week} className="flex justify-between gap-4">
-                <span>
-                  {w.week}: <span className="underline underline-offset-4">{handle(getStudent(w.studentId).name)}</span>
-                </span>
-                <span className="tabular-nums opacity-80">{w.hours} hours</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      </div>
+      )}
     </div>
   );
 }

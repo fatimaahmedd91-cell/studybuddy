@@ -4,7 +4,8 @@ POST /api/auth/demo   creates a fresh demo account and logs it in
 
 Each click makes a NEW demo account (so visitors don't see each other's changes). It starts with
 a filled-in fictional profile, two friend requests waiting, and one friend with a short chat.
-Everything about it is marked as demo, and `python -m app.seed --reset --yes` removes it.
+Demo accounts are hidden from Discover, are deleted after 24 hours (with any groups and events they
+made), and are all marked as demo. `python -m app.seed --reset --yes` removes them straight away.
 """
 
 import secrets
@@ -17,7 +18,7 @@ from app.db import get_connection
 from app.notifications import notify
 from app.ratelimit import RateLimiter, client_ip
 from app.security import create_token
-from app.seed import DEMO_DOMAIN, demo_people_ids, insert_demo_person, seed
+from app.seed import DEMO_DOMAIN, demo_people_ids, insert_demo_person, remove_old_explorers, seed
 from app.users import load_user, own_profile
 
 router = APIRouter(prefix="/api")
@@ -32,6 +33,7 @@ def start_demo(request: Request):
     demo_limit.check(client_ip(request))
 
     with get_connection() as conn, conn.cursor() as cur:
+        remove_old_explorers(cur)
         seed(cur)  # makes sure the fictional people exist (does nothing if they already do)
         people = demo_people_ids(cur)
         me = insert_demo_person(cur, data.DEMO_EXPLORER, f"explorer-{secrets.token_hex(6)}@{DEMO_DOMAIN}")

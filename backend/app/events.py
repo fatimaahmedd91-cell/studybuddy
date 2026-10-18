@@ -138,10 +138,10 @@ def create_event(body: EventCreate, me: CurrentUser):
                 raise HTTPException(status_code=403, detail="Join the group before adding events to it.")
             group_name = group["name"]
         cur.execute(
-            "INSERT INTO events (title, description, starts_at, ends_at, location, online_url, organiser_id, group_id)"
-            " VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id",
+            "INSERT INTO events (title, description, starts_at, ends_at, location, online_url, organiser_id, group_id,"
+            " is_demo) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id",
             (body.title, body.description, body.starts_at, body.ends_at, body.location, body.online_url,
-             me["id"], body.group_id),
+             me["id"], body.group_id, me["is_demo"]),  # a demo account's events are demo too
         )
         event_id = cur.fetchone()["id"]
         # The organiser is going to their own event.

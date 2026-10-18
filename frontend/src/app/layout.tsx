@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import AppShell from "@/components/AppShell";
-import { StoreProvider } from "@/lib/store";
+import { AuthProvider } from "@/lib/auth";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "FriendFinder",
-  description: "Find study buddies and friends on campus who share your courses, interests, and free time.",
+  description: "Find platonic friends, study buddies, groups and events on campus who share your interests and free time.",
 };
 
 export const viewport: Viewport = {
@@ -16,9 +16,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en">
       <body className="font-sans antialiased">
-        <StoreProvider>
+        <AuthProvider>
           <AppShell>{children}</AppShell>
-        </StoreProvider>
+        </AuthProvider>
       </body>
     </html>
   );

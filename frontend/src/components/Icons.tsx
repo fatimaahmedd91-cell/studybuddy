@@ -105,3 +105,23 @@ export const CrownIcon = (p: IconProps) => (
     <path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z" />
   </Svg>
 );
+
+export const ProfileIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <circle cx="12" cy="8" r="4" />
+    <path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7" />
+  </Svg>
+);
+
+export const SettingsIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="3" />
+    <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1" />
+  </Svg>
+);
+
+export const ChatIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M4 5h16v11H9l-5 4z" />
+  </Svg>
+);
