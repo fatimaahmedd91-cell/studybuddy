@@ -2,6 +2,10 @@
 
 POST  /api/me/accept-terms        {"accept": true, "version": "..."} accept the current Terms
 PATCH /api/me/email               {"new_email": "...", "current_password": "..."} change your login email
+PATCH /api/me/password            {"current_password": "...", "new_password": "..."} -> a fresh token;
+                                  every other device is logged out
+POST  /api/auth/password-reset/request  {"email": "..."} emails a reset code (needs SMTP; no login)
+POST  /api/auth/password-reset/confirm  {"email", "code", "new_password"} sets a new password (no login)
 PATCH /api/me/phone               {"phone": "+14165550123"} or {"phone": null} (always private)
 PATCH /api/me/notification-prefs  {"messages": false, ...} switch kinds of notifications on or off
 PUT   /api/me/consents/{key}      {"granted": true} turn an optional feature on or off
@@ -13,23 +17,27 @@ GET   /api/privacy-requests       your own requests and their status
 Changing a verified email or phone number removes its "verified" label until it's checked again.
 """
 
+import hmac
+import logging
+import secrets
 from datetime import datetime, timezone
 from typing import Annotated, Literal
 
 import psycopg2
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from psycopg2.extras import Json
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, StringConstraints
 
-from app import config
+from app import config, verification
 from app.auth import CurrentUser
 from app.db import get_connection
 from app.notifications import CATEGORIES
-from app.ratelimit import RateLimiter
-from app.security import verify_password
+from app.ratelimit import RateLimiter, client_ip
+from app.security import create_token, hash_password, verify_password
 from app.users import USER_COLUMNS, own_profile
 
 router = APIRouter(prefix="/api")
+log = logging.getLogger("friendfinder.account")
 
 password_check_limit = RateLimiter(10, 600, "Too many attempts. Wait 10 minutes and try again.")
 privacy_request_limit = RateLimiter(5, 86400, "You've sent several requests today. We'll reply to those first.")
@@ -97,6 +105,131 @@ def change_email(body: EmailChange, me: CurrentUser):
         user = cur.fetchone()
         cur.execute("UPDATE contact_verifications SET used_at = now() WHERE user_id = %s AND channel = 'email' AND used_at IS NULL", (me["id"],))
     return own_profile(user)
+
+
+# ---------- Passwords ----------
+
+class PasswordChange(BaseModel):
+    current_password: str = Field(min_length=1, max_length=128)
+    new_password: str = Field(min_length=8, max_length=128)  # same rules as sign-up
+
+
+def set_password(cur, user_id, new_password):
+    """Saves a new password and logs out every device: tokens made before now stop working (app/auth.py).
+
+    The time comes from this server's clock, the same clock that stamps new tokens, so a token made
+    right after this call is always accepted.
+    """
+    cur.execute(
+        "UPDATE users SET password_hash = %s, password_changed_at = %s, updated_at = now() WHERE id = %s",
+        (hash_password(new_password), datetime.now(timezone.utc), user_id),
+    )
+
+
+@router.patch("/me/password")
+def change_password(body: PasswordChange, me: CurrentUser):
+    if me["is_demo"]:
+        raise HTTPException(status_code=403, detail="Demo accounts don't have a password to change.")
+    password_check_limit.check(f"user:{me['id']}")
+    with get_connection() as conn, conn.cursor() as cur:
+        cur.execute("SELECT password_hash FROM users WHERE id = %s", (me["id"],))
+        if not verify_password(body.current_password, cur.fetchone()["password_hash"]):
+            raise HTTPException(status_code=403, detail="That password isn't right.")
+        set_password(cur, me["id"], body.new_password)
+    # A fresh token, made after the change, keeps this browser logged in.
+    return {"access_token": create_token(me["id"]), "token_type": "bearer"}
+
+
+RESET_MINUTES = 15
+RESET_UNAVAILABLE = "Password reset by email isn't set up on this server yet. Ask the Meerkat team for help."
+RESET_REQUESTED = (
+    "If that email belongs to a Meerkat account, we'll send a reset code there. "
+    "It can take a few minutes, so check your spam folder too."
+)
+RESET_BAD_CODE = "That code is wrong or has expired."
+
+reset_request_limit = RateLimiter(10, 3600, "Too many reset requests from this network. Try again later.")
+reset_confirm_limit = RateLimiter(20, 3600, "Too many attempts from this network. Try again later.")
+
+
+class ResetRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetConfirm(BaseModel):
+    email: EmailStr
+    code: str = Field(pattern=r"^\s*[0-9]{6}\s*$")
+    new_password: str = Field(min_length=8, max_length=128)  # same rules as sign-up
+
+
+@router.post("/auth/password-reset/request")
+def request_password_reset(body: ResetRequest, request: Request):
+    """Emails a 6-digit reset code (15 minutes, 5 tries), if this server has SMTP set up.
+
+    The answer is the same whether or not the email has an account, so this can't be used to find
+    out who uses Meerkat. For the same reason, a resend limit or a failed send is only logged, not
+    reported: the person is told to check their email and can try again later. That's a deliberate
+    privacy trade-off. Demo and suspended accounts never get a code.
+    """
+    if not verification.email_available():
+        raise HTTPException(status_code=503, detail=RESET_UNAVAILABLE)
+    reset_request_limit.check(client_ip(request))
+    email = body.email.lower()
+    with get_connection() as conn, conn.cursor() as cur:
+        cur.execute(
+            "SELECT id FROM users WHERE email = %s AND is_demo = FALSE AND suspended_at IS NULL", (email,)
+        )
+        row = cur.fetchone()
+        code = record_id = None
+        if row:
+            try:
+                verification.check_send_limits(cur, row["id"], "password_reset")
+                code = f"{secrets.randbelow(10**6):06d}"
+                record_id = verification.start_code(
+                    cur, row["id"], "password_reset", email, verification.hash_code(row["id"], code), RESET_MINUTES
+                )
+            except HTTPException:
+                log.info("Password reset code not sent: too many recent requests for this account.")
+    if code:
+        try:
+            verification.send_email(
+                email,
+                "Reset your Meerkat password",
+                f"Your Meerkat password reset code is {code}. It expires in {RESET_MINUTES} minutes.\n\n"
+                "If you didn't ask to reset your password, you can ignore this email. Your password stays the same.",
+            )
+        except verification.SendFailed:
+            log.warning("Password reset email could not be sent.")
+            with get_connection() as conn, conn.cursor() as cur:
+                cur.execute("UPDATE contact_verifications SET used_at = now() WHERE id = %s", (record_id,))
+    return {"message": RESET_REQUESTED}
+
+
+@router.post("/auth/password-reset/confirm")
+def confirm_password_reset(body: ResetConfirm, request: Request):
+    """Sets a new password with a reset code. Every way of failing gives the same message."""
+    reset_confirm_limit.check(client_ip(request))
+    email, code = body.email.lower(), body.code.strip()
+    with get_connection() as conn, conn.cursor() as cur:
+        cur.execute(
+            "SELECT id FROM users WHERE email = %s AND is_demo = FALSE AND suspended_at IS NULL", (email,)
+        )
+        user = cur.fetchone()
+        row = verification.latest_open(cur, user["id"], "password_reset") if user else None
+        usable = (
+            row is not None
+            and row["target"] == email
+            and row["expires_at"] > datetime.now(timezone.utc)
+            and row["attempts"] < verification.MAX_ATTEMPTS
+        )
+        if usable and hmac.compare_digest(row["code_hash"], verification.hash_code(user["id"], code)):
+            cur.execute("UPDATE contact_verifications SET used_at = now() WHERE id = %s", (row["id"],))
+            set_password(cur, user["id"], body.new_password)
+            return {"message": "Password changed. Log in with your new password."}
+        if usable:
+            cur.execute("UPDATE contact_verifications SET attempts = attempts + 1 WHERE id = %s", (row["id"],))
+    # Outside the "with", so the counted attempt is saved before answering.
+    raise HTTPException(status_code=400, detail=RESET_BAD_CODE)
 
 
 Phone = Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^\+[1-9][0-9]{7,14}$")]

@@ -2,6 +2,7 @@
 
 POST /api/auth/signup  creates an account and returns a token
 POST /api/auth/login   checks email and password and returns a token
+(Forgot password and change password are in app/account.py.)
 Every other endpoint uses current_user() to require a valid token in the header
 "Authorization: Bearer <token>". It also refuses suspended accounts, and accounts that haven't
 accepted the current Terms of Service yet (except for the few endpoints listed in TERMS_EXEMPT).
@@ -17,7 +18,7 @@ from pydantic import BaseModel, EmailStr, Field, StringConstraints
 from app import config
 from app.db import get_connection
 from app.ratelimit import RateLimiter, client_ip
-from app.security import DUMMY_HASH, create_token, hash_password, read_token, verify_password
+from app.security import DUMMY_HASH, create_token, hash_password, issued_before, read_token_claims, verify_password
 from app.users import USER_COLUMNS, load_user, own_profile
 
 router = APIRouter(prefix="/api")
@@ -117,14 +118,19 @@ def current_user(request: Request, credentials: Annotated[HTTPAuthorizationCrede
     Any endpoint that needs a logged-in person adds:  me: CurrentUser
     Suspended accounts get 403. So do accounts that haven't accepted the current Terms
     (detail "terms_required"), except for the TERMS_EXEMPT endpoints.
+    Tokens made before the last password change get 401, so a new password logs out every other device.
     """
-    user_id = read_token(credentials.credentials) if credentials else None
+    claims = read_token_claims(credentials.credentials) if credentials else None
     user = None
-    if user_id is not None:
+    if claims is not None:
         with get_connection() as conn, conn.cursor() as cur:
-            user = load_user(cur, user_id)
+            user = load_user(cur, claims[0])
     if not user:
         raise HTTPException(status_code=401, detail="Please log in.", headers={"WWW-Authenticate": "Bearer"})
+    if issued_before(claims[1], user["password_changed_at"]):
+        raise HTTPException(
+            status_code=401, detail="Your password was changed. Please log in again.", headers={"WWW-Authenticate": "Bearer"}
+        )
     if user["suspended_at"]:
         raise HTTPException(status_code=403, detail=SUSPENDED)
     if user["terms_version"] != config.TERMS_VERSION and (request.method, request.url.path) not in TERMS_EXEMPT:

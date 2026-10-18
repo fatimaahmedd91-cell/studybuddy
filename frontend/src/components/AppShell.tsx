@@ -2,7 +2,7 @@
 
 // The frame around every page.
 //   Legal pages (/terms, /privacy, /guidelines): open to everyone, no menus.
-//   Public pages (/, /login, /signup): no menus.
+//   Public pages (/, /login, /signup, /forgot-password): no menus.
 //   Logged in but the Terms changed (or were never accepted): the TermsGate screen first.
 //   Onboarding: header only.
 //   Everything else: header (logo, +, bell), the sidebar on wide screens, a tab bar on phones.
@@ -45,7 +45,7 @@ const NAV = [
   { href: "/screen-time", label: "Screen Time", Icon: HourglassIcon, phone: false },
 ];
 
-const PUBLIC_PAGES = ["/", "/login", "/signup"];
+const PUBLIC_PAGES = ["/", "/login", "/signup", "/forgot-password"];
 // Readable by anyone, logged in or not.
 export const OPEN_PAGES = ["/terms", "/privacy", "/guidelines"];
 

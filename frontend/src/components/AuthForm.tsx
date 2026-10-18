@@ -4,13 +4,13 @@
 // Sign-up needs one unticked checkbox: age (18+, the proposed launch policy) and the Terms.
 // The Privacy Policy is linked separately: reading it is not the same as agreeing to optional features.
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { BRAND } from "@/lib/brand";
 import { useOptions } from "@/lib/options";
 import { MeerkatMark } from "./Brand";
-import { ErrorBox } from "./States";
+import { ErrorBox, Notice } from "./States";
 import { Button, Field, FrameCard, inputClass } from "./ui";
 
 export default function AuthForm({ mode }: { mode: "login" | "signup" }) {
@@ -22,8 +22,14 @@ export default function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [resetDone, setResetDone] = useState(false);
   const isSignup = mode === "signup";
   const minAge = options?.min_age ?? 18;
+
+  // /login?reset=1 comes from the Forgot password page, after the server changed the password.
+  useEffect(() => {
+    setResetDone(!isSignup && new URLSearchParams(window.location.search).get("reset") === "1");
+  }, [isSignup]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -53,6 +59,7 @@ export default function AuthForm({ mode }: { mode: "login" | "signup" }) {
         <FrameCard>
           <form onSubmit={submit} className="space-y-4 p-6 sm:p-8">
             <h1 className="text-3xl font-bold">{isSignup ? "Create your account" : "Welcome back"}</h1>
+            {resetDone && <Notice kind="success">Password changed. Log in with your new password.</Notice>}
             {isSignup && (
               <Field label="Display name" htmlFor="name" hint="What other people see. It doesn't need to be your legal name.">
                 <input id="name" required maxLength={60} autoComplete="nickname" value={name}
@@ -68,6 +75,11 @@ export default function AuthForm({ mode }: { mode: "login" | "signup" }) {
                 autoComplete={isSignup ? "new-password" : "current-password"} value={password}
                 onChange={(e) => setPassword(e.target.value)} className={inputClass} />
             </Field>
+            {!isSignup && (
+              <p className="-mt-2 text-sm">
+                <Link href="/forgot-password" className="font-semibold underline">Forgot password?</Link>
+              </p>
+            )}
             {isSignup && (
               <div className="space-y-2">
                 <label className="flex min-h-11 items-start gap-3 text-sm">
